@@ -1,0 +1,26 @@
+{
+  "name": "aptentech-platform",
+  "private": true,
+  "version": "1.0.0",
+  "description": "AptenTech website and admin CMS — Next.js + Node.js REST API + MongoDB",
+  "workspaces": ["packages/*", "apps/*"],
+  "engines": { "node": ">=20.10.0" },
+  "scripts": {
+    "dev": "concurrently -n api,web -c magenta,cyan \"npm:dev:api\" \"npm:dev:web\"",
+    "dev:api": "npm run dev --workspace @aptentech/api",
+    "dev:web": "npm run dev --workspace @aptentech/web",
+    "build": "npm run build --workspace @aptentech/shared && npm run build --workspace @aptentech/api && npm run build --workspace @aptentech/web",
+    "start": "concurrently -n api,web -c magenta,cyan \"npm:start:api\" \"npm:start:web\"",
+    "start:api": "npm run start --workspace @aptentech/api",
+    "start:web": "npm run start --workspace @aptentech/web",
+    "seed": "npm run seed --workspace @aptentech/api",
+    "create-admin": "npm run create-admin --workspace @aptentech/api",
+    "typecheck": "npm run typecheck --workspaces --if-present",
+    "lint": "npm run lint --workspaces --if-present",
+    "test": "npm run test --workspaces --if-present"
+  },
+  "devDependencies": {
+    "concurrently": "^9.1.0",
+    "typescript": "^5.7.2"
+  }
+}

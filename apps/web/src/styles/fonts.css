@@ -1,0 +1,17 @@
+/* ==========================================================================
+   Font wiring.
+
+   base.css declares --display / --body / --mono with the original Google Fonts
+   family names. next/font self-hosts the same faces under generated family
+   names, so those three tokens are repointed here — loaded after base.css, and
+   nothing else about the typography changes.
+
+   The original fallback stacks are kept intact behind each family, so text
+   still renders in the intended metrics if a font file fails to load.
+   ========================================================================== */
+
+:root {
+  --display: var(--font-display), "Plus Jakarta Sans", ui-sans-serif, system-ui, sans-serif;
+  --body: var(--font-body), "Inter", ui-sans-serif, system-ui, sans-serif;
+  --mono: var(--font-mono), "IBM Plex Mono", ui-monospace, Menlo, monospace;
+}
