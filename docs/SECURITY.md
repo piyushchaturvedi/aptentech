@@ -45,6 +45,15 @@ the account `mustChangePassword`. Every admin route is refused until a new passw
 An empty `ADMIN_PASSWORD` is treated as unset rather than accepted as a password — a bug
 found and fixed during testing.
 
+**Lockout recovery**: `create-admin` refuses to overwrite an existing account, which is the
+right default — one administrator should not be able to silently take over another's login.
+That left no way back when the only account's password was lost, because the CMS was the
+only place to change it and the CMS needs the password. `reset-admin-password` is the
+deliberate exception: it requires shell access to the server, issues a password the same way
+`create-admin` does, re-flags `mustChangePassword`, and deletes every session belonging to
+that account. Destroying the sessions is the part that matters — a reset is also how a
+stolen session is revoked, so leaving old ones valid would defeat it.
+
 ## CSRF
 
 Double-submit token on every state-changing admin request. The CSRF token is returned in
@@ -149,6 +158,15 @@ site.
 `trust proxy` is off by default and must be switched on only when actually behind a proxy.
 Trusting `X-Forwarded-For` unconditionally lets any client spoof its IP and walk past every
 per-IP rate limit.
+
+**The global ceiling does not apply to the site's own renderer.** The content API is reachable
+only by the Next.js server, which presents the service token, and a build that pre-renders 24
+pages and 51 articles makes several hundred reads in a few seconds from that one address. The
+300-a-minute ceiling started refusing them mid-build, and the export failed with a connection
+reset rather than a clear error. It now skips requests carrying the correct token — compared
+by digest, so the check takes the same time whatever value is supplied. Every limit that
+guards a specific action is mounted on that route and still applies: the lead limiter keyed on
+the visitor's forwarded address, the sign-in limiter, the upload limiter.
 
 ## Error handling
 

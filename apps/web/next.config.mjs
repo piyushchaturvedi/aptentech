@@ -48,6 +48,23 @@ const nextConfig = {
     ],
   },
 
+  /**
+   * Media served from the API's local disk.
+   *
+   * The local media driver returns site-relative paths like `/uploads/media/...`, but the
+   * files sit on the API's disk on another port. Without this the browser asks the Next
+   * server for them and gets a 404, so every image slot renders empty in development while
+   * looking correctly wired in the database.
+   *
+   * A rewrite rather than an absolute URL on the stored record: the browser stays on one
+   * origin, so `img-src 'self'` in the CSP keeps working and no API hostname reaches the
+   * page. In production `MEDIA_DRIVER=s3` returns absolute CDN URLs and this never matches.
+   */
+  async rewrites() {
+    const apiOrigin = (process.env.API_BASE_URL ?? 'http://localhost:4000/api/v1').replace(/\/api\/v1\/?$/, '');
+    return [{ source: '/uploads/:path*', destination: `${apiOrigin}/uploads/:path*` }];
+  },
+
   async headers() {
     return [
       {
@@ -73,18 +90,99 @@ const nextConfig = {
     ];
   },
 
+  /**
+   * Redirects come from the CMS.
+   *
+   * The source's navigation pointed 864 links at `/services/`, 378 at `/technologies/` and
+   * 216 at `/solutions/ai-automation/`, none of which had a page behind it, plus a handful
+   * of one-off paths. Rather than inventing pages, each is a row in the redirect table an
+   * administrator can repoint the day a real page ships.
+   *
+   * Next evaluates this once, when the server starts, so a redirect added in the CMS takes
+   * effect on the next deploy rather than immediately — which is the right trade for a
+   * table that changes rarely and is checked on every request.
+   *
+   * FALLBACK is what ships if the API cannot be reached during a build: the same set the
+   * seed writes, so a build never silently drops the redirects the navigation depends on.
+   */
   async redirects() {
-    return [
-      {
-        // The footer linked Blog/Insights/Guides to /insights/ on 24 of 25 source pages,
-        // while every canonical and article link used /blog/. /blog/ wins; this keeps the
-        // other path resolving instead of 404ing.
-        source: '/insights',
-        destination: '/blog',
-        permanent: true,
-      },
+    const FALLBACK = [
+      // The footer linked Blog/Insights/Guides to /insights/ on 24 of 25 source pages,
+      // while every canonical and article link used /blog/. /blog/ wins; this keeps the
+      // other path resolving instead of 404ing.
+      { source: '/insights', destination: '/blog', permanent: true },
+      { source: '/solutions/ai-automation', destination: '/services/ai-automation/', permanent: true },
+      { source: '/case-studies/all', destination: '/case-studies', permanent: true },
+      { source: '/careers', destination: '/contact', permanent: true },
+    ];
+
+    /*
+      Structural redirects that belong to the application rather than to the content, so they
+      apply whether or not the database answered.
+
+      `/admin` is the address people actually type; without this it 404s, because every admin
+      screen lives one segment deeper. It points at the dashboard and lets `AdminShell` send
+      an unauthenticated visitor on to the sign-in page — that keeps one place deciding what
+      an unauthenticated admin sees. It is deliberately temporary: a permanent redirect is
+      cached by the browser indefinitely, which would make that landing choice unchangeable.
+
+      `/insights/:path*` is a pattern rather than a single path, so the database's row-by-row
+      table cannot express it.
+    */
+    const ALWAYS = [
+      { source: '/admin', destination: '/admin/dashboard/', permanent: false },
       { source: '/insights/:path*', destination: '/blog/:path*', permanent: true },
     ];
+
+    const base = process.env.API_BASE_URL;
+    const token = process.env.API_SERVICE_TOKEN;
+    if (!base || !token) return [...FALLBACK, ...ALWAYS];
+
+    /*
+      `npm run dev` starts both apps at once, so this can run before the API is listening.
+      A single attempt fell back to the compiled-in list and silently dropped every redirect
+      that only exists in the database. Six tries over about fifteen seconds covers a cold
+      start without making a genuinely-absent API slow to fail.
+    */
+    async function fetchRedirects() {
+      for (let attempt = 0; attempt < 6; attempt += 1) {
+        try {
+          const res = await fetch(`${base}/redirects`, {
+            headers: { 'x-api-key': token },
+            signal: AbortSignal.timeout(5000),
+          });
+          if (res.ok) return res;
+        } catch {
+          // Not up yet.
+        }
+        await new Promise((resolve) => setTimeout(resolve, 2500));
+      }
+      return null;
+    }
+
+    try {
+      const res = await fetchRedirects();
+      if (!res) {
+        console.warn('[redirects] API unreachable — using the compiled-in fallback list.');
+        return [...FALLBACK, ...ALWAYS];
+      }
+
+      const body = await res.json();
+      const rows = Array.isArray(body?.data) ? body.data : [];
+      const mapped = rows
+        .filter((row) => row?.active !== false && row?.from && row?.to)
+        // Next matches without the trailing slash; `trailingSlash: true` adds it back.
+        .map((row) => ({
+          source: String(row.from).replace(/\/$/, '') || '/',
+          destination: String(row.to),
+          permanent: row.statusCode !== 302,
+        }))
+        .filter((row) => row.source !== row.destination);
+
+      return mapped.length ? [...mapped, ...ALWAYS] : [...FALLBACK, ...ALWAYS];
+    } catch {
+      return [...FALLBACK, ...ALWAYS];
+    }
   },
 };
 

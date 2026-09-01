@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import Link from 'next/link';
 import type { Lead, LeadStatus, Paginated } from '@aptentech/shared';
 import { LEAD_STATUSES } from '@aptentech/shared';
 import { useAdmin } from '@/components/admin/AdminClient';
@@ -179,8 +180,13 @@ export default function LeadsPage() {
                         <span className={`adm-chip ${lead.status.toLowerCase()}`}>{lead.status}</span>
                       </td>
                       <td>
-                        <button className="adm-btn ghost sm" onClick={() => setSelected(lead)}>
+                        {/* The detail route carries the conversation; the panel below is a
+                            quick look without leaving the list. */}
+                        <Link className="adm-btn ghost sm" href={`/admin/leads/${lead.id}/`}>
                           Open
+                        </Link>
+                        <button className="adm-btn ghost sm" onClick={() => setSelected(lead)}>
+                          Peek
                         </button>
                       </td>
                     </tr>

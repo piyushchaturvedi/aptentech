@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import '@/styles/base.css';
+import '@/styles/site.css';
 
 /** 404. Uses the approved design tokens; no internal detail is exposed. */
 export default function NotFound() {

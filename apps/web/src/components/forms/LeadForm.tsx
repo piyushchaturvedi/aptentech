@@ -18,7 +18,22 @@ import { HoneypotField } from './HoneypotField';
  * pages while keeping each one's specific wording ("Get my free SEO audit" versus "Get a
  * Free Consultation", "Monthly SEO budget" versus "Approximate budget").
  */
-export function LeadForm({ config }: { config: LeadFormConfig }) {
+/**
+ * Dialling codes offered by the contact page's phone field.
+ *
+ * The source populated this select from a script; the list is design/content rather than
+ * something to invent, so only the codes the original shipped are offered.
+ */
+const DIAL_CODES = ['+91', '+1', '+44', '+61', '+971', '+65', '+49', '+33', '+31', '+27'];
+
+export function LeadForm({
+  config,
+  variant = 'standard',
+}: {
+  config: LeadFormConfig;
+  /** The contact page's form adds a dialling code, a file drop and an NDA checkbox. */
+  variant?: 'standard' | 'contact';
+}) {
   const { state, submit, clearField } = useLeadSubmit('leadForm', 'lead_form_submit');
   const [values, setValues] = useState({
     name: '',
@@ -35,6 +50,10 @@ export function LeadForm({ config }: { config: LeadFormConfig }) {
     clearField(field === 'details' ? 'message' : field);
   };
 
+  const [dialCode, setDialCode] = useState(DIAL_CODES[0] ?? '');
+  const [nda, setNda] = useState(true);
+  const [fileName, setFileName] = useState('');
+
   const err = (field: string): boolean => Boolean(state.fieldErrors[field]?.length);
   const busy = state.status === 'submitting';
 
@@ -45,7 +64,8 @@ export function LeadForm({ config }: { config: LeadFormConfig }) {
     const ok = await submit({
       name: values.name,
       email: values.email,
-      phone: values.phone,
+      // The contact form splits the number across two controls; the API stores one string.
+      phone: variant === 'contact' && values.phone ? `${dialCode} ${values.phone}` : values.phone,
       service: values.service,
       budget: values.budget,
       message: values.details,
@@ -92,18 +112,50 @@ export function LeadForm({ config }: { config: LeadFormConfig }) {
           <span className="msg">{state.fieldErrors.email?.[0] ?? 'Please enter a valid business email.'}</span>
         </div>
 
-        <div className="field">
-          <label htmlFor="phone">Phone number</label>
-          <input
-            id="phone"
-            name="phone"
-            type="tel"
-            autoComplete="tel"
-            placeholder="+91 00000 00000"
-            value={values.phone}
-            onChange={set('phone')}
-          />
-        </div>
+        {variant === 'contact' ? (
+          <div className={`field full${err('phone') ? ' err' : ''}`} id="f-phone">
+            <label htmlFor="phone">Phone number</label>
+            <div className="phone-row">
+              <select
+                id="dialCode"
+                name="dialCode"
+                aria-label="Country dialling code"
+                value={dialCode}
+                onChange={(event) => setDialCode(event.target.value)}
+              >
+                {DIAL_CODES.map((code) => (
+                  <option key={code}>{code}</option>
+                ))}
+              </select>
+              <input
+                id="phone"
+                name="phone"
+                type="tel"
+                inputMode="tel"
+                autoComplete="tel-national"
+                required
+                placeholder="00000 00000"
+                value={values.phone}
+                onChange={set('phone')}
+                aria-invalid={err('phone')}
+              />
+            </div>
+            <span className="msg">{state.fieldErrors.phone?.[0] ?? 'Please enter a valid phone number.'}</span>
+          </div>
+        ) : (
+          <div className="field">
+            <label htmlFor="phone">Phone number</label>
+            <input
+              id="phone"
+              name="phone"
+              type="tel"
+              autoComplete="tel"
+              placeholder="+91 00000 00000"
+              value={values.phone}
+              onChange={set('phone')}
+            />
+          </div>
+        )}
 
         <div className={`field${err('service') ? ' err' : ''}`} id="f-service">
           <label htmlFor="service">{config.serviceLabel}</label>
@@ -116,7 +168,8 @@ export function LeadForm({ config }: { config: LeadFormConfig }) {
           <span className="msg">{state.fieldErrors.service?.[0] ?? 'Please choose a service.'}</span>
         </div>
 
-        <div className="field full">
+        {/* The contact page pairs budget beside the service select; service pages run it full width. */}
+        <div className={variant === 'contact' ? 'field' : 'field full'}>
           <label htmlFor="budget">{config.budgetLabel}</label>
           <select id="budget" name="budget" value={values.budget} onChange={set('budget')}>
             <option value="">Select a range (optional)</option>
@@ -137,9 +190,63 @@ export function LeadForm({ config }: { config: LeadFormConfig }) {
             onChange={set('details')}
           />
         </div>
+
+        {variant === 'contact' ? (
+          <div className="field full" id="f-file">
+            <label htmlFor="attachment">
+              Attach a file <span className="opt">optional</span>
+            </label>
+            <div className="drop" id="drop">
+              <input
+                id="attachment"
+                name="attachment"
+                type="file"
+                accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.xls,.xlsx"
+                onChange={(event) => setFileName(event.target.files?.[0]?.name ?? '')}
+              />
+              <span className="drop-ic" aria-hidden="true">
+                <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
+                  <path
+                    d="M11 15.5V4m0 0L7.5 7.5M11 4l3.5 3.5"
+                    stroke="currentColor"
+                    strokeWidth="1.7"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                  <path
+                    d="M4 15v2.5A1.5 1.5 0 0 0 5.5 19h11a1.5 1.5 0 0 0 1.5-1.5V15"
+                    stroke="currentColor"
+                    strokeWidth="1.6"
+                    strokeLinecap="round"
+                  />
+                </svg>
+              </span>
+              <span className="drop-txt">
+                <b>Choose a file</b> or drag it here
+              </span>
+              <span className="drop-hint">PDF, DOC, XLS, PNG, JPG · 10&nbsp;MB</span>
+            </div>
+            <p className="file-name" id="fileName" role="status">
+              {fileName}
+            </p>
+            <span className="msg">Please attach a supported file under 10&nbsp;MB.</span>
+          </div>
+        ) : null}
       </div>
 
-      <HoneypotField id="website" value={values.website} onChange={set('website')} />
+      <HoneypotField
+        id="website"
+        value={values.website}
+        onChange={set('website')}
+        {...(variant === 'contact' ? { className: 'hp' } : {})}
+      />
+
+      {variant === 'contact' ? (
+        <label className="hf-nda">
+          <input type="checkbox" id="nda" checked={nda} onChange={(event) => setNda(event.target.checked)} />{' '}
+          <span>Send me an NDA before we discuss details.</span>
+        </label>
+      ) : null}
 
       <button type="submit" className="btn btn-primary" disabled={busy}>
         {busy ? 'Sending…' : config.submitLabel}

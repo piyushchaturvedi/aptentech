@@ -14,7 +14,19 @@
  * same testimonial appears on several pages and must be edited in one place.
  */
 import { Schema, model, models, type Model, type InferSchemaType } from 'mongoose';
-import { ACCENT_TOKENS, ADMIN_ROLES, CASE_SHOTS, LEAD_STATUSES, PUBLISH_STATUSES, SERVICE_KINDS } from '@aptentech/shared';
+import {
+  ACCENT_TOKENS,
+  ADMIN_ROLES,
+  CASE_SHOTS,
+  HERO_DECORATIONS,
+  LEAD_STATUSES,
+  PUBLISH_STATUSES,
+  SERVICE_KINDS,
+  EMAIL_STATUSES,
+  MESSAGE_AUTHORS,
+  MESSAGE_KINDS,
+  TEMPLATE_KINDS,
+} from '@aptentech/shared';
 import { LEAD_FORM_TYPES } from '@aptentech/shared';
 
 const opts = { timestamps: true, versionKey: false } as const;
@@ -299,13 +311,23 @@ const ServicePageSchema = new Schema(
     midCta2Points: { type: [String], default: [] },
     midCta2MediaLabel: { type: String, default: '', maxlength: 300 },
     midCta2MediaHint: { type: String, default: '', maxlength: 300 },
+    canvasSectionIds: { type: [String], default: [] },
+    centredHeadIds: { type: [String], default: [] },
+    heroDecoration: { type: String, enum: HERO_DECORATIONS, default: 'none' },
+    whyCtaStyle: { type: String, enum: ['strip', 'inline'], default: 'strip' },
+    servicesCtaLabel: { type: String, default: '', maxlength: 300 },
     solutionsCtaLabel: { type: String, default: '', maxlength: 300 },
     costFactorsCtaLabel: { type: String, default: '', maxlength: 300 },
 
     closingCtaTitle: { type: String, default: '', maxlength: 300 },
     closingCtaBody: { type: String, default: '', maxlength: 6000 },
     leadReasons: { type: [LeadReasonSchema], default: [] },
-    leadOffices: { type: [OfficeSchema], default: [] },
+    // The lead band's office blocks are labelled ("Headquarters", "Get in touch"), which
+    // is not the same field as the site-wide office list's city.
+    leadOffices: {
+      type: [new Schema({ label: { type: String, default: '', maxlength: 300 }, lines: { type: [String], default: [] } }, { _id: false })],
+      default: [],
+    },
     whyCtaLabel: { type: String, default: '', maxlength: 300 },
     faqAfter: { type: String, default: '', maxlength: 6000 },
     faqAfterCtaLabel: { type: String, default: '', maxlength: 300 },
@@ -330,6 +352,7 @@ const ServicePageSchema = new Schema(
     },
 
     caseStudyIds: { type: [Schema.Types.ObjectId], ref: 'CaseStudy', default: [] },
+    latestPostIds: { type: [Schema.Types.ObjectId], ref: 'BlogPost', default: [] },
     testimonialIds: { type: [Schema.Types.ObjectId], ref: 'Testimonial', default: [] },
 
     sectionOrder: { type: [String], default: [] },
@@ -355,6 +378,11 @@ const SitePageSchema = new Schema(
     slug: { type: String, required: true, maxlength: 120 },
     title: { type: String, required: true, maxlength: 300 },
     status: { type: String, enum: PUBLISH_STATUSES, default: 'DRAFT' },
+    // Each page carries the case studies, testimonials and articles written for it rather
+    // than a shared set: the copy on the home page is not the copy on the about page.
+    caseStudyIds: { type: [Schema.Types.ObjectId], ref: 'CaseStudy', default: [] },
+    testimonialIds: { type: [Schema.Types.ObjectId], ref: 'Testimonial', default: [] },
+    latestPostIds: { type: [Schema.Types.ObjectId], ref: 'BlogPost', default: [] },
     blocks: { type: [PageBlockSchema], default: [] },
     seo: { type: SeoSchema, default: () => ({}) },
   },
@@ -380,6 +408,14 @@ const CaseStudySchema = new Schema(
       default: [],
     },
     shot: { type: String, enum: CASE_SHOTS, default: 'chart' },
+    /**
+     * Caption under the interface frame.
+     *
+     * The source hardcoded `[PRODUCT INTERFACE MOCKUP]` into the markup, so it appeared on
+     * every case study on 27 pages with no way to change it. Holding it here makes it content
+     * like everything else — an editor renames it, or empties it to hide the caption.
+     */
+    shotCaption: { type: String, default: '', maxlength: 200 },
     shotConsole: {
       type: new Schema(
         {
@@ -432,6 +468,8 @@ const BlogPostSchema = new Schema(
     categoryName: { type: String, default: '', maxlength: 300 },
     tags: { type: [String], default: [] },
     authorName: { type: String, default: '', maxlength: 300 },
+    authorRole: { type: String, default: '', maxlength: 300 },
+    authorBio: { type: String, default: '', maxlength: 2000 },
     coverImage: { type: MediaRefSchema, default: () => ({}) },
     readingMinutes: { type: Number, default: 0 },
     status: { type: String, enum: PUBLISH_STATUSES, default: 'DRAFT' },
@@ -452,6 +490,14 @@ BlogPostSchema.index({ title: 'text', excerpt: 'text' }, { name: 'blog_text', we
 
 const TestimonialSchema = new Schema(
   {
+    /**
+     * Where this testimonial came from in the source, as `<page>#<index>`.
+     *
+     * The seed keys on this rather than on the name and quote, which are exactly the fields
+     * an editor — or the demo-content pass — is expected to rewrite. Keying on mutable text
+     * meant the next seed no longer recognised the record and inserted a second copy.
+     */
+    sourceKey: { type: String, default: null, maxlength: 160 },
     name: { type: String, required: true, maxlength: 300 },
     designation: { type: String, default: '', maxlength: 300 },
     company: { type: String, default: '', maxlength: 300 },
@@ -668,6 +714,29 @@ const SiteSettingsSchema = new Schema(
     footerTagline: { type: String, default: '', maxlength: 6000 },
     legalLinks: { type: [new Schema({ label: String, href: String }, { _id: false })], default: [] },
     defaultSeo: { type: SeoSchema, default: () => ({}) },
+    /**
+     * Who lead mail reaches, and how it signs itself.
+     *
+     * Recipients and wording are content, so they belong to the administrator. The provider
+     * credentials and the envelope sender are deliberately absent: those stay in server
+     * configuration, because the CMS is reachable by more people than the server is.
+     */
+    emailDelivery: {
+      type: new Schema(
+        {
+          notifyTo: { type: String, default: '', maxlength: 200 },
+          notifyCc: { type: [String], default: [] },
+          notifyBcc: { type: [String], default: [] },
+          senderName: { type: String, default: 'AptenTech', maxlength: 120 },
+          replyTo: { type: String, default: '', maxlength: 200 },
+          sendClientConfirmation: { type: Boolean, default: true },
+          sendAdminNotification: { type: Boolean, default: true },
+        },
+        { _id: false },
+      ),
+      default: () => ({}),
+    },
+
     analytics: {
       type: new Schema(
         {
@@ -683,6 +752,124 @@ const SiteSettingsSchema = new Schema(
   opts,
 );
 SiteSettingsSchema.index({ singleton: 1 }, { unique: true });
+
+/* ------------------------------------------------------------------ email + conversations */
+
+const EmailAttemptSchema = new Schema(
+  {
+    at: { type: Date, default: Date.now },
+    status: { type: String, enum: EMAIL_STATUSES, required: true },
+    error: { type: String, default: null, maxlength: 1000 },
+  },
+  { _id: false },
+);
+
+/**
+ * One message on a lead's thread.
+ *
+ * Messages are embedded in the conversation rather than kept in their own collection: a
+ * thread is always read whole, is bounded in practice by how much correspondence one
+ * enquiry attracts, and embedding means the admin's lead view is a single query.
+ *
+ * The threading headers are stored because they are the only reliable way to recognise a
+ * client's reply later. Subject matching is a guess; `In-Reply-To` is an identifier the
+ * client's mail program echoes back.
+ */
+const ConversationMessageSchema = new Schema(
+  {
+    author: { type: String, enum: MESSAGE_AUTHORS, required: true },
+    kind: { type: String, enum: MESSAGE_KINDS, required: true },
+    authorName: { type: String, default: '', maxlength: 200 },
+    authorEmail: { type: String, default: '', maxlength: 320 },
+    subject: { type: String, default: '', maxlength: 400 },
+    /** Sanitised before it is written; never re-sanitised on read. */
+    html: { type: String, default: '', maxlength: 200_000 },
+    text: { type: String, default: '', maxlength: 200_000 },
+    to: { type: [String], default: [] },
+    cc: { type: [String], default: [] },
+    bcc: { type: [String], default: [] },
+    status: { type: String, enum: EMAIL_STATUSES, default: 'QUEUED' },
+    messageId: { type: String, default: null, maxlength: 400 },
+    inReplyTo: { type: String, default: null, maxlength: 400 },
+    references: { type: [String], default: [] },
+    attempts: { type: [EmailAttemptSchema], default: [] },
+    lastError: { type: String, default: null, maxlength: 1000 },
+    /** The provider's own id, so a delivery can be traced in their console. */
+    providerId: { type: String, default: null, maxlength: 200 },
+    sentAt: { type: Date, default: null },
+    /**
+     * Idempotency key. A unique sparse index cannot be used inside an array, so uniqueness
+     * is enforced by the service checking for the key before appending — which is enough,
+     * because a single conversation's writes are serialised by the document lock.
+     */
+    dedupeKey: { type: String, default: null, maxlength: 64 },
+    createdAt: { type: Date, default: Date.now },
+  },
+  { _id: true },
+);
+
+const ConversationSchema = new Schema(
+  {
+    leadId: { type: Schema.Types.ObjectId, ref: 'Lead', required: true },
+    subject: { type: String, default: '', maxlength: 400 },
+    messages: { type: [ConversationMessageSchema], default: [] },
+    lastMessageAt: { type: Date, default: Date.now },
+  },
+  opts,
+);
+// One conversation per lead — the whole point of the thread is that there is only one.
+ConversationSchema.index({ leadId: 1 }, { unique: true });
+ConversationSchema.index({ lastMessageAt: -1 });
+/**
+ * Finds the thread an inbound reply belongs to.
+ *
+ * Sparse because most messages have no `messageId` until they are actually sent, and a
+ * non-sparse index would store a null entry for every one of them.
+ */
+ConversationSchema.index({ 'messages.messageId': 1 }, { sparse: true });
+
+const EmailTemplateSchema = new Schema(
+  {
+    kind: { type: String, enum: TEMPLATE_KINDS, required: true },
+    name: { type: String, required: true, maxlength: 120 },
+    description: { type: String, default: '', maxlength: 400 },
+    subject: { type: String, required: true, maxlength: 300 },
+    html: { type: String, required: true, maxlength: 60_000 },
+    text: { type: String, default: '', maxlength: 30_000 },
+    active: { type: Boolean, default: true },
+    /** Built-in templates fill a slot the application sends from; they may be edited, not deleted. */
+    builtIn: { type: Boolean, default: false },
+    updatedBy: { type: Schema.Types.ObjectId, ref: 'AdminUser', default: null },
+  },
+  opts,
+);
+EmailTemplateSchema.index({ kind: 1, active: 1 });
+
+/**
+ * Inbound mail that could not be matched to a thread.
+ *
+ * Kept rather than dropped: an unanswered client reply is worse than an untidy queue, and
+ * attaching it to the wrong lead would put one client's words in another's history.
+ */
+const UnmatchedInboundSchema = new Schema(
+  {
+    fromEmail: { type: String, default: '', maxlength: 320 },
+    fromName: { type: String, default: '', maxlength: 200 },
+    subject: { type: String, default: '', maxlength: 400 },
+    text: { type: String, default: '', maxlength: 200_000 },
+    html: { type: String, default: '', maxlength: 200_000 },
+    messageId: { type: String, default: null, maxlength: 400 },
+    inReplyTo: { type: String, default: null, maxlength: 400 },
+    references: { type: [String], default: [] },
+    reason: { type: String, default: '', maxlength: 200 },
+    resolved: { type: Boolean, default: false },
+    resolvedLeadId: { type: Schema.Types.ObjectId, ref: 'Lead', default: null },
+  },
+  opts,
+);
+UnmatchedInboundSchema.index({ resolved: 1, createdAt: -1 });
+// Providers retry webhooks; the same message must not be recorded twice.
+UnmatchedInboundSchema.index({ messageId: 1 }, { unique: true, sparse: true });
 
 /* ------------------------------------------------------------------ exports */
 
@@ -704,6 +891,9 @@ export const MediaModel = build('Media', MediaSchema);
 export const RedirectModel = build('Redirect', RedirectSchema);
 export const AuditLogModel = build('AuditLog', AuditLogSchema);
 export const SiteSettingsModel = build('SiteSettings', SiteSettingsSchema);
+export const ConversationModel = build('Conversation', ConversationSchema);
+export const EmailTemplateModel = build('EmailTemplate', EmailTemplateSchema);
+export const UnmatchedInboundModel = build('UnmatchedInbound', UnmatchedInboundSchema);
 
 /** Called once at boot so index creation failures surface immediately, not on first query. */
 export async function syncIndexes(): Promise<void> {
@@ -722,5 +912,8 @@ export async function syncIndexes(): Promise<void> {
     RedirectModel.syncIndexes(),
     AuditLogModel.syncIndexes(),
     SiteSettingsModel.syncIndexes(),
+    ConversationModel.syncIndexes(),
+    EmailTemplateModel.syncIndexes(),
+    UnmatchedInboundModel.syncIndexes(),
   ]);
 }

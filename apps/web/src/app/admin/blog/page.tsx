@@ -45,6 +45,8 @@ export default function AdminBlogPage() {
         categoryName: '',
         tags: [],
         authorName: '',
+        authorRole: '',
+        authorBio: '',
         coverImage: { ...EMPTY_MEDIA },
         readingMinutes: 0,
         status: 'DRAFT' as const,
@@ -59,6 +61,18 @@ export default function AdminBlogPage() {
             <Text label="Slug" value={item.slug} onChange={(v) => patch({ slug: v })} hint="Used by /blog/<slug>/" />
             <Text label="Category" value={item.categoryName} onChange={(v) => patch({ categoryName: v })} />
             <Text label="Author" value={item.authorName} onChange={(v) => patch({ authorName: v })} />
+            <Text
+              label="Author role"
+              value={item.authorRole}
+              onChange={(v) => patch({ authorRole: v })}
+              hint="Printed under the name in the article byline."
+            />
+            <TextArea
+              label="Author bio"
+              value={item.authorBio}
+              onChange={(v) => patch({ authorBio: v })}
+              rows={2}
+            />
           </div>
 
           <TextArea label="Excerpt" value={item.excerpt} onChange={(v) => patch({ excerpt: v })} rows={3} />

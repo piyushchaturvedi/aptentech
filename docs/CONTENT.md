@@ -8,6 +8,7 @@
 - services, solutions, case studies, blog articles, testimonials, FAQs
 - which sections appear on a page, and in what order
 - the mega-menu, the footer, contact details, social links
+- redirects, so a path the old navigation promised can be repointed without a code change
 - images, alt text, logo, favicon
 - per-page SEO: title, meta description, canonical, social share image, robots
 - publish status and scheduling
@@ -25,9 +26,29 @@ rather than hex values, icons as keys into a registry that ships with the code, 
 as a closed typed set. There is no free-form page builder, so no CMS edit can produce markup
 the stylesheet does not already cover.
 
-The one exception is a blog article body, which accepts a limited subset of HTML —
-headings, paragraphs, lists, links, quotes, code, tables and images. It is sanitised on the
-server when saved and again when read.
+Two places accept markup, both sanitised on the server when saved *and* again when read:
+
+- **A blog article body**, against a profile that keeps what the article template styles —
+  headings, paragraphs, lists, links, quotes, code, tables, images, the key-takeaway panel,
+  the table wrapper, the pull quote, the inline call to action and anchored sections that the
+  contents list links to. Everything else is stripped.
+- **A legal document**, against a profile that keeps its clause sections, definition cards and
+  numbering, because the privacy policy and terms are structured documents rather than prose.
+
+Neither profile admits a class the stylesheet has no rule for, so no edit can produce markup
+the design does not already cover.
+
+### Content that belongs to one page
+
+Case studies, testimonials and the "latest insights" cards look shared and are not: each
+service, solution, home and about page ships its own, written for its subject. The taxi page
+quotes driver onboarding, the fitness page quotes coaching. Editing a page's carousel or
+testimonial grid changes that page only.
+
+The card label above an article in a "latest insights" band is the page's, not the article's:
+the about page calls one piece a *Guide* where the software page calls the same piece a *Cost
+guide*. The article supplies the title, standfirst and link; the page supplies how it is
+labelled and coloured there.
 
 ## Everyday tasks
 
@@ -50,12 +71,81 @@ that filter occasionally, because a false positive is recoverable there and nowh
 point at placeholder paths such as `/services/` and `/technologies/`; repoint them here as
 those pages are built.
 
+## Demo content and imagery
+
+The site now ships populated. Every placeholder the source left behind has been filled with
+demo data **in MongoDB**, and every image slot has an asset behind it. Nothing is hardcoded
+into a component, so all of it is replaceable from the admin without a deploy.
+
+Run `node scripts/verify-placeholders.js` against a running site to confirm none has crept
+back: it crawls every page and reports only text a visitor would actually see, so a token
+sitting in an unrendered template does not raise a false alarm. It currently reports **0
+visible placeholders across 130 pages**.
+
+### What was filled in, and how honestly
+
+Three different kinds of placeholder needed three different answers.
+
+**Configuration** — addresses, phone numbers, mailboxes — got deliberately obvious dummies:
+`hello@example.com`, `+00 0000000000`, `Demo Street 1`. A plausible-looking fake would be
+worse than an obvious one, because nobody would notice it shipping.
+
+**Claims about the company** — awards, certifications, audit bodies, partner tiers, review
+scores, client logos, registration numbers — got visibly generic labels: "Demo award", "Demo
+certification", "Demo issuing body". They were never given realistic names. An invented
+"ISO 27001 certified" would sit on the page looking entirely credible, and a visitor has no
+way to tell it apart from a real credential. Market-size and growth figures render as an
+em dash for the same reason: a statistic implies a source.
+
+**Portfolio and quotes** — case-study metrics and testimonials — are filled so the design
+reads as finished, and every seeded record carries `demoContent: true` so the admin can list
+exactly what still needs replacing. Case studies get fictional product names (FoodFlow,
+RideGo, FitTrack, StreamBox, TravelMate…) and metric values shaped to their own label — a
+latency label gets a duration, a rate label a percentage — because a metric tile sized for
+"38%" looks broken holding a dash. Testimonials name no invented person: each is
+`Demo Client NN` with a real-sounding role and sector, which is what makes the section look
+complete without putting words in a named individual's mouth.
+
+> **Before launch.** The demo values are not publishable as-is. Filter the admin for
+> `demoContent` records, replace every case-study metric with a verified figure, replace the
+> testimonials with real quotes, and either fill in genuine awards and certifications or
+> deactivate those sections.
+
+### Images
+
+The source referenced 82 images and none were delivered. Each slot now holds a generated SVG
+at exactly the dimensions the slot records, stored through the ordinary media pipeline and
+listed in `/admin/media` like any upload. Replacing one is a normal upload — no code change,
+no redeploy.
+
+They are abstract compositions in the site's own palette, not photographs, and that is a
+deliberate choice rather than a limitation. Most of the slots are named `*-team.jpg` or
+`aptentech-office.jpg`. A stock photograph of strangers captioned as AptenTech's team, or of
+a building presented as its office, is a picture asserting something untrue about the
+company — the same class of fabrication as an invented award, and harder to spot. Abstract
+artwork fills the same space, carries the same visual weight, and is honestly what it is.
+
+Three families are generated, chosen from the slot's recorded size: overlapping panels for
+the team slots, a plotted series and node graph for the architecture and dashboard slots, and
+a quieter geometric field for the 51 blog covers. Each is seeded from its own filename, so a
+re-seed never repaints the site.
+
+The logo, favicon and OG card are stored the same way and referenced from Settings, so the
+brand assets are replaceable from `/admin/media` too.
+
+### Verifying the round trip
+
+`node scripts/verify-cms-flow.js <admin-password>` proves the claim that matters: it signs in
+over the real HTTP surface, edits the home page hero, confirms the change appears on the
+public site, restores it, and reads back every content collection. Nothing in it touches
+MongoDB directly, so it cannot pass while the invalidation path is broken.
+
+
 ## What AptenTech still needs to supply
 
-The source pages are structurally complete but were seeded with placeholder content. None of
-it was replaced with invented text — inventing a client name, a testimonial or a performance
-figure would be worse than leaving the placeholder visible. Everything below is editable in
-the CMS.
+The placeholders below now hold **demo values**, not the original brackets — see the section
+above for what was filled in and how. This list is what still needs a *real* value before the
+site is published. Everything here is editable in the CMS.
 
 ### Contact details — highest priority
 
@@ -68,8 +158,9 @@ These appear in the footer of all 25 pages.
 | `[GRIEVANCE EMAIL]`, `[PRIVACY EMAIL]`, `[LEGAL EMAIL]` | Pages → Privacy Policy / Terms |
 | `[APTENTECH LEGAL ENTITY NAME]`, `[CIN NUMBER]`, `[GRIEVANCE OFFICER NAME]` | Pages → legal pages |
 
-Until these are real, the footer renders them as plain text rather than as clickable
-`mailto:` or `tel:` links — a placeholder never becomes a broken link a visitor can tap.
+The footer now renders these as real `mailto:` and `tel:` links, because the demo values are
+well-formed. That makes them tappable — and it makes replacing them before launch more
+important, not less, since a visitor can now actually dial `+00 0000000000`.
 
 The site currently has **no social media links**; the source had none. Add them in
 Settings → Social links and they will appear in the footer and in the Organization
@@ -93,26 +184,37 @@ to search engines while these stand.
 - **`[AUTHOR NAME]` (10)** — blog bylines. The `ArticleSchema` skips the author field while
   it is a placeholder rather than publishing a fake byline.
 
-### Images — 101 slots, none filled
+### Images — every slot filled with generated artwork
 
-The original referenced 37 images; none of the files were delivered, and the CMS now exposes
-101 image slots in total across pages, case studies, articles, testimonials, logo and
-favicon.
+None of the 82 referenced image files were delivered, so every slot now holds a generated SVG
+at exactly the right dimensions (see "Demo content and imagery" above). The layout is correct
+and dropping a real file in shifts nothing, because the replacement inherits the slot's
+recorded size.
 
-Every slot renders a placeholder at exactly the right dimensions, so the layout is already
-correct and dropping the real file in shifts nothing. Priority order:
+Replace them from `/admin/media` in roughly this order, by how much each is seen:
 
-1. **Logo and favicon** (Settings) — currently drawn from the inline SVG mark
+1. **Logo, favicon and the OG card** (Settings) — these carry the brand everywhere, including
+   into every shared link
 2. **Service and solution hero images** — 17 pages, 640×620 and 520×420
-3. **Blog cover images** — 900×506 for articles, 760×520 for the featured card
-4. **Social share images** — no page had one; they matter for how links look when shared
-5. Case study screenshots, testimonial photos, client and partner logos
+3. **Blog covers** — 51 articles at 760×520
+4. Case-study screenshots and testimonial photos
+
+Photographs of the team and the office are the ones worth commissioning first: those slots are
+currently abstract artwork precisely because inventing them was not an option.
 
 ### Article bodies
 
-The blog listing gave titles and standfirsts but no article bodies — the source never
-contained them. Each post is seeded with its real excerpt as the body and needs writing out
-in the CMS.
+No source page contained an article body. The listing gave titles and standfirsts; the detail
+page was a template of placeholders. Each of the 51 articles is seeded with its real
+standfirst as the body and needs writing out in the CMS.
+
+The template's own example article — with its key-takeaway panel, table, pull quote and
+inline call to action — is stored as the starting body for a new article, so a writer begins
+from the structure the design was built for rather than a blank field.
+
+Each article also carries an author name, role and bio, all still `[AUTHOR NAME]`-style
+placeholders. The byline and the author box are both a ranking signal, so real, credited
+authors are worth the effort before launch.
 
 ## Content decisions worth making
 
@@ -128,7 +230,20 @@ breadcrumb also pointed at the AI-SEO page in the source; both now point at them
 will still compete with each other in search until the copy genuinely differentiates them —
 or one is consolidated into the other with a redirect.
 
-**Pages the menu promises that do not exist.** `/services/`, `/solutions/`,
-`/technologies/` and `/solutions/ai-automation/` are linked from the mega-menu but were
-never designed. They are not built, because doing so would mean inventing a design. Either
-commission those pages or repoint the links in Settings → Navigation.
+**Pages the menu promises that do not exist.** `/services/`, `/technologies/` and
+`/solutions/ai-automation/` carried 864, 378 and 216 links respectively in the source, and
+none of them was ever designed. They are not built, because doing so would mean inventing a
+design. Each redirects to the band of the site that covers the same ground — `/#services`,
+`/#tech`, `/#ai` — so no link is broken today. Either commission the pages and repoint the
+redirect, or repoint the menu links themselves in Settings → Navigation.
+
+Three more paths are in the same position: `/case-studies/all/` and the eight per-study
+detail URLs the portfolio declared, and `/careers/` from the about page's hiring strip. Each
+redirects to the nearest real page, and each study's slug is preserved so its page can be
+built later without changing anything an editor has entered.
+
+**The blog now has 51 articles, not 11.** Every service and solution page linked three of its
+own, at real `/blog/<slug>/` addresses. Those are seeded with the title and standfirst the
+source wrote and an empty body, exactly like the eleven on the listing — so the links work,
+the copy is preserved, and the listing's pagination is real rather than the eight placeholder
+pages the source hard-coded.

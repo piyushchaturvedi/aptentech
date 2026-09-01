@@ -1,5 +1,6 @@
 import { z } from 'zod';
-import { BLOCK_TYPES, CASE_SHOTS } from '../types/content';
+import { emailListSchema, headerSafeText, optionalEmail } from './email';
+import { BLOCK_TYPES, CASE_SHOTS, HERO_DECORATIONS } from '../types/content';
 import {
   accentSchema,
   ctaLinkSchema,
@@ -47,6 +48,7 @@ export const featureGroupSchema = z.object({
 });
 
 export const technologyItemSchema = z.object({
+  outcome: longText.optional().default(''),
   accent: accentSchema,
   title: shortText.min(1),
   description: longText.default(''),
@@ -102,6 +104,7 @@ export const caseStudySchema = z.object({
   result: longText.default(''),
   metrics: z.array(caseMetricSchema).max(8).default([]),
   shot: z.enum(CASE_SHOTS).default('chart'),
+  shotCaption: z.string().trim().max(200).default(''),
   shotConsole: z
     .object({
       command: shortText.default(''),
@@ -153,6 +156,8 @@ export const blogPostSchema = z.object({
   categoryName: shortText.default(''),
   tags: z.array(z.string().trim().max(60)).max(20).default([]),
   authorName: shortText.default(''),
+  authorRole: shortText.default(''),
+  authorBio: longText.default(''),
   coverImage: mediaRefSchema,
   readingMinutes: z.number().int().min(0).max(180).default(0),
   status: publishStatusSchema.default('DRAFT'),
@@ -170,11 +175,35 @@ const blockBase = {
   body: longText.optional().default(''),
 };
 
+/** Every lead form on the site takes its labels and options from one of these. */
+export const leadFormConfigSchema = z
+  .object({
+    title: shortText.default('Get a free consultation'),
+    submitLabel: shortText.default('Get a Free Consultation'),
+    serviceLabel: shortText.default('Service required'),
+    serviceOptions: z.array(z.string().trim().max(160)).max(40).default([]),
+    budgetLabel: shortText.default('Approximate budget'),
+    budgetOptions: z.array(z.string().trim().max(160)).max(40).default([]),
+    budgetNote: longText.default(''),
+    detailsLabel: shortText.default('Project details'),
+    detailsPlaceholder: longText.default(''),
+    reassurance: longText.default('No obligation. Your project details remain confidential.'),
+  })
+  .default({});
+
 /**
  * Blocks are validated as a permissive union rather than a strict discriminated union so
  * that a block carrying extra fields for its own type still validates. Each renderer
  * reads only the fields it knows about, and `type` is constrained to the closed set.
  */
+/** The icon card the quick-facts, values, why and AI grids all share. */
+export const iconCardSchema = z.object({
+  accent: accentSchema,
+  icon: iconKey,
+  title: shortText.min(1),
+  description: longText.default(''),
+});
+
 export const pageBlockSchema = z
   .object({
     ...blockBase,
@@ -193,8 +222,142 @@ export const pageBlockSchema = z
     steps: z.array(processStepSchema).max(20).optional().default([]),
     badges: z.array(complianceBadgeSchema).max(20).optional().default([]),
     faqs: z.array(faqItemSchema).max(40).optional().default([]),
+    /*
+      Two block types carry offices under different field names: the office-card grid labels
+      each entry by `city`, while the contact page's lead-form aside labels them by `label`
+      ("Headquarters", "Get in touch"). Requiring `city` for both rejected the home page
+      outright — reading it and saving it back unchanged returned a validation error, so no
+      administrator could edit that page at all. Both names are optional here; the block's own
+      renderer knows which one it reads.
+    */
     offices: z
-      .array(z.object({ city: shortText, lines: z.array(z.string().trim().max(200)).max(8).default([]) }))
+      .array(
+        z
+          .object({
+            city: shortText.optional().default(''),
+            label: shortText.optional().default(''),
+            lines: z.array(z.string().trim().max(200)).max(8).default([]),
+          })
+          .passthrough(),
+      )
+      .max(12)
+      .optional()
+      .default([]),
+    // Legal documents: the heading block, the review notice, and the clause anchors that
+    // build the table of contents. `bodyHtml` reuses `html` above.
+    heading: shortText.optional().default(''),
+    meta: z.array(shortText).max(6).optional().default([]),
+    notice: z.string().max(20_000).optional().default(''),
+    tocLabel: shortText.optional().default(''),
+    bodyHtml: z.string().max(400_000).optional().default(''),
+    clauses: z
+      .array(z.object({ id: z.string().trim().max(60), number: shortText, title: shortText }))
+      .max(60)
+      .optional()
+      .default([]),
+    // Contact page bands.
+    crumbLabel: shortText.optional().default(''),
+    // The section indexes carry only wording; the cards below them are the live page list.
+    lede: longText.optional().default(''),
+    reasons: z
+      .array(z.object({ accent: accentSchema, icon: iconKey, title: shortText, description: longText }))
+      .max(8)
+      .optional()
+      .default([]),
+    formTitle: shortText.optional().default(''),
+    formTitleTag: z.enum(['h2', 'h3']).optional().default('h2'),
+    formNote: shortText.optional().default(''),
+    headingId: z.string().trim().max(60).optional().default(''),
+    paddingBlock: z.string().trim().max(120).optional().default(''),
+    kicker: shortText.optional().default(''),
+    // Home and about bands. The heroes split their headline around a highlighted phrase.
+    splitHeading: z
+      .object({ lead: shortText.default(''), highlight: shortText.default(''), trail: shortText.default('') })
+      .optional(),
+    pillText: shortText.optional().default(''),
+    pillStrong: shortText.optional().default(''),
+    sub: longText.optional().default(''),
+    note: longText.optional().default(''),
+    trustedLabel: shortText.optional().default(''),
+    logoSlots: z.array(shortText).max(40).optional().default([]),
+    capabilitiesTitle: shortText.optional().default(''),
+    capabilities: z.array(shortText).max(20).optional().default([]),
+    mediaLabel: shortText.optional().default(''),
+    mediaHint: shortText.optional().default(''),
+    quickCards: z.array(iconCardSchema).max(8).optional().default([]),
+    values: z.array(iconCardSchema).max(12).optional().default([]),
+    principles: z
+      .array(
+        z.object({
+          accent: accentSchema,
+          number: shortText.default(''),
+          title: shortText,
+          description: longText.default(''),
+        }),
+      )
+      .max(12)
+      .optional()
+      .default([]),
+    // Declared lazily: these item schemas are defined further down the file, and a block
+    // schema evaluated at module load cannot reference them directly.
+    awardLead: z.lazy(() => awardLeadSchema).optional(),
+    awards: z.lazy(() => z.array(awardSchema).max(20)).optional(),
+    groups: z.lazy(() => z.array(techStackGroupSchema).max(12)).optional(),
+    centred: z.boolean().optional().default(false),
+    askTitle: shortText.optional().default(''),
+    askBody: longText.optional().default(''),
+    askCtaLabel: shortText.optional().default(''),
+    buttonLabel: shortText.optional().default(''),
+    insightCards: z
+      .array(z.object({ slug: z.string().trim().max(160), label: shortText.default(''), accent: accentSchema }))
+      .max(12)
+      .optional()
+      .default([]),
+    points: z.array(shortText).max(12).optional().default([]),
+    shareLabel: shortText.optional().default(''),
+    authorLabel: shortText.optional().default(''),
+    prevLabel: shortText.optional().default(''),
+    nextLabel: shortText.optional().default(''),
+    relatedTitle: shortText.optional().default(''),
+    relatedLede: longText.optional().default(''),
+    defaultBody: z.string().max(200_000).optional().default(''),
+    listHeading: shortText.optional().default(''),
+    sidebarTitle: shortText.optional().default(''),
+    sidebarSubtitle: longText.optional().default(''),
+    ctaLabel: shortText.optional().default(''),
+    ctaHref: safeHref.optional().default(''),
+    leadForm: leadFormConfigSchema.optional(),
+    formSubtitle: longText.optional().default(''),
+    stepCards: z
+      .array(z.object({ number: shortText.default(''), title: shortText, description: longText, accent: accentSchema }))
+      .max(12)
+      .optional()
+      .default([]),
+    routes: z
+      .array(
+        z.object({
+          accent: accentSchema,
+          icon: iconKey,
+          title: shortText,
+          description: longText,
+          linkLabel: shortText.default(''),
+          href: safeHref.default(''),
+        }),
+      )
+      .max(12)
+      .optional()
+      .default([]),
+    cards: z
+      .array(
+        z.object({
+          accent: accentSchema,
+          kind: shortText.default(''),
+          city: shortText.default(''),
+          addressLines: z.array(z.string().trim().max(200)).max(8).default([]),
+          phoneLabel: shortText.default(''),
+          phoneHref: safeHref.default(''),
+        }),
+      )
       .max(12)
       .optional()
       .default([]),
@@ -209,25 +372,14 @@ export const sitePageSchema = z.object({
   slug: z.string().trim().min(1).max(120),
   title: shortText.min(1),
   status: publishStatusSchema.default('DRAFT'),
+  caseStudyIds: z.array(objectIdSchema).max(24).default([]),
+  testimonialIds: z.array(objectIdSchema).max(24).default([]),
+  latestPostIds: z.array(objectIdSchema).max(12).default([]),
   blocks: z.array(pageBlockSchema).max(60).default([]),
   seo: seoSchema,
 });
 
 /** Per-page lead form wording and options. Defaults match the most common source page. */
-export const leadFormConfigSchema = z
-  .object({
-    title: shortText.default('Get a free consultation'),
-    submitLabel: shortText.default('Get a Free Consultation'),
-    serviceLabel: shortText.default('Service required'),
-    serviceOptions: z.array(z.string().trim().max(160)).max(40).default([]),
-    budgetLabel: shortText.default('Approximate budget'),
-    budgetOptions: z.array(z.string().trim().max(160)).max(40).default([]),
-    budgetNote: longText.default(''),
-    detailsLabel: shortText.default('Project details'),
-    detailsPlaceholder: longText.default(''),
-    reassurance: longText.default('No obligation. Your project details remain confidential.'),
-  })
-  .default({});
 
 
 /* --- the remaining section content, modelled from a DOM diff against the originals --- */
@@ -387,6 +539,11 @@ export const servicePageSchema = z.object({
   midCta2Points: z.array(z.string().trim().max(400)).max(12).default([]),
   midCta2MediaLabel: shortText.default(''),
   midCta2MediaHint: shortText.default(''),
+  canvasSectionIds: z.array(z.string().trim().max(60)).max(40).default([]),
+  centredHeadIds: z.array(z.string().trim().max(60)).max(40).default([]),
+  heroDecoration: z.enum(HERO_DECORATIONS).default('none'),
+  whyCtaStyle: z.enum(['strip', 'inline']).default('strip'),
+  servicesCtaLabel: shortText.default(''),
   solutionsCtaLabel: shortText.default(''),
   costFactorsCtaLabel: shortText.default(''),
 
@@ -401,6 +558,7 @@ export const servicePageSchema = z.object({
   leadForm: leadFormConfigSchema,
 
   caseStudyIds: z.array(objectIdSchema).max(40).default([]),
+  latestPostIds: z.array(objectIdSchema).max(12).default([]),
   testimonialIds: z.array(objectIdSchema).max(40).default([]),
 
   sectionOrder: z.array(z.string().trim().max(64)).max(60).default([]),
@@ -488,6 +646,34 @@ export const siteSettingsSchema = z.object({
       enabled: z.boolean().default(false),
     })
     .default({ gaMeasurementId: '', gtmContainerId: '', enabled: false }),
+
+  /**
+   * Who lead mail reaches, and how it signs itself.
+   *
+   * Addresses may be left empty here — the application falls back to the site's own contact
+   * address — so the stricter `emailSettingsSchema` is not reused: that one is for the
+   * dedicated email screen, where a blank recipient is a mistake rather than a default.
+   * Every address is still checked for the line breaks that would allow header injection.
+   */
+  emailDelivery: z
+    .object({
+      notifyTo: optionalEmail,
+      notifyCc: emailListSchema.default([]),
+      notifyBcc: emailListSchema.default([]),
+      senderName: headerSafeText(120).default('AptenTech'),
+      replyTo: optionalEmail,
+      sendClientConfirmation: z.boolean().default(true),
+      sendAdminNotification: z.boolean().default(true),
+    })
+    .default({
+      notifyTo: '',
+      notifyCc: [],
+      notifyBcc: [],
+      senderName: 'AptenTech',
+      replyTo: '',
+      sendClientConfirmation: true,
+      sendAdminNotification: true,
+    }),
 });
 
 export const publicListQuerySchema = z.object({

@@ -327,6 +327,73 @@ export default function AdminSettingsPage() {
             />
           </Panel>
 
+          <Panel title="Lead email">
+            <p className="hint">
+              Who lead mail reaches and how it signs itself. The mail provider&rsquo;s credentials
+              are server configuration and are deliberately not editable here — the CMS is
+              reachable by more people than the server is.
+            </p>
+
+            <div className="adm-grid2">
+              <Text
+                label="Notification recipient"
+                value={settings.emailDelivery?.notifyTo ?? ''}
+                onChange={(v) => patch({ emailDelivery: { ...settings.emailDelivery, notifyTo: v } })}
+                placeholder="leads@yourdomain.com"
+              />
+              <Text
+                label="Reply-To"
+                value={settings.emailDelivery?.replyTo ?? ''}
+                onChange={(v) => patch({ emailDelivery: { ...settings.emailDelivery, replyTo: v } })}
+                placeholder="hello@yourdomain.com"
+              />
+            </div>
+
+            <div className="adm-grid2">
+              <Text
+                label="CC (comma separated)"
+                value={(settings.emailDelivery?.notifyCc ?? []).join(', ')}
+                onChange={(v) =>
+                  patch({ emailDelivery: { ...settings.emailDelivery, notifyCc: splitAddresses(v) } })
+                }
+                placeholder="sales@yourdomain.com, ops@yourdomain.com"
+              />
+              <Text
+                label="BCC (comma separated)"
+                value={(settings.emailDelivery?.notifyBcc ?? []).join(', ')}
+                onChange={(v) =>
+                  patch({ emailDelivery: { ...settings.emailDelivery, notifyBcc: splitAddresses(v) } })
+                }
+                placeholder="archive@yourdomain.com"
+              />
+            </div>
+
+            <Text
+              label="Sender name"
+              value={settings.emailDelivery?.senderName ?? ''}
+              onChange={(v) => patch({ emailDelivery: { ...settings.emailDelivery, senderName: v } })}
+              placeholder="AptenTech"
+            />
+
+            <Toggle
+              label="Email the notification recipients when a lead arrives"
+              value={settings.emailDelivery?.sendAdminNotification !== false}
+              onChange={(v) => patch({ emailDelivery: { ...settings.emailDelivery, sendAdminNotification: v } })}
+            />
+            <Toggle
+              label="Send the client a confirmation"
+              value={settings.emailDelivery?.sendClientConfirmation !== false}
+              onChange={(v) => patch({ emailDelivery: { ...settings.emailDelivery, sendClientConfirmation: v } })}
+            />
+
+            {!settings.emailDelivery?.notifyTo ? (
+              <p className="adm-error">
+                No notification recipient is set, so nobody is emailed when an enquiry arrives.
+                Leads are still saved and visible under Leads.
+              </p>
+            ) : null}
+          </Panel>
+
           <Panel title="Analytics">
             <p className="hint">
               Nothing third-party loads until this is switched on, so the site ships no tracking scripts by default.
@@ -372,4 +439,17 @@ function Panel({ title, children }: { title: string; children: React.ReactNode }
       <div className="adm-panel-body">{children}</div>
     </div>
   );
+}
+
+/**
+ * Turns a typed list of addresses into an array.
+ *
+ * The field is a single text input because that is how an administrator thinks about a CC
+ * list; the stored shape is an array because that is what the mailer needs.
+ */
+function splitAddresses(value: string): string[] {
+  return value
+    .split(/[,;\n]/)
+    .map((s) => s.trim())
+    .filter(Boolean);
 }

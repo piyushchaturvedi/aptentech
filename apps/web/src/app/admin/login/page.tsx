@@ -28,7 +28,8 @@ export default function LoginPage() {
 
     try {
       const user = await signIn(email, password);
-      router.replace(user.mustChangePassword ? '/admin/settings' : '/admin/dashboard');
+      // Trailing slashes: the canonical form, so the redirect does not bounce through a 308.
+      router.replace(user.mustChangePassword ? '/admin/settings/' : '/admin/dashboard/');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Sign-in failed.');
     } finally {

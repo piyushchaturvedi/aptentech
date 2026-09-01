@@ -46,7 +46,7 @@ interface Envelope<T> {
 async function request<T>(path: string, options: FetchOptions = {}): Promise<T> {
   const { tags, revalidate = 3600, noStore, method = 'GET', body, headers = {} } = options;
 
-  const res = await fetch(`${API_BASE}${path}`, {
+  const init: RequestInit & { next?: { tags?: string[]; revalidate?: number } } = {
     method,
     headers: {
       'x-api-key': SERVICE_TOKEN,
@@ -57,7 +57,35 @@ async function request<T>(path: string, options: FetchOptions = {}): Promise<T> 
     ...(noStore
       ? { cache: 'no-store' as const }
       : { next: { tags, ...(revalidate === false ? {} : { revalidate }) } }),
-  });
+  };
+
+  /*
+    Retries, and only for a connection that never completed.
+
+    Two situations produce one: `npm run dev` starts both apps at once, so the first page
+    opened can land while the API is still binding its port; and Node's fetch keeps sockets
+    alive, so a request can pick up one the API has already closed and get `ECONNRESET`. Both
+    look identical to the caller and both are fixed by trying again — the second attempt
+    opens a new socket.
+
+    An HTTP error is the API answering and is passed straight through, never retried. Reads
+    are safe to repeat; a write is not, so it is attempted once.
+  */
+  const attempts = method === 'GET' ? 3 : 1;
+  let res: Response | undefined;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      res = await fetch(`${API_BASE}${path}`, init);
+      break;
+    } catch (cause) {
+      if (attempt === attempts - 1) throw cause;
+      // Growing pause: long enough for a cold start, short enough not to hang a page.
+      await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1) ** 2));
+    }
+  }
+
+  if (!res) throw new ApiError(503, 'UNREACHABLE', 'The content service is unavailable');
 
   let payload: Envelope<T>;
   try {
@@ -101,6 +129,10 @@ export const tags = {
   solutions: 'solutions',
   service: (slug: string) => `service:${slug}`,
   solution: (slug: string) => `solution:${slug}`,
+  industries: 'industries',
+  industry: (slug: string) => `industry:${slug}`,
+  technologies: 'technologies',
+  technology: (slug: string) => `technology:${slug}`,
   page: (slug: string) => `page:${slug}`,
   blog: 'blog',
   post: (slug: string) => `post:${slug}`,

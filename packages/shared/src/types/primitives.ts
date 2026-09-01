@@ -64,8 +64,16 @@ export type LeadStatus = (typeof LEAD_STATUSES)[number];
 export const ADMIN_ROLES = ['SUPER_ADMIN', 'ADMIN', 'EDITOR'] as const;
 export type AdminRole = (typeof ADMIN_ROLES)[number];
 
-/** Which page family a service document belongs to — decides its URL prefix. */
-export const SERVICE_KINDS = ['service', 'solution'] as const;
+/**
+ * Which page family a service document belongs to — decides its URL prefix.
+ *
+ * All four render through the same components and stylesheet, so a page added under any of
+ * them inherits the approved design rather than introducing a new one. `industry` and
+ * `technology` were added when the menus were given real destinations: every entry in them
+ * promised a page, and pointing several at one shared screen is what made the navigation
+ * look broken.
+ */
+export const SERVICE_KINDS = ['service', 'solution', 'industry', 'technology'] as const;
 export type ServiceKind = (typeof SERVICE_KINDS)[number];
 
 /**

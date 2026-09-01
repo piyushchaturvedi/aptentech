@@ -52,6 +52,17 @@ const server = http.createServer((req, res) => {
     return;
   }
 
+  // The capture modules, served with CORS so the migrated site at :3000 can import them too.
+  if (url === '/sig.js' || url === '/layout.js') {
+    res.writeHead(200, {
+      'content-type': 'text/javascript; charset=utf-8',
+      'access-control-allow-origin': '*',
+      'cache-control': 'no-store',
+    });
+    res.end(fs.readFileSync(path.join(__dirname, url.slice(1))));
+    return;
+  }
+
   if (req.method === 'OPTIONS') {
     res.writeHead(204, {
       'access-control-allow-origin': '*',

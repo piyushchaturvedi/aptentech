@@ -2,11 +2,14 @@ import { Router } from 'express';
 import multer from 'multer';
 import {
   adminLoginSchema,
+  adminReplySchema,
   adminPasswordChangeSchema,
   blogPostSchema,
   blogCategorySchema,
   caseStudySchema,
+  emailTemplateSchema,
   faqItemSchema,
+  inboundEmailSchema,
   idParamSchema,
   leadListQuerySchema,
   leadNoteSchema,
@@ -18,7 +21,9 @@ import {
   servicePageSchema,
   sitePageSchema,
   siteSettingsSchema,
+  templatePreviewSchema,
   testimonialSchema,
+  unmatchedResolveSchema,
 } from '@aptentech/shared';
 
 import { publicController } from '../controllers/public.controller';
@@ -26,6 +31,7 @@ import { leadController } from '../controllers/lead.controller';
 import { authController } from '../controllers/auth.controller';
 import { adminController } from '../controllers/admin.controller';
 import { mediaController } from '../controllers/media.controller';
+import { emailController } from '../controllers/email.controller';
 
 import { validate } from '../middleware/validate';
 import {
@@ -35,7 +41,7 @@ import {
   requireRole,
   requireServiceToken,
 } from '../middleware/auth';
-import { leadLimiter, loginLimiter, uploadLimiter } from '../middleware/rateLimit';
+import { inboundLimiter, leadLimiter, loginLimiter, replyLimiter, uploadLimiter } from '../middleware/rateLimit';
 import { env } from '../config/env';
 
 export const api = Router();
@@ -54,6 +60,10 @@ pub.get('/services', publicController.listServices);
 pub.get('/services/:slug', publicController.getService);
 pub.get('/solutions', publicController.listSolutions);
 pub.get('/solutions/:slug', publicController.getSolution);
+pub.get('/industries', publicController.listIndustries);
+pub.get('/industries/:slug', publicController.getIndustry);
+pub.get('/technologies', publicController.listTechnologies);
+pub.get('/technologies/:slug', publicController.getTechnology);
 pub.get('/pages/:slug', publicController.getPage);
 pub.get('/case-studies', validate(publicListQuerySchema, 'query'), publicController.listCaseStudies);
 pub.get('/case-studies/:slug', publicController.getCaseStudy);
@@ -80,6 +90,17 @@ api.post(
   validate(leadSubmissionRefined),
   leadController.submit,
 );
+
+/* ================================================================== inbound mail */
+
+/**
+ * Where the mail provider posts a client's reply.
+ *
+ * Outside the admin router on purpose: the caller is a machine with no session and no CSRF
+ * token. Its own shared secret is checked inside the handler, and the endpoint is
+ * rate-limited because it is reachable without authentication.
+ */
+api.post('/email/inbound', inboundLimiter, validate(inboundEmailSchema), emailController.inbound);
 
 /* ================================================================== admin auth */
 
@@ -121,6 +142,45 @@ admin.patch(
   leadController.updateStatus,
 );
 admin.post('/leads/:id/notes', validate(idParamSchema, 'params'), validate(leadNoteSchema), leadController.addNote);
+
+// Lead conversation — the thread, the reply, and retrying a delivery that failed.
+admin.get('/leads/:id/conversation', validate(idParamSchema, 'params'), emailController.conversation);
+admin.post(
+  '/leads/:id/reply',
+  replyLimiter,
+  validate(idParamSchema, 'params'),
+  validate(adminReplySchema),
+  emailController.reply,
+);
+admin.post('/leads/:id/messages/:messageId/retry', validate(idParamSchema, 'params'), emailController.retryMessage);
+
+// Email templates
+admin.get('/email-templates', emailController.listTemplates);
+admin.post('/email-templates/preview', validate(templatePreviewSchema), emailController.previewTemplate);
+admin.get('/email-templates/:id', validate(idParamSchema, 'params'), emailController.getTemplate);
+admin.post('/email-templates', validate(emailTemplateSchema), emailController.createTemplate);
+admin.put(
+  '/email-templates/:id',
+  validate(idParamSchema, 'params'),
+  validate(emailTemplateSchema),
+  emailController.updateTemplate,
+);
+admin.delete(
+  '/email-templates/:id',
+  requireRole('ADMIN'),
+  validate(idParamSchema, 'params'),
+  emailController.deleteTemplate,
+);
+
+// Inbound replies that could not be matched to a thread.
+admin.get('/inbound/unmatched', emailController.listUnmatched);
+admin.post(
+  '/inbound/unmatched/:id/attach',
+  validate(idParamSchema, 'params'),
+  validate(unmatchedResolveSchema),
+  emailController.attachUnmatched,
+);
+admin.post('/inbound/unmatched/:id/discard', validate(idParamSchema, 'params'), emailController.discardUnmatched);
 
 // Service and solution pages
 admin.get('/content/:kind', adminController.listServicePages);

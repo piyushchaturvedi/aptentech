@@ -49,10 +49,18 @@ export interface FeatureGroup {
 }
 
 /** Source: `AI` — the "future-ready technologies" grid. */
+/**
+ * A capability in the "future-ready technologies" band.
+ *
+ * The home page's version of this band adds an outcome line under the description; the
+ * service pages' does not, so the field is optional rather than invented for them.
+ */
 export interface TechnologyItem {
   accent: AccentToken;
   title: string;
   description: string;
+  /** The home page prints an outcome line under the description; other pages do not. */
+  outcome?: string;
   icon: string;
 }
 
@@ -106,6 +114,10 @@ export interface CaseShotConsole {
   summary: string;
 }
 
+/** Hero overlays available to a page. Design-controlled, so the set is closed. */
+export const HERO_DECORATIONS = ['none', 'hearts'] as const;
+export type HeroDecoration = (typeof HERO_DECORATIONS)[number];
+
 /** The three faux-UI illustrations the carousel drew in CSS. Design-controlled. */
 export const CASE_SHOTS = ['chart', 'cells', 'code'] as const;
 export type CaseShot = (typeof CASE_SHOTS)[number];
@@ -123,6 +135,8 @@ export interface CaseStudy {
   result: string;
   metrics: CaseStudyMetric[];
   shot: CaseShot;
+  /** Caption under the interface frame; empty hides it. */
+  shotCaption: string;
   /** Copy for the faux console in the `code` illustration. Decorative, but page-specific. */
   shotConsole: CaseShotConsole;
   detailHref: string | null;
@@ -149,6 +163,10 @@ export interface BlogPostSummary {
   title: string;
   excerpt: string;
   authorName: string;
+  /** The byline's second line. The article template prints it under the author's name. */
+  authorRole: string;
+  /** One or two sentences under the author box, establishing why they are credible here. */
+  authorBio: string;
   publishedAt: string | null;
   coverImage: MediaRef;
   readingMinutes: number;
@@ -308,6 +326,28 @@ export interface ServicePage {
   midCta2MediaLabel: string;
   midCta2MediaHint: string;
   /** Button under the solutions bento (`.cc-cta > .btn-lg`). */
+  /**
+   * DOM ids of the sections this page renders on the tinted `.canvas` background.
+   *
+   * The source alternates the banding down the page, so it depends on which sections a
+   * given page has rather than on the section itself.
+   */
+  canvasSectionIds: string[];
+  /** DOM ids of the sections whose heading block is centred (`.sect-head.center`). */
+  centredHeadIds: string[];
+  /**
+   * A decorative hero overlay. A closed set, because it is design: the dating page floats
+   * hearts behind its hero and no other page has an overlay at all.
+   */
+  heroDecoration: HeroDecoration;
+  /**
+   * How the "why" band's button is laid out. Sixteen pages use the full-width strip; the
+   * dating page places the button inline under the standfirst.
+   */
+  whyCtaStyle: 'strip' | 'inline';
+  /** Button under the services panel. Only the dating page carries one. */
+  servicesCtaLabel: string;
+  /** Button under the solutions bento (`.cc-cta > .btn-lg`). */
   solutionsCtaLabel: string;
   /** Button at the end of the "what moves the number" list. */
   costFactorsCtaLabel: string;
@@ -323,6 +363,8 @@ export interface ServicePage {
   leadForm: LeadFormConfig;
 
   caseStudyIds: string[];
+  /** Articles the page's "latest insights" band links; page-specific in the source. */
+  latestPostIds: string[];
   testimonialIds: string[];
 
   /** Section visibility + order. Editors may hide or reorder, never invent a section. */
@@ -358,6 +400,17 @@ export interface LeadFormConfig {
 
 /** A statically-routed page (home, about, contact, legal). */
 export interface SitePage {
+  /**
+   * Case studies this page's carousel shows.
+   *
+   * The home page carries five of its own rather than the index's eight, so it references
+   * them here; a page that leaves this empty falls back to the published index.
+   */
+  caseStudyIds?: string[];
+  /** Testimonials this page shows. The home and about pages each carry their own three. */
+  testimonialIds?: string[];
+  /** Articles the page's "latest insights" band links. */
+  latestPostIds?: string[];
   id: string;
   slug: string;
   title: string;
@@ -392,6 +445,31 @@ export const BLOCK_TYPES = [
   'leadFormSection',
   'richText',
   'legalSection',
+  'legalDocument',
+  'contactBanner',
+  'portfolioHero',
+  'blogHero',
+  'pageIndex',
+  'articleTemplate',
+  'aboutHero',
+  'homeHero',
+  'statsPanel',
+  'storyBand',
+  'valueGrid',
+  'principleList',
+  'brandStrip',
+  'awardsBand',
+  'whyGrid',
+  'serviceTabs',
+  'caseCarousel',
+  'techTabs',
+  'aiGrid',
+  'faqShell',
+  'latestInsights',
+  'caseStudyList',
+  'stepGrid',
+  'routeGrid',
+  'officeCards',
   'officeGrid',
 ] as const;
 export type BlockType = (typeof BLOCK_TYPES)[number];
@@ -471,6 +549,306 @@ export interface TextBlock extends BaseBlock {
   html: string;
 }
 
+/** One numbered clause in a legal document, used to build the table of contents. */
+export interface LegalClause {
+  id: string;
+  number: string;
+  title: string;
+}
+
+/**
+ * A legal document — privacy policy, terms.
+ *
+ * The body is kept as one sanitised HTML string because the clauses nest lists, cards and
+ * sub-headings that the source styles as a whole; splitting it into fields would have
+ * meant rebuilding that markup rather than preserving it. `clauses` mirrors the section
+ * anchors so the table of contents can be rendered on the server.
+ */
+export interface LegalDocumentBlock extends BaseBlock {
+  type: 'legalDocument';
+  heading: string;
+  /** The dated lines under the heading; still `[DATE]` placeholders until an admin sets them. */
+  meta: string[];
+  /** The pre-publication review notice. Cleared in the CMS when the document goes live. */
+  notice: string;
+  tocLabel: string;
+  bodyHtml: string;
+  clauses: LegalClause[];
+}
+
+/** A numbered card in the contact page's "what happens after you hit send" band. */
+export interface StepCard {
+  number: string;
+  title: string;
+  description: string;
+  accent: AccentToken;
+}
+
+/** One of the contact page's four routes to a person. */
+export interface ContactRoute {
+  accent: AccentToken;
+  icon: string;
+  title: string;
+  description: string;
+  linkLabel: string;
+  href: string;
+}
+
+/** An office card: a kind label, a city, an address and a phone number. */
+export interface OfficeCard {
+  accent: AccentToken;
+  kind: string;
+  city: string;
+  addressLines: string[];
+  phoneLabel: string;
+  phoneHref: string;
+}
+
+/**
+ * The contact page's opening band.
+ *
+ * It is not the generic hero: the heading is the page's `h1` inside the lead layout, with
+ * the reasons-to-write list and office summary beside the form rather than above it.
+ */
+export interface ContactBannerBlock extends BaseBlock {
+  type: 'contactBanner';
+  crumbLabel: string;
+  heading: string;
+  lede: string;
+  reasons: LeadReason[];
+  offices: OfficeBlock[];
+  formTitle: string;
+  formSubtitle: string;
+}
+
+/**
+ * The blog listing's opening band: breadcrumb, eyebrow, heading and the featured-guide
+ * label. The featured article itself is the newest published post, not a stored copy.
+ */
+export interface BlogHeroBlock extends BaseBlock {
+  type: 'blogHero';
+  crumbLabel: string;
+  kicker: string;
+  listHeading: string;
+  sidebarTitle: string;
+  sidebarSubtitle: string;
+}
+
+/**
+ * Fixed wording around every article: the contents heading, share and author labels, the
+ * previous/next captions, the sidebar form's heading and the related-reading band.
+ */
+export interface ArticleTemplateBlock extends BaseBlock {
+  type: 'articleTemplate';
+  crumbLabel: string;
+  tocLabel: string;
+  shareLabel: string;
+  authorLabel: string;
+  prevLabel: string;
+  nextLabel: string;
+  sidebarTitle: string;
+  sidebarSubtitle: string;
+  relatedTitle: string;
+  relatedLede: string;
+  /**
+   * The example article the source template shipped, kept verbatim as the starting body
+   * for a new article. It is placeholders throughout — nothing here is presented as real
+   * published copy.
+   */
+  defaultBody: string;
+}
+
+/** An icon card: the shape shared by the quick facts, values, why and AI grids. */
+export interface IconCard {
+  accent: AccentToken;
+  icon: string;
+  title: string;
+  description: string;
+}
+
+/** A numbered principle in the about page's "how an engagement runs" list. */
+export interface PrincipleItem {
+  accent: AccentToken;
+  number: string;
+  title: string;
+  description: string;
+}
+
+/**
+ * A page heading split around its highlighted phrase.
+ *
+ * Both heroes wrap part of the headline in `<span class="g">` for the gradient treatment,
+ * so the split has to survive as data rather than as markup an editor could break.
+ */
+export interface SplitHeading {
+  lead: string;
+  highlight: string;
+  trail: string;
+}
+
+export interface AboutHeroBlock extends BaseBlock {
+  type: 'aboutHero';
+  crumbLabel: string;
+  splitHeading: SplitHeading;
+  lede: string;
+  ctas: CtaLink[];
+  quickCards: IconCard[];
+}
+
+export interface HomeHeroBlock extends BaseBlock {
+  type: 'homeHero';
+  pillText: string;
+  pillStrong: string;
+  splitHeading: SplitHeading;
+  sub: string;
+  ctas: CtaLink[];
+  note: string;
+}
+
+/** The counters panel. The home page also carries the client marquee inside it. */
+export interface StatsPanelBlock extends BaseBlock {
+  type: 'statsPanel';
+  note: string;
+  stats: StatItem[];
+  trustedLabel: string;
+  logoSlots: string[];
+}
+
+export interface StoryBandBlock extends BaseBlock {
+  type: 'storyBand';
+  lede: string;
+  capabilitiesTitle: string;
+  capabilities: string[];
+  mediaLabel: string;
+  mediaHint: string;
+  image: MediaRef;
+}
+
+export interface ValueGridBlock extends BaseBlock {
+  type: 'valueGrid';
+  lede: string;
+  values: IconCard[];
+}
+
+export interface PrincipleListBlock extends BaseBlock {
+  type: 'principleList';
+  lede: string;
+  principles: PrincipleItem[];
+}
+
+export interface BrandStripBlock extends BaseBlock {
+  type: 'brandStrip';
+  label: string;
+  logoSlots: string[];
+}
+
+export interface AwardsBandBlock extends BaseBlock {
+  type: 'awardsBand';
+  lede: string;
+  awardLead: AwardLead;
+  awards: Award[];
+}
+
+export interface WhyGridBlock extends BaseBlock {
+  type: 'whyGrid';
+  lede: string;
+  items: IconCard[];
+}
+
+export interface ServiceTabsBlock extends BaseBlock {
+  type: 'serviceTabs';
+  lede: string;
+  items: ServiceItem[];
+}
+
+export interface CaseCarouselBlock extends BaseBlock {
+  type: 'caseCarousel';
+  lede: string;
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+export interface TechTabsBlock extends BaseBlock {
+  type: 'techTabs';
+  lede: string;
+  centred: boolean;
+  groups: TechStackGroup[];
+}
+
+export interface AiGridBlock extends BaseBlock {
+  type: 'aiGrid';
+  lede: string;
+  items: TechnologyItem[];
+}
+
+export interface FaqShellBlock extends BaseBlock {
+  type: 'faqShell';
+  lede: string;
+  askTitle: string;
+  askBody: string;
+  askCtaLabel: string;
+  faqs: FaqItem[];
+}
+
+export interface LatestInsightsBlock extends BaseBlock {
+  type: 'latestInsights';
+  lede: string;
+  buttonLabel: string;
+  limit: number;
+}
+
+/**
+ * The heading block of a section index — `/services/`, `/solutions/`, `/technologies/`.
+ *
+ * The cards below it are the live list of pages, so only the wording lives here. The
+ * technologies index also carries the stack it lists, because those groups are content
+ * rather than pages.
+ */
+export interface PageIndexBlock extends BaseBlock {
+  type: 'pageIndex';
+  crumbLabel: string;
+  lede: string;
+  groups: TechStackGroup[];
+}
+
+/** The case-study page's opening band: heading, standfirst and three headline figures. */
+export interface PortfolioHeroBlock extends BaseBlock {
+  type: 'portfolioHero';
+  crumbLabel: string;
+  lede: string;
+  stats: StatItem[];
+}
+
+/**
+ * The full-width list of case studies.
+ *
+ * Unlike the carousel on a service page this shows every published study at full width,
+ * with an `h2` per study rather than an `h3`, and closes with a button to the archive.
+ */
+export interface CaseStudyListBlock extends BaseBlock {
+  type: 'caseStudyList';
+  ctaLabel: string;
+  ctaHref: string;
+}
+
+export interface StepGridBlock extends BaseBlock {
+  type: 'stepGrid';
+  lede: string;
+  stepCards: StepCard[];
+}
+
+export interface RouteGridBlock extends BaseBlock {
+  type: 'routeGrid';
+  lede: string;
+  routes: ContactRoute[];
+}
+
+export interface OfficeCardsBlock extends BaseBlock {
+  type: 'officeCards';
+  lede: string;
+  cards: OfficeCard[];
+}
+
 export interface ImageTextBlock extends BaseBlock {
   type: 'imageText';
   image: MediaRef;
@@ -509,6 +887,31 @@ export type PageBlock =
   | CtaBlock
   | TextBlock
   | ImageTextBlock
+  | LegalDocumentBlock
+  | ContactBannerBlock
+  | PortfolioHeroBlock
+  | BlogHeroBlock
+  | PageIndexBlock
+  | ArticleTemplateBlock
+  | AboutHeroBlock
+  | HomeHeroBlock
+  | StatsPanelBlock
+  | StoryBandBlock
+  | ValueGridBlock
+  | PrincipleListBlock
+  | BrandStripBlock
+  | AwardsBandBlock
+  | WhyGridBlock
+  | ServiceTabsBlock
+  | CaseCarouselBlock
+  | TechTabsBlock
+  | AiGridBlock
+  | FaqShellBlock
+  | LatestInsightsBlock
+  | CaseStudyListBlock
+  | StepGridBlock
+  | RouteGridBlock
+  | OfficeCardsBlock
   | OfficeGridBlock
   | CollectionBlock;
 
@@ -587,6 +990,21 @@ export interface SiteSettings {
     gaMeasurementId: string;
     gtmContainerId: string;
     enabled: boolean;
+  };
+  /**
+   * Lead email routing an administrator owns.
+   *
+   * Recipients, sender name and reply-to only. Provider credentials are server configuration
+   * and never appear in the CMS.
+   */
+  emailDelivery: {
+    notifyTo: string;
+    notifyCc: string[];
+    notifyBcc: string[];
+    senderName: string;
+    replyTo: string;
+    sendClientConfirmation: boolean;
+    sendAdminNotification: boolean;
   };
   updatedAt?: string;
 }

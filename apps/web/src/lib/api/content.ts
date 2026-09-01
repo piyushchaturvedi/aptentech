@@ -67,6 +67,19 @@ export const content = {
       tags: [tags.solutions, tags.solution(slug), tags.caseStudies, tags.testimonials],
     }),
 
+  industries: () => api.request<ServiceSummary[]>('/industries', { tags: [tags.industries] }),
+  technologyPages: () => api.request<ServiceSummary[]>('/technologies', { tags: [tags.technologies] }),
+
+  industry: (slug: string) =>
+    api.optional<ResolvedServicePage>(`/industries/${encodeURIComponent(slug)}`, {
+      tags: [tags.industries, tags.industry(slug), tags.caseStudies, tags.testimonials],
+    }),
+
+  technology: (slug: string) =>
+    api.optional<ResolvedServicePage>(`/technologies/${encodeURIComponent(slug)}`, {
+      tags: [tags.technologies, tags.technology(slug), tags.caseStudies, tags.testimonials],
+    }),
+
   page: (slug: string) =>
     api.optional<ResolvedSitePage>(`/pages/${encodeURIComponent(slug)}`, {
       tags: [tags.page(slug), tags.caseStudies, tags.testimonials, tags.blog],
@@ -107,8 +120,10 @@ export const content = {
     api.request<{
       services: Array<{ slug: string; updatedAt?: string }>;
       solutions: Array<{ slug: string; updatedAt?: string }>;
+      industries: Array<{ slug: string; updatedAt?: string }>;
+      technologies: Array<{ slug: string; updatedAt?: string }>;
       posts: Array<{ slug: string; updatedAt?: string; publishedAt?: string }>;
       caseStudies: Array<{ slug: string; updatedAt?: string; detailHref: string | null }>;
       pages: Array<{ slug: string; updatedAt?: string }>;
-    }>('/sitemap', { tags: [tags.services, tags.solutions, tags.blog, tags.caseStudies], revalidate: 3600 }),
+    }>('/sitemap', { tags: [tags.services, tags.solutions, tags.industries, tags.technologies, tags.blog, tags.caseStudies], revalidate: 3600 }),
 };

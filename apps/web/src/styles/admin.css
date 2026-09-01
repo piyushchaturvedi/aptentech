@@ -212,3 +212,161 @@
 .adm-repeat-item .adm-repeat-head .spacer { margin-left: auto; }
 
 .adm :focus-visible { outline: 2px solid var(--a-primary); outline-offset: 2px; border-radius: 6px; }
+
+/* ------------------------------------------------------------------ conversations */
+
+/*
+  The lead thread.
+
+  Direction is carried by alignment and border colour rather than by a label alone, so a
+  glance separates what the client said from what was sent to them — the single thing an
+  operator needs to read quickly when reopening an enquiry.
+*/
+.crm-thread {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.crm-msg {
+  border: 1px solid var(--a-line);
+  border-left-width: 3px;
+  border-radius: 10px;
+  padding: 12px 14px;
+  background: var(--a-card);
+}
+
+.crm-msg.in {
+  border-left-color: var(--a-accent, #4f46e5);
+  background: var(--a-sunk);
+}
+
+.crm-msg.out {
+  border-left-color: var(--a-line);
+}
+
+.crm-msg-head {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  font-size: 13px;
+  margin-bottom: 6px;
+}
+
+.crm-msg-head time {
+  color: var(--a-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.crm-kind {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--a-muted);
+  border: 1px solid var(--a-line);
+  border-radius: 999px;
+  padding: 1px 8px;
+}
+
+.crm-status {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.crm-status.sent { color: #15803d; }
+.crm-status.queued,
+.crm-status.sending { color: #a16207; }
+.crm-status.failed { color: #b91c1c; }
+.crm-status.cancelled { color: var(--a-muted); }
+
+.crm-msg-meta,
+.crm-msg-subject {
+  font-size: 12px;
+  color: var(--a-muted);
+  margin-bottom: 4px;
+  word-break: break-word;
+}
+
+.crm-msg-subject {
+  font-weight: 600;
+  color: inherit;
+}
+
+.crm-msg-body {
+  font-size: 14px;
+  line-height: 1.6;
+  overflow-x: auto;
+}
+
+.crm-msg-body p { margin: 0 0 8px; }
+.crm-msg-body p:last-child { margin-bottom: 0; }
+.crm-msg-body img { max-width: 100%; height: auto; }
+.crm-msg-body table { max-width: 100%; }
+
+.crm-msg-error {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--a-line);
+  font-size: 13px;
+  color: #b91c1c;
+}
+
+/* ------------------------------------------------------------------ template editor */
+
+.crm-vars {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 6px;
+}
+
+.crm-var {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  padding: 3px 8px;
+  border: 1px solid var(--a-line);
+  border-radius: 6px;
+  background: var(--a-sunk);
+  color: inherit;
+  cursor: pointer;
+}
+
+.crm-var:hover { border-color: var(--a-accent, #4f46e5); }
+
+.crm-preview {
+  margin-top: 16px;
+  border: 1px solid var(--a-line);
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.crm-preview-head {
+  padding: 10px 14px;
+  background: var(--a-sunk);
+  border-bottom: 1px solid var(--a-line);
+  font-size: 13px;
+  word-break: break-word;
+}
+
+/*
+  The preview renders the client's own email markup, which sets its own colours against an
+  assumed white ground. Forcing that ground here keeps a dark admin theme from turning a
+  legible email into white text on white.
+*/
+.crm-preview-body {
+  padding: 0;
+  background: #ffffff;
+  color: #111827;
+  overflow-x: auto;
+}

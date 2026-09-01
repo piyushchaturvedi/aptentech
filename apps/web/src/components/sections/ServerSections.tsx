@@ -97,21 +97,36 @@ export function SolutionsBento({ items }: { items: SolutionItem[] }) {
 }
 
 /** Source: the `AI` "future-ready technologies" grid. */
-export function TechnologyGrid({ items }: { items: TechnologyItem[] }) {
+export function TechnologyGrid({
+  items,
+  className = 'ai-plain',
+  cardClassName = '',
+  plainHeading = false,
+}: {
+  items: TechnologyItem[];
+  /** Service pages use `.ai-plain`; the home page's band is the two-column `.ai-grid`. */
+  className?: string;
+  /** The home page's cards carry `.ai`; the service pages' carry no class of their own. */
+  cardClassName?: string;
+  /** The home page uses a bare `h3`; service pages use the card heading style. */
+  plainHeading?: boolean;
+}) {
   if (!items.length) return null;
   return (
-    <div className="ai-plain" id="aiGrid">
+    <div className={className} id="aiGrid">
       {items.map((item, index) => (
         <article
           key={`${item.title}-${index}`}
-          className={`rv d${(index % 3) + 1}`}
+          className={`${cardClassName ? `${cardClassName} ` : ''}rv d${(index % 3) + 1}`}
           style={{ ['--c' as string]: ACCENT_HEX[item.accent] }}
         >
           <div className="ic" aria-hidden="true">
             <Icon name={item.icon} size={20} />
           </div>
-          <h3 className="h3-card">{item.title}</h3>
+          {plainHeading ? <h3>{item.title}</h3> : <h3 className="h3-card">{item.title}</h3>}
           <p>{item.description}</p>
+          {/* The outcome line exists only on the home page's cards. */}
+          {item.outcome ? <span className="out">{item.outcome}</span> : null}
         </article>
       ))}
     </div>

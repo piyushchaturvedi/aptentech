@@ -18,6 +18,20 @@ async function main(): Promise<void> {
     );
   });
 
+  /*
+    Outlive the caller's idle sockets.
+
+    Node closes a keep-alive connection after five seconds. The Next.js server pools its
+    sockets and reuses them, so one that has been idle a little longer gets picked up just as
+    the API is closing it, and the request dies with `ECONNRESET` — a 500 on a page that
+    works when you reload it. Holding connections open for longer than any client will keep
+    them means the client is always the side that closes.
+
+    `headersTimeout` has to stay above `keepAliveTimeout` or the race simply moves.
+  */
+  server.keepAliveTimeout = 65_000;
+  server.headersTimeout = 66_000;
+
   const shutdown = async (signal: string): Promise<void> => {
     logger.info({ signal }, 'Shutting down');
     server.close(async () => {

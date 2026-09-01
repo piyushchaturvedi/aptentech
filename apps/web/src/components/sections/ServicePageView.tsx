@@ -43,10 +43,21 @@ function chunk<T>(items: T[], size: number): T[][] {
  */
 
 /** `.sect-head` — heading and standfirst, with no wrapper between them. */
-function SectHead({ title, lede, headingId }: { title: string; lede?: string; headingId: string }) {
+function SectHead({
+  title,
+  lede,
+  headingId,
+  centred = false,
+}: {
+  title: string;
+  lede?: string;
+  headingId: string;
+  /** Two pages centre a heading block; everywhere else it is left-aligned. */
+  centred?: boolean;
+}) {
   if (!title) return null;
   return (
-    <div className="sect-head">
+    <div className={centred ? 'sect-head center' : 'sect-head'}>
       <h2 className="h2 rv" id={headingId}>
         {title}
       </h2>
@@ -54,6 +65,27 @@ function SectHead({ title, lede, headingId }: { title: string; lede?: string; he
     </div>
   );
 }
+
+/**
+ * The dating page's hero overlay: seven hearts drifting behind the copy.
+ *
+ * Decoration, so the markup lives here and the page only stores which overlay it uses.
+ * The sizes are the source's, in the source's order — the CSS positions each `i` by
+ * `:nth-child`, so the order is load-bearing.
+ */
+const HEART_SIZES = [26, 16, 34, 20, 28, 18, 22];
+
+const Hearts = () => (
+  <div className="hearts" aria-hidden="true">
+    {HEART_SIZES.map((size, i) => (
+      <i key={i}>
+        <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
+          <path d="M12 21s-8-5.2-8-11a4.6 4.6 0 0 1 8-3.1A4.6 4.6 0 0 1 20 10c0 5.8-8 11-8 11Z" />
+        </svg>
+      </i>
+    ))}
+  </div>
+);
 
 const Stars = ({ count = 5, size = 15 }: { count?: number; size?: number }) => (
   <div className="stars" aria-hidden="true">
@@ -69,14 +101,39 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
   const hidden = new Set(page.hiddenSections ?? []);
   const show = (key: string) => !hidden.has(key);
   const lede = (key: string) => page.sectionLedes?.[key] ?? '';
+  /**
+   * The section background band.
+   *
+   * The design alternates a tinted `.canvas` background down the page, so whether a given
+   * section is banded depends on what sits above it. The page stores the ids the source
+   * marked, which keeps the rhythm identical on all seventeen pages.
+   */
+  const band = (id: string) => (page.canvasSectionIds?.includes(id) ? 'section canvas' : 'section');
 
-  const family = page.kind === 'service' ? 'Services' : 'Solutions';
-  const familyHref = page.kind === 'service' ? '/services/' : '/solutions/';
+  /** Whether a section's heading block is centred, which two pages do for one band each. */
+  const centred = (id: string) => Boolean(page.centredHeadIds?.includes(id));
+
+  /*
+    The breadcrumb's parent, by family.
+
+    A lookup rather than a ternary because there are now four families: a page under
+    `/industries/` that says "Solutions" in its breadcrumb is telling the reader — and the
+    structured data — the wrong thing about where it sits.
+  */
+  const FAMILY: Record<string, { label: string; href: string }> = {
+    service: { label: 'Services', href: '/services/' },
+    solution: { label: 'Solutions', href: '/solutions/' },
+    industry: { label: 'Industries', href: '/industries/' },
+    technology: { label: 'Technologies', href: '/technologies/' },
+  };
+
+  const { label: family, href: familyHref } = FAMILY[page.kind] ?? FAMILY.solution!;
 
   return (
     <>
       {/* ---------------------------------------------------------------- 1. hero */}
       <section className="hero hero-split" aria-labelledby="page-h1">
+        {page.heroDecoration === 'hearts' ? <Hearts /> : null}
         <div className="wrap">
           <nav className="crumb" aria-label="Breadcrumb">
             <ol>
@@ -175,7 +232,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
       {page.protect?.length && show('protect') ? (
         <section className="section protect" id="protect" aria-labelledby="pro-h2">
           <div className="wrap">
-            <SectHead title={page.protectTitle} lede={lede('protect')} headingId="pro-h2" />
+            <SectHead title={page.protectTitle} lede={lede('protect')} headingId="pro-h2" centred={centred('protect')} />
             <div className="pro-grid">
               {page.protect.map((item, index) => (
                 <article
@@ -200,7 +257,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ------------------------------------------------------------- 4. overview */}
       {page.positioningTitle && show('positioning') ? (
-        <section className="section canvas" id="overview" aria-labelledby="ov-h2">
+        <section className={band('overview')} id="overview" aria-labelledby="ov-h2">
           <div className="wrap">
             <div className="intro">
               <div className="intro-body">
@@ -249,7 +306,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
       {page.marketStats?.length && show('marketContext') ? (
         <section className="section market" id="market" aria-labelledby="mkt-h2">
           <div className="wrap">
-            <SectHead title={page.marketContextTitle} lede={lede('marketContext')} headingId="mkt-h2" />
+            <SectHead title={page.marketContextTitle} lede={lede('marketContext')} headingId="mkt-h2" centred={centred('market')} />
             <div className="mkt-grid rv">
               {page.marketStats.map((stat) => (
                 <div className="mkt" key={stat.label}>
@@ -281,10 +338,19 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ------------------------------------------------------------- 7. services */}
       {page.services?.length && show('services') ? (
-        <section className="section canvas" id="services" aria-labelledby="svc-h2">
+        <section className={band('services')} id="services" aria-labelledby="svc-h2">
           <div className="wrap">
-            <SectHead title={page.servicesTitle} lede={lede('services')} headingId="svc-h2" />
+            <SectHead title={page.servicesTitle} lede={lede('services')} headingId="svc-h2" centred={centred('services')} />
             <ServicesPanel items={page.services} label={page.servicesTitle} />
+
+            {page.servicesCtaLabel ? (
+              <div className="cc-cta rv">
+                <a href="#contact" className="btn btn-primary btn-lg">
+                  {page.servicesCtaLabel}
+                  <ArrowIcon size={17} />
+                </a>
+              </div>
+            ) : null}
           </div>
         </section>
       ) : null}
@@ -327,9 +393,9 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ----------------------------------------------------------- 9. recognition */}
       {page.recognitionTitle && show('recognition') ? (
-        <section className="section" id="awards" aria-labelledby="aw-h2">
+        <section className={band('awards')} id="awards" aria-labelledby="aw-h2">
           <div className="wrap">
-            <SectHead title={page.recognitionTitle} lede={lede('recognition')} headingId="aw-h2" />
+            <SectHead title={page.recognitionTitle} lede={lede('recognition')} headingId="aw-h2" centred={centred('awards')} />
             <div className="aw-grid">
               <div className="aw-lead rv">
                 <div>
@@ -371,9 +437,9 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ------------------------------------------------------------ 10. solutions */}
       {page.solutions?.length && show('solutions') ? (
-        <section className="section canvas" id="solutions" aria-labelledby="sol-h2">
+        <section className={band('solutions')} id="solutions" aria-labelledby="sol-h2">
           <div className="wrap">
-            <SectHead title={page.solutionsTitle} lede={lede('solutions')} headingId="sol-h2" />
+            <SectHead title={page.solutionsTitle} lede={lede('solutions')} headingId="sol-h2" centred={centred('solutions')} />
             <SolutionsBento items={page.solutions} />
 
             {page.solutionsCtaLabel ? (
@@ -390,9 +456,9 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ----------------------------------------------------------- 11. case studies */}
       {page.caseStudies?.length && show('caseStudies') ? (
-        <section className="section canvas" id="portfolio" aria-labelledby="pf-h2">
+        <section className={band('portfolio')} id="portfolio" aria-labelledby="pf-h2">
           <div className="wrap">
-            <SectHead title={page.caseStudiesTitle} lede={lede('caseStudies')} headingId="pf-h2" />
+            <SectHead title={page.caseStudiesTitle} lede={lede('caseStudies')} headingId="pf-h2" centred={centred('portfolio')} />
             <CaseCarousel items={page.caseStudies} />
           </div>
         </section>
@@ -400,9 +466,9 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ----------------------------------------------------------- 12. testimonials */}
       {page.testimonials?.length && show('testimonials') ? (
-        <section className="section" id="testimonials" aria-labelledby="tst-h2">
+        <section className={band('testimonials')} id="testimonials" aria-labelledby="tst-h2">
           <div className="wrap">
-            <SectHead title={page.testimonialsTitle} lede={lede('testimonials')} headingId="tst-h2" />
+            <SectHead title={page.testimonialsTitle} lede={lede('testimonials')} headingId="tst-h2" centred={centred('testimonials')} />
             <TestimonialGrid items={page.testimonials} />
           </div>
         </section>
@@ -410,9 +476,9 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* -------------------------------------------------------------- 13. features */}
       {page.features?.length && show('features') ? (
-        <section className="section" id="features" aria-labelledby="feat-h2">
+        <section className={band('features')} id="features" aria-labelledby="feat-h2">
           <div className="wrap">
-            <SectHead title={page.featuresTitle} lede={lede('features')} headingId="feat-h2" />
+            <SectHead title={page.featuresTitle} lede={lede('features')} headingId="feat-h2" centred={centred('features')} />
             {page.featuresLayout === 'chips' ? (
               <FeatureChips items={page.features} />
             ) : (
@@ -426,7 +492,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
       {page.technologies?.length && show('technologies') ? (
         <section className="section ai-sec on-dark" id="ai" aria-labelledby="ai-h2">
           <div className="wrap">
-            <SectHead title={page.technologiesTitle} lede={lede('technologies')} headingId="ai-h2" />
+            <SectHead title={page.technologiesTitle} lede={lede('technologies')} headingId="ai-h2" centred={centred('ai')} />
             <TechnologyGrid items={page.technologies} />
           </div>
         </section>
@@ -468,9 +534,9 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ----------------------------------------------------------- 16. compliance */}
       {page.compliance?.length && show('compliance') ? (
-        <section className="section canvas" id="compliance" aria-labelledby="comp-h2">
+        <section className={band('compliance')} id="compliance" aria-labelledby="comp-h2">
           <div className="wrap">
-            <SectHead title={page.complianceTitle} lede={lede('compliance')} headingId="comp-h2" />
+            <SectHead title={page.complianceTitle} lede={lede('compliance')} headingId="comp-h2" centred={centred('compliance')} />
             <ComplianceBadges items={page.compliance} />
           </div>
         </section>
@@ -478,9 +544,9 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* -------------------------------------------------------------- 17. process */}
       {page.process?.length && show('process') ? (
-        <section className="section" id="process" aria-labelledby="proc-h2">
+        <section className={band('process')} id="process" aria-labelledby="proc-h2">
           <div className="wrap">
-            <SectHead title={page.processTitle} lede={lede('process')} headingId="proc-h2" />
+            <SectHead title={page.processTitle} lede={lede('process')} headingId="proc-h2" centred={centred('process')} />
             <ProcessTimeline steps={page.process} />
           </div>
         </section>
@@ -488,9 +554,9 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ----------------------------------------------------------------- 18. cost */}
       {page.pricingTitle && show('pricing') ? (
-        <section className="section canvas" id="cost" aria-labelledby="cost-h2">
+        <section className={band('cost')} id="cost" aria-labelledby="cost-h2">
           <div className="wrap">
-            <SectHead title={page.pricingTitle} lede={lede('pricing')} headingId="cost-h2" />
+            <SectHead title={page.pricingTitle} lede={lede('pricing')} headingId="cost-h2" centred={centred('cost')} />
             <div className="cost-wrap rv">
               {page.costTable?.rows?.length ? (
                 <table className="cost-table">
@@ -546,9 +612,9 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ----------------------------------------------------------- 19. tech stack */}
       {page.techStack?.length && show('techStack') ? (
-        <section className="section canvas" id="tech" aria-labelledby="tech-h2">
+        <section className={band('tech')} id="tech" aria-labelledby="tech-h2">
           <div className="wrap">
-            <SectHead title={page.techStackTitle} lede={lede('techStack')} headingId="tech-h2" />
+            <SectHead title={page.techStackTitle} lede={lede('techStack')} headingId="tech-h2" centred={centred('tech')} />
             <TechStackTabs groups={page.techStack} />
           </div>
         </section>
@@ -556,7 +622,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ------------------------------------------------------------------ 20. why */}
       {page.why?.length && show('why') ? (
-        <section className="section" id="why" aria-labelledby="why-h2">
+        <section className={band('why')} id="why" aria-labelledby="why-h2">
           <div className="wrap">
             <div className="why-split">
               <div className="why-sticky">
@@ -569,12 +635,19 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                   </p>
                 ) : null}
                 {page.whyCtaLabel ? (
-                  <div className="cc-cta rv d2" style={{ justifyContent: 'flex-start', marginTop: 24 }}>
-                    <a href="#contact" className="btn btn-primary btn-lg">
+                  page.whyCtaStyle === 'inline' ? (
+                    <a href="#contact" className="btn btn-primary rv d2" style={{ marginTop: 24 }}>
                       {page.whyCtaLabel}
-                      <ArrowIcon size={17} />
+                      <ArrowIcon size={15} />
                     </a>
-                  </div>
+                  ) : (
+                    <div className="cc-cta rv d2" style={{ justifyContent: 'flex-start', marginTop: 24 }}>
+                      <a href="#contact" className="btn btn-primary btn-lg">
+                        {page.whyCtaLabel}
+                        <ArrowIcon size={17} />
+                      </a>
+                    </div>
+                  )
                 ) : null}
               </div>
               <WhyList items={page.why} />
@@ -585,7 +658,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
 
       {/* ------------------------------------------------------------------ 21. FAQ */}
       {page.faqs?.length && show('faqs') ? (
-        <section className="section canvas" id="faq" aria-labelledby="faq-h2">
+        <section className={band('faq')} id="faq" aria-labelledby="faq-h2">
           <div className="wrap">
             <div className="faq-head">
               <h2 className="h2 rv" id="faq-h2">
@@ -658,7 +731,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
       ) : null}
 
       {/* ------------------------------------------------------------- 23. lead form */}
-      <section className="section" id="contact" aria-labelledby="lead-h2">
+      <section className={band('contact')} id="contact" aria-labelledby="lead-h2">
         <div className="wrap">
           <div className="lead">
             <div className="lead-copy">

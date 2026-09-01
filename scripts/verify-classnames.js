@@ -14,13 +14,30 @@ const path = require('path');
 const WEB = path.resolve(__dirname, '../apps/web/src');
 const STYLES = path.join(WEB, 'styles');
 
-/** Every class name that appears in a selector across all extracted stylesheets. */
+/**
+ * Every class name that appears in a selector across all extracted stylesheets.
+ *
+ * The per-page tails count too: four pages carry rules of their own — the dating page's
+ * floating hearts among them — that are rendered in that page's own `<style>` rather than
+ * shipped in a `.css` file, and a name defined only there is still styled.
+ */
 function stylesheetClasses() {
   const classes = new Set();
-  for (const file of fs.readdirSync(STYLES).filter((f) => f.endsWith('.css'))) {
-    const css = fs.readFileSync(path.join(STYLES, file), 'utf8');
+  const add = (css) => {
     for (const m of css.matchAll(/\.(-?[_a-zA-Z][\w-]*)/g)) classes.add(m[1]);
+  };
+
+  for (const file of fs.readdirSync(STYLES).filter((f) => f.endsWith('.css'))) {
+    add(fs.readFileSync(path.join(STYLES, file), 'utf8'));
   }
+
+  const generated = path.join(STYLES, 'pageExtras.generated.ts');
+  if (fs.existsSync(generated)) {
+    const source = fs.readFileSync(generated, 'utf8');
+    const map = JSON.parse(source.slice(source.indexOf('{'), source.lastIndexOf('}') + 1));
+    for (const css of Object.values(map)) add(css);
+  }
+
   return classes;
 }
 

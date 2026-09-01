@@ -361,16 +361,22 @@ export function readFeatures(js: string, icons: IconCollector): {
 }
 
 export function readTechnologies(js: string, icons: IconCollector) {
-  const raw = readArray<[string, string, string, string]>(js, 'AI');
+  const raw = readArray<string[]>(js, 'AI');
   if (!raw) return [];
   return raw
     .filter((row) => Array.isArray(row))
-    .map((row) => ({
-      accent: accentFromHex(row[0]) as AccentToken,
-      title: text(row[1]),
-      description: text(row[2]),
-      icon: icons.add(row[3]),
-    }));
+    .map((row) => {
+      // The home page's rows carry an outcome line before the icon; the service pages' do
+      // not. The icon is always the last column, and is the only one holding SVG markup.
+      const hasOutcome = row.length > 4;
+      return {
+        accent: accentFromHex(row[0]) as AccentToken,
+        title: text(row[1]),
+        description: text(row[2]),
+        outcome: hasOutcome ? text(row[3]) : '',
+        icon: icons.add(row[hasOutcome ? 4 : 3] ?? ''),
+      };
+    });
 }
 
 export function readBadges(js: string, icons: IconCollector) {

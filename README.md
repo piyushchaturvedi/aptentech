@@ -39,7 +39,7 @@ the compiler, not by convention.
 | `apps/web` | Next.js 15 (App Router). Public site under `app/(site)`, admin CMS under `app/admin`. |
 | `apps/api` | Node.js + Express REST API. Routes → controllers → services → repositories → MongoDB. |
 | `packages/shared` | Types and zod schemas used by both, so the two cannot drift apart. |
-| `scripts` | CSS extraction, parity verification, performance measurement. |
+| `scripts` | CSS extraction, and the checks that prove the migration: structure, layout, links, CSS coverage, security, performance. |
 | `docs` | Architecture, deployment, security and content guides. |
 
 ---
@@ -95,15 +95,83 @@ stored in plain text and must be changed at first sign-in:
 npm run create-admin -- --email you@aptentech.com --name "Your Name" --role SUPER_ADMIN
 ```
 
+Copy that password somewhere safe before closing the terminal — it is stored only as a hash
+and cannot be read back. If it is lost, or nobody can sign in, this issues a new one and
+signs out every existing session:
+
+```bash
+npm run reset-admin-password -- --email you@aptentech.com
+```
+
 Start both apps:
 
 ```bash
 npm run dev
 ```
 
-- Public site — <http://localhost:3000>
-- Admin CMS — <http://localhost:3000/admin/login>
-- API health — <http://localhost:4000/health>
+That one command runs **both** apps, each on its own port, with their output interleaved and
+labelled `[api]` / `[web]`. Stopping it stops both.
+
+| | URL |
+| --- | --- |
+| Public site | <http://localhost:3000> |
+| Admin CMS | <http://localhost:3000/admin> |
+| API | <http://localhost:4000/health> |
+
+`/admin` is the only address you need to remember: it forwards to the dashboard, and sends
+you to the sign-in form first if you are not signed in. On the very first sign-in the CMS
+requires you to choose a new password before it will let you in.
+
+The site cannot render without the API — every page reads its content from it — so if pages
+come up blank, check that the `[api]` half printed `AptenTech API listening`.
+
+> **`EADDRINUSE: address already in use :::3000`.** Both ports are fixed, so a server left
+> running from an earlier session still holds one of them. Because `concurrently` stops the
+> other half as soon as one fails, the whole command exits and neither app comes up. Free the
+> ports and start again:
+>
+> ```bash
+> npm run stop
+> ```
+>
+> It reports every process it stops, so nothing is killed silently. Closing a terminal does
+> not always stop what it started, which is why this happens more often than it should.
+>
+> **`Cannot find module for page: /…` during a build.** The named page is fine; the build
+> output is not. `next dev` and `next build` share `.next` and fill it differently, so a
+> build that reads a dev server's leftovers fails part way through and blames a page at
+> random. `npm run build` now clears the directory first, so this should only appear if a dev
+> server is running *while* you build — stop it with `npm run stop` and build again.
+
+---
+
+## Running the production build
+
+`npm run dev` compiles pages on demand, which is convenient but slow and occasionally flaky.
+To run the site the way it is actually served, build it once and start both apps:
+
+```bash
+npm run build
+```
+
+```bash
+npm run start
+```
+
+`npm run start` runs the API and the web app together on the same two ports as `npm run dev`
+— <http://localhost:3000> and <http://localhost:4000> — with output labelled `[api]` / `[web]`.
+Stopping it stops both.
+
+Two things about the build worth knowing:
+
+- **Start the API first, or build with it stopped and accept the fallback.** The build asks
+  the API for the redirect table. If it cannot reach it, the build still succeeds but prints
+  `[redirects] API unreachable — using the compiled-in fallback list` and ships only the
+  redirects compiled into `next.config.mjs`, leaving out any an administrator added in the
+  CMS. `npm run dev` in `apps/api` beforehand is enough.
+- **Rebuild after changing content.** Pages are prerendered at build time, so edits made in
+  the CMS reach a running production server through revalidation, but a fresh build is what
+  regenerates the static HTML.
 
 ---
 
@@ -113,16 +181,45 @@ npm run dev
 | --- | --- |
 | `npm run dev` | Runs the API and the web app together |
 | `npm run dev:api` / `npm run dev:web` | Runs one of them |
+| `npm run stop` | Frees ports 3000 and 4000 when a previous run is still holding them |
 | `npm run build` | Builds shared, API and web, in that order |
 | `npm run start` | Runs both from their production builds |
 | `npm run seed` | Re-imports content from the original HTML (idempotent) |
 | `npm run create-admin` | Creates an admin account |
+| `npm run reset-admin-password` | Resets a password when nobody can sign in |
+| `node scripts/verify-crm.js` | End-to-end check of the lead CRM and email (both apps must be running) |
 | `npm run typecheck` | Type-checks every workspace |
-| `node scripts/verify-parity.js` | Compares all 25 migrated routes against the original HTML |
+| `node scripts/verify-placeholders.js` | Crawls the site for placeholder text a visitor would see |
+| `node scripts/verify-cms-flow.js <password>` | Proves an admin edit reaches the public site without a deploy |
+| `node scripts/verify-parity.js` | Compares all 25 migrated routes against the original HTML on title, description, canonical and every heading |
+| `node scripts/verify-links.js` | Crawls the built site and reports dead links, `#` links and broken anchors |
 | `node scripts/verify-css.js` | Confirms no CSS rule was lost in extraction |
 | `node scripts/verify-classnames.js` | Confirms every class a component uses is actually styled |
 | `node scripts/verify-security.js <password>` | Probes the running system for its security controls |
 | `node scripts/measure-performance.js` | Measures TTFB, HTML size and bundle size per route |
+| `node scripts/extract-css.js` | Regenerates the stylesheets from the original HTML |
+| `node scripts/parity-report.js` | Diffs captured DOM structures, original against migration |
+| `node scripts/layout-report.js` | Diffs captured layouts — boxes and computed styles — at each width |
+
+### Comparing against the original pages
+
+The structure and layout reports work on captures taken in a real browser, because the
+source pages build most of their sections in JavaScript and the file on disk is missing
+exactly the parts worth comparing.
+
+```bash
+node scripts/serve-original.js          # serves the 25 source files on :8080
+```
+
+Then, in a browser on each page in turn:
+
+```js
+await import('http://localhost:8080/sig.js?n=o-taxi-app-development')     // the original
+await import('http://localhost:8080/layout.js?n=lo-o-taxi-1440')          // at this width
+```
+
+…and the same with `m-` / `lo-m-` names on the migrated page. Captures land in `.parity/`;
+`parity-report.js` and `layout-report.js` diff every pair they find.
 
 > **Rebuilding after a content change.** Next.js caches API responses on disk between
 > builds. After re-seeding, clear that cache or the build will reuse the previous data:
@@ -139,8 +236,11 @@ npm run dev
 ## Seeding
 
 `npm run seed` reads the 25 original HTML files and loads their real content into MongoDB:
-17 service and solution pages, 7 static pages, 8 case studies, 11 blog posts, testimonials,
-FAQs, navigation, footer and SEO. It also regenerates
+17 service and solution pages, 7 static pages, 81 case studies, 51 articles, 52 testimonials,
+FAQs, navigation, footer, redirects and SEO. Most of those collections are larger than they
+look from the page count, because each page ships its own — the taxi page's case studies are
+not the SEO page's, and attaching one shared set to all of them was how the first pass lost
+roughly 150 entries. It also regenerates
 `apps/web/src/components/shared/iconRegistry.generated.ts` from the exact SVG the source
 used, which is what keeps the icon set identical.
 
@@ -179,5 +279,6 @@ starting half-configured.
 - [`docs/SECURITY.md`](docs/SECURITY.md) — the security model and what was verified
 - [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — AWS deployment and cost control
 - [`docs/CONTENT.md`](docs/CONTENT.md) — using the CMS, and what content is still outstanding
+- [`docs/CRM.md`](docs/CRM.md) — lead conversations, email templates, delivery and inbound replies
 - [`docs/MIGRATION.md`](docs/MIGRATION.md) — how each of the 25 pages was migrated, and verification results
 "# aptentech" 

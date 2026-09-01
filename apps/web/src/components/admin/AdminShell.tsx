@@ -40,6 +40,7 @@ const NAV = [
   {
     label: 'Site',
     items: [
+      { href: '/admin/email-templates', label: 'Email templates' },
       { href: '/admin/media', label: 'Media' },
       { href: '/admin/seo', label: 'SEO' },
       { href: '/admin/settings', label: 'Settings' },
@@ -47,18 +48,27 @@ const NAV = [
   },
 ];
 
+/**
+ * Compares two routes ignoring the trailing slash.
+ *
+ * `trailingSlash: true` means `usePathname()` returns `/admin/login/`. Comparing that against
+ * a bare `/admin/login` silently never matches — which is what left the sign-in page blank.
+ */
+const samePath = (a: string, b: string) => a.replace(/\/$/, '') === b.replace(/\/$/, '');
+
 export function AdminShell({ children }: { children: React.ReactNode }) {
   const { session, loading, signOut } = useAdmin();
   const pathname = usePathname();
   const router = useRouter();
 
-  const isLogin = pathname === '/admin/login';
+  const isLogin = samePath(pathname, '/admin/login');
   const needsPasswordChange = Boolean(session?.user.mustChangePassword);
 
   useEffect(() => {
     if (loading) return;
-    if (!session && !isLogin) router.replace('/admin/login');
-    if (session && isLogin && !needsPasswordChange) router.replace('/admin/dashboard');
+    // The trailing slash is the canonical form; without it every redirect costs a 308.
+    if (!session && !isLogin) router.replace('/admin/login/');
+    if (session && isLogin && !needsPasswordChange) router.replace('/admin/dashboard/');
   }, [loading, session, isLogin, needsPasswordChange, router]);
 
   if (isLogin) return <>{children}</>;
@@ -92,7 +102,7 @@ export function AdminShell({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.href}
                 href={item.href}
-                aria-current={pathname === item.href || pathname.startsWith(`${item.href}/`) ? 'page' : undefined}
+                aria-current={samePath(pathname, item.href) ? 'page' : undefined}
               >
                 {item.label}
               </Link>

@@ -71,6 +71,82 @@ export function ServicesPanel({ items, label = 'Services' }: { items: ServiceIte
   );
 }
 
+/**
+ * The home page's capability tabs.
+ *
+ * A vertical strip of numbered tabs beside a panel that changes with the selection. The
+ * panel is `aria-live` so the change is announced, and arrow keys move between tabs, which
+ * is what the source's script did.
+ */
+export function HomeServicePanel({ items }: { items: ServiceItem[] }) {
+  const [active, setActive] = useState(0);
+  if (!items.length) return null;
+
+  const current = items[active] ?? items[0]!;
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLButtonElement>, index: number) => {
+    const forward = event.key === 'ArrowDown' || event.key === 'ArrowRight';
+    const back = event.key === 'ArrowUp' || event.key === 'ArrowLeft';
+    if (!forward && !back) return;
+
+    event.preventDefault();
+    const next = forward ? (index + 1) % items.length : (index - 1 + items.length) % items.length;
+    setActive(next);
+  };
+
+  return (
+    <div className="svc-shell">
+      <div className="svc-tabs rv" role="tablist" aria-label="Services" id="svcTabs">
+        {items.map((item, index) => (
+          <button
+            key={`${item.title}-${index}`}
+            className="svc-tab"
+            role="tab"
+            aria-selected={index === active}
+            onClick={() => setActive(index)}
+            onKeyDown={(event) => onKeyDown(event, index)}
+            style={{ ['--c' as string]: ACCENT_HEX[item.accent] }}
+          >
+            <span className="node" />
+            <span className="t">{item.title}</span>
+            <span className="n">{String(index + 1).padStart(2, '0')}</span>
+          </button>
+        ))}
+      </div>
+
+      <div
+        className="svc-panel rv d1"
+        id="svcPanel"
+        aria-live="polite"
+        style={{ ['--c' as string]: ACCENT_HEX[current.accent] }}
+      >
+        <div className="svc-head">
+          <div className="ic" aria-hidden="true">
+            <Icon name={current.icon} size={23} />
+          </div>
+          <h3>{current.title}</h3>
+        </div>
+        <p>{current.description}</p>
+        <div className="svc-links">
+          {current.bullets.map((bullet) => (
+            <a href="#contact" key={bullet}>
+              <i />
+              {bullet}
+              <ArrowIcon />
+            </a>
+          ))}
+        </div>
+        <div className="svc-foot">
+          <a href="#contact" className="btn btn-primary btn-sm">
+            Discuss your project
+            <ArrowIcon />
+          </a>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 /* ------------------------------------------------------------------ features */
 
 const FEAT_VISIBLE = 9;
@@ -199,7 +275,8 @@ export function ProcessTimeline({ steps }: { steps: ProcessStep[] }) {
           className="tl-fill"
           id="tlFill"
           aria-hidden="true"
-          style={{ width: `${((active + 1) / steps.length) * 100}%` }}
+          // The source fills the rail to the selected node, so the first step leaves it empty.
+          style={{ width: `${steps.length > 1 ? (active / (steps.length - 1)) * 100 : 0}%` }}
         />
         <div className="tl-nodes" id="tlNodes" role="tablist" aria-label="Development stages">
         {steps.map((s, index) => (
@@ -242,8 +319,47 @@ export function ProcessTimeline({ steps }: { steps: ProcessStep[] }) {
 
 /* ------------------------------------------------------------------ tech stack */
 
+/**
+ * URL-safe id for a category name: "AI / ML" becomes "ai-ml".
+ *
+ * Exported because the navigation needs to produce exactly the same value when it builds a
+ * link — if the two ever disagree the link silently opens the first tab instead.
+ */
+export function techCategoryId(category: string): string {
+  return category
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+}
+
 export function TechStackTabs({ groups }: { groups: TechStackGroup[] }) {
   const [active, setActive] = useState(0);
+
+  /*
+    Opens the tab named in the URL fragment, so `/technologies/#cloud` is a real destination.
+
+    The menus list nine technology categories as separate entries. Without this every one of
+    them lands on the same page showing the same first tab, which is what made them look
+    broken. Reading the fragment on mount — and again on `hashchange`, because clicking a
+    second such link does not remount the component — makes each entry lead somewhere
+    different.
+
+    An unrecognised fragment is ignored rather than treated as an error: the page still has
+    to render sensibly for `#techGrid` or a stale bookmark.
+  */
+  useEffect(() => {
+    const apply = (): void => {
+      const wanted = decodeURIComponent(window.location.hash.replace(/^#/, '')).toLowerCase();
+      if (!wanted) return;
+      const index = groups.findIndex((g) => techCategoryId(g.category) === wanted);
+      if (index >= 0) setActive(index);
+    };
+
+    apply();
+    window.addEventListener('hashchange', apply);
+    return () => window.removeEventListener('hashchange', apply);
+  }, [groups]);
+
   if (!groups.length) return null;
 
   const group = groups[active] ?? groups[0]!;
@@ -254,6 +370,7 @@ export function TechStackTabs({ groups }: { groups: TechStackGroup[] }) {
         {groups.map((g, index) => (
           <button
             key={g.category}
+            id={techCategoryId(g.category)}
             className="tech-tab"
             role="tab"
             aria-selected={index === active}
@@ -326,7 +443,7 @@ function CodePanel({ console: c }: { console: CaseStudy['shotConsole'] | undefin
   );
 }
 
-function Shot({ cs }: { cs: CaseStudy }) {
+export function CaseShot({ cs }: { cs: CaseStudy }) {
   const panels =
     cs.shot === 'code' ? (
       <>
@@ -358,7 +475,16 @@ function Shot({ cs }: { cs: CaseStudy }) {
   );
 }
 
-export function CaseCarousel({ items }: { items: CaseStudy[] }) {
+export function CaseCarousel({
+  items,
+  label = 'Choose project',
+  itemLabel = 'project',
+}: {
+  items: CaseStudy[];
+  /** The dot strip's accessible name; the home page calls these case studies. */
+  label?: string;
+  itemLabel?: string;
+}) {
   const [index, setIndex] = useState(0);
   const trackRef = useRef<HTMLDivElement>(null);
 
@@ -426,8 +552,8 @@ export function CaseCarousel({ items }: { items: CaseStudy[] }) {
                   </Link>
                 </div>
                 <div className="cs-shot">
-                  <Shot cs={cs} />
-                  <p className="shot-tag">[PRODUCT INTERFACE MOCKUP]</p>
+                  <CaseShot cs={cs} />
+                  {cs.shotCaption ? <p className="shot-tag">{cs.shotCaption}</p> : null}
                 </div>
               </article>
             </div>
@@ -437,17 +563,17 @@ export function CaseCarousel({ items }: { items: CaseStudy[] }) {
 
       {/* Class names and child order match the source's `.cc-nav` exactly. */}
       <div className="cc-nav">
-        <button className="cc-btn" id="ccPrev" aria-label="Previous project" onClick={() => go(index - 1)}>
+        <button className="cc-btn" id="ccPrev" aria-label={`Previous ${itemLabel}`} onClick={() => go(index - 1)}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="M10 3 5 8l5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-        <button className="cc-btn" id="ccNext" aria-label="Next project" onClick={() => go(index + 1)}>
+        <button className="cc-btn" id="ccNext" aria-label={`Next ${itemLabel}`} onClick={() => go(index + 1)}>
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
             <path d="m6 3 5 5-5 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
           </svg>
         </button>
-        <div className="cc-dots" id="ccDots" role="tablist" aria-label="Choose project">
+        <div className="cc-dots" id="ccDots" role="tablist" aria-label={label}>
           {items.map((cs, i) => (
             <button
               key={cs.id}
@@ -480,11 +606,14 @@ export function FaqAccordion({
   faqs,
   categories = false,
   wide = false,
+  aside,
 }: {
   faqs: FaqItem[];
   categories?: boolean;
   /** Service and solution pages render the list full width as .faq-wide. */
   wide?: boolean;
+  /** The home page puts a "still have a question" card under the category list. */
+  aside?: React.ReactNode;
 }) {
   const groups = Array.from(new Set(faqs.map((f) => f.category).filter(Boolean))) as string[];
   const [activeCategory, setActiveCategory] = useState(groups[0] ?? '');
@@ -495,7 +624,7 @@ export function FaqAccordion({
   return (
     <div className={categories && groups.length ? 'faq-shell' : ''}>
       {categories && groups.length ? (
-        <div className="faq-side">
+        <div className="faq-side rv">
           <div className="faq-cats" id="faqCats" role="tablist" aria-label="FAQ categories">
             {groups.map((category) => (
               <button
@@ -513,18 +642,22 @@ export function FaqAccordion({
               </button>
             ))}
           </div>
+          {aside}
         </div>
       ) : null}
 
-      <div className={wide ? 'faq-wide rv d1' : 'faq-list'} id="faqList">
+      <div className={wide ? 'faq-wide rv d1' : `faq-list${categories ? ' rv d1' : ''}`} id="faqList">
         {visible.map((faq, index) => {
           const isOpen = open === index;
+          // The panel id carries the category, as the source's did, so two categories
+          // cannot produce the same id when the list is swapped.
+          const panelId = `faq-${index}${activeCategory ? `-${activeCategory.replace(/\W+/g, '')}` : ''}`;
           return (
             <div className={`faq-item${isOpen ? ' open' : ''}`} key={`${faq.question}-${index}`}>
               <button
                 className="faq-q"
                 aria-expanded={isOpen}
-                aria-controls={`faq-${index}`}
+                aria-controls={panelId}
                 onClick={() => setOpen(isOpen ? null : index)}
               >
                 {faq.question}
@@ -534,7 +667,7 @@ export function FaqAccordion({
               </button>
               <div
                 className="faq-a"
-                id={`faq-${index}`}
+                id={panelId}
                 role="region"
                 style={{ height: isOpen ? 'auto' : 0, overflow: 'hidden' }}
               >

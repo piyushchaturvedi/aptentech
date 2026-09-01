@@ -4,7 +4,8 @@ import { content } from '@/lib/api/content';
 import { buildMetadata } from '@/lib/seo/metadata';
 import { BreadcrumbSchema, FaqSchema, ServiceSchema } from '@/lib/seo/structuredData';
 import { ServicePageView } from '@/components/sections/ServicePageView';
-import '@/styles/service.css';
+import { PageStyles } from '@/components/sections/PageStyles';
+import '@/styles/site.css';
 import '@/styles/solution.css';
 
 /**
@@ -59,6 +60,7 @@ export default async function ServiceRoute({ params }: { params: Promise<{ slug:
         settings={settings}
       />
       <FaqSchema faqs={page.faqs} />
+      <PageStyles slug={slug} />
       <ServicePageView page={page} settings={settings} />
     </>
   );

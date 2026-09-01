@@ -104,7 +104,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
 
       if (res.status === 401) {
         setSession(null);
-        router.push('/admin/login');
+        router.push('/admin/login/');
         throw new AdminApiError(401, 'UNAUTHENTICATED', 'Your session has ended. Please sign in again.');
       }
 
@@ -151,7 +151,7 @@ export function AdminProvider({ children }: { children: React.ReactNode }) {
       });
     } finally {
       setSession(null);
-      router.push('/admin/login');
+      router.push('/admin/login/');
     }
   }, [session?.csrfToken, router]);
 

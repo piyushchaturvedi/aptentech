@@ -2,7 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { contentRepository } from '../repositories/content.repository';
 import { settingsRepository, redirectRepository } from '../repositories/system.repository';
 import { hydrateService } from '../services/hydrate.service';
-import { sanitizeRichText } from '../services/sanitize.service';
+import { sanitizeRichText, sanitizePageBlocks, sanitizeArticleHtml } from '../services/sanitize.service';
 import { notFound } from '../utils/errors';
 import { ok, paginated } from '../utils/respond';
 import type { ServiceKind } from '@aptentech/shared';
@@ -29,8 +29,13 @@ async function loadServicePage(kind: ServiceKind, slug: string) {
   const [caseStudies, testimonials, latest] = await Promise.all([
     contentRepository.findCaseStudiesByIds((page.caseStudyIds ?? []).map(String)),
     contentRepository.findTestimonialsByIds((page.testimonialIds ?? []).map(String)),
-    // The "latest insights" strip at the foot of every service page.
-    contentRepository.listBlogPosts({ page: 1, pageSize: 3 }),
+    // The "latest insights" strip. Each page links three articles of its own; a page that
+    // names none falls back to the most recent published ones.
+    (page.latestPostIds ?? []).length
+      ? contentRepository
+          .findBlogPostsByIds((page.latestPostIds ?? []).map(String))
+          .then((items) => ({ items, total: items.length }))
+      : contentRepository.listBlogPosts({ page: 1, pageSize: 3 }),
   ]);
 
   return hydrateService.media({ ...page, caseStudies, testimonials, latestPosts: latest.items });
@@ -58,6 +63,28 @@ export const publicController = {
     return ok(res, data);
   }),
 
+  listIndustries: asyncHandler(async (_req, res) => {
+    const items = await contentRepository.listServicePages('industry');
+    return ok(res, await hydrateService.media(items));
+  }),
+
+  getIndustry: asyncHandler(async (req, res) => {
+    const data = await loadServicePage('industry', String(req.params.slug));
+    if (!data) throw notFound('Industry not found');
+    return ok(res, data);
+  }),
+
+  listTechnologies: asyncHandler(async (_req, res) => {
+    const items = await contentRepository.listServicePages('technology');
+    return ok(res, await hydrateService.media(items));
+  }),
+
+  getTechnology: asyncHandler(async (req, res) => {
+    const data = await loadServicePage('technology', String(req.params.slug));
+    if (!data) throw notFound('Technology not found');
+    return ok(res, data);
+  }),
+
   getSolution: asyncHandler(async (req, res) => {
     const data = await loadServicePage('solution', String(req.params.slug));
     if (!data) throw notFound('Solution not found');
@@ -65,14 +92,26 @@ export const publicController = {
   }),
 
   getPage: asyncHandler(async (req, res) => {
-    const page = await contentRepository.findPageBySlug(String(req.params.slug));
-    if (!page) throw notFound('Page not found');
+    const stored = await contentRepository.findPageBySlug(String(req.params.slug));
+    if (!stored) throw notFound('Page not found');
+
+    // Sanitised again on read: stored content is not assumed safe just because it was
+    // sanitised on write.
+    const page = sanitizePageBlocks(stored);
 
     // Pull the shared collections a page block may need, so the web app renders in one pass.
+    // A page that names its own case studies gets those; otherwise the published index.
+    const ownCases = (page.caseStudyIds ?? []).map(String);
     const [caseStudies, testimonials, blogPosts] = await Promise.all([
-      contentRepository.listCaseStudies({ limit: 12 }),
-      contentRepository.listTestimonials({}),
-      contentRepository.listBlogPosts({ page: 1, pageSize: 3 }),
+      ownCases.length
+        ? contentRepository.findCaseStudiesByIds(ownCases).then((items) => ({ items, total: items.length }))
+        : contentRepository.listCaseStudies({ limit: 12 }),
+      (page.testimonialIds ?? []).length
+        ? contentRepository.findTestimonialsByIds((page.testimonialIds ?? []).map(String))
+        : contentRepository.listTestimonials({}),
+      (page.latestPostIds ?? []).length
+        ? contentRepository.findBlogPostsByIds((page.latestPostIds ?? []).map(String))
+        : contentRepository.listBlogPosts({ page: 1, pageSize: 3 }).then((r) => r.items),
     ]);
 
     return ok(
@@ -81,7 +120,7 @@ export const publicController = {
         ...page,
         caseStudies: caseStudies.items,
         testimonials,
-        latestPosts: blogPosts.items,
+        latestPosts: blogPosts,
       }),
     );
   }),
@@ -119,7 +158,7 @@ export const publicController = {
 
     // Sanitised again on read: stored content is not assumed safe just because it was
     // sanitised on write.
-    const safe = { ...post, body: sanitizeRichText(post.body ?? '') };
+    const safe = { ...post, body: sanitizeArticleHtml(post.body ?? '') };
 
     const related = await contentRepository.listBlogPosts({ page: 1, pageSize: 4 });
     return ok(
@@ -158,6 +197,8 @@ export const publicController = {
     return ok(res, {
       services: services.filter((s) => s.kind === 'service'),
       solutions: services.filter((s) => s.kind === 'solution'),
+      industries: services.filter((s) => s.kind === 'industry'),
+      technologies: services.filter((s) => s.kind === 'technology'),
       posts,
       caseStudies: caseStudies.items.map((c) => ({ slug: c.slug, updatedAt: c.updatedAt, detailHref: c.detailHref })),
       pages: pages.map((p) => ({ slug: p.slug, updatedAt: p.updatedAt })),

@@ -40,6 +40,17 @@ export function Media({
   const alt = media.alt ?? '';
 
   if (media.url) {
+    /*
+      SVG bypasses the image optimiser.
+
+      Next refuses to optimise SVG unless `dangerouslyAllowSVG` is set, and that flag is
+      global: turning it on would also cover any SVG an admin uploads later, which is a
+      stored-XSS surface. Skipping optimisation for this one type costs nothing — an SVG is
+      already resolution-independent and has no raster variants to generate — and it keeps
+      the flag off.
+    */
+    const isVector = /\.svg(\?|$)/i.test(media.url);
+
     return (
       <Image
         src={media.url}
@@ -49,6 +60,7 @@ export function Media({
         priority={priority}
         // Only genuinely above-the-fold images get `priority`; everything else defers.
         loading={priority ? undefined : 'lazy'}
+        unoptimized={isVector}
         {...(sizes ? { sizes } : {})}
         {...(className ? { className } : {})}
         style={{ width: '100%', height: 'auto' }}

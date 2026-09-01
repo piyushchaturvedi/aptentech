@@ -182,12 +182,35 @@ export const contentRepository = {
     category?: string;
     tag?: string;
     search?: string;
+    status?: string;
   } = {}) {
-    const { includeDrafts = false, page = 1, pageSize = 9, category, tag, search } = opts;
+    const { includeDrafts = false, page = 1, pageSize = 9, category, tag, search, status } = opts;
     const filter: Record<string, unknown> = includeDrafts ? {} : { ...PUBLIC };
     if (category) filter.categoryName = category;
     if (tag) filter.tags = tag;
-    if (search) filter.$text = trusted({ $search: search });
+    if (status) filter.status = status;
+
+    /*
+      Substring search rather than the text index.
+
+      The admin list searches as you type, and a text index matches whole words only — typing
+      "deliv" would find nothing until "delivery" was complete, which reads as a broken box.
+      The input is escaped before it becomes a pattern so a stray `(` cannot throw, and the
+      collection is small enough that the scan is not worth an index.
+    */
+    if (search) {
+      const safe = search.replace(/[.*+?^${}()|[]\]/g, '\    const { includeDrafts = false, page = 1, pageSize = 9, category, tag, search } = opts;
+    const filter: Record<string, unknown> = includeDrafts ? {} : { ...PUBLIC };
+    if (category) filter.categoryName = category;
+    if (tag) filter.tags = tag;
+    if (search) filter.$text = trusted({ $search: search });');
+      filter.$or = trusted([
+        { title: { $regex: safe, $options: 'i' } },
+        { slug: { $regex: safe, $options: 'i' } },
+        { excerpt: { $regex: safe, $options: 'i' } },
+        { categoryName: { $regex: safe, $options: 'i' } },
+      ]);
+    }
 
     const [items, total] = await Promise.all([
       BlogPostModel.find(filter)
@@ -199,6 +222,22 @@ export const contentRepository = {
       BlogPostModel.countDocuments(filter),
     ]);
     return { items: items.map(toDto), total };
+  },
+
+  /**
+   * How many articles sit in each status, for the list screen tabs.
+   *
+   * Counted server-side rather than derived from the current page, which would only ever
+   * describe the 25 rows on screen.
+   */
+  async blogStatusCounts(): Promise<Record<string, number>> {
+    const rows = await BlogPostModel.aggregate([{ $group: { _id: '$status', n: { $sum: 1 } } }]);
+    const counts: Record<string, number> = { ALL: 0, PUBLISHED: 0, DRAFT: 0, ARCHIVED: 0 };
+    for (const row of rows as Array<{ _id: string; n: number }>) {
+      counts[row._id] = row.n;
+      counts.ALL += row.n;
+    }
+    return counts;
   },
 
   async findBlogPostBySlug(slug: string, includeDrafts = false) {
@@ -255,6 +294,15 @@ export const contentRepository = {
     if (opts.attachedTo) filter.attachedTo = opts.attachedTo;
     const docs = await TestimonialModel.find(filter).sort({ order: 1, createdAt: -1 }).lean();
     return docs.map(toDto);
+  },
+
+  /** Resolves a page's own "latest insights" articles, keeping the order the page set. */
+  async findBlogPostsByIds(ids: string[]) {
+    const valid = ids.filter((i) => Types.ObjectId.isValid(i));
+    if (!valid.length) return [];
+    const docs = await BlogPostModel.find({ _id: trusted({ $in: valid }), ...PUBLIC }).lean();
+    const byId = new Map(docs.map((d) => [String(d._id), toDto(d)]));
+    return valid.map((id) => byId.get(id)).filter((x): x is NonNullable<typeof x> => Boolean(x));
   },
 
   async findTestimonialsByIds(ids: string[]) {

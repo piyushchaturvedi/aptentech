@@ -28,7 +28,7 @@ function ledeOf(block: string): string {
   // reveal classes and not `.lede`. Fall back to the paragraph straight after the heading,
   // but only inside that wrapper, so ordinary body copy is never mistaken for a standfirst.
   if (!/class="faq-head"/.test(block)) return '';
-  return stripTags(block.match(/<h2[^>]*>[\s\S]*?<\/h2>\s*<p[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? '');
+  return stripTags(block.match(/<h2[^>]*>[\s\S]*?<\/h2>\s*<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/)?.[1] ?? '');
 }
 
 /**
@@ -76,7 +76,7 @@ export function readSectionLedes(html: string): Record<string, string> {
 export function readBrandStrip(html: string): { label: string; slots: string[] } {
   const block = html.match(/<section[^>]*aria-label="Clients and partners"[\s\S]*?<\/section>/)?.[0] ?? '';
   return {
-    label: stripTags(block.match(/<p[^>]*>([\s\S]*?)<\/p>/)?.[1] ?? ''),
+    label: stripTags(block.match(/<p(?:\s[^>]*)?>([\s\S]*?)<\/p>/)?.[1] ?? ''),
     slots: [...block.matchAll(/<div class="lslot">([\s\S]*?)<\/div>/g)].map((m) => stripTags(m[1]!)),
   };
 }
@@ -231,6 +231,17 @@ export function readWhyAndFaqExtras(html: string) {
     faqAfter: stripTags(faqAfter.match(/<p>([\s\S]*?)<\/p>/)?.[1] ?? ''),
     faqAfterCtaLabel: stripTags(faqAfter.match(/<a[^>]*class="btn[^"]*"[^>]*>([\s\S]*?)<\/a>/)?.[1] ?? ''),
   };
+}
+
+/** The button that closes a band, where the band has one. */
+function readBandCta(block: string): string {
+  const cta = block.match(/<div class="[^"]*\bcc-cta\b[^"]*"[^>]*>([\s\S]*?)<\/div>/)?.[1] ?? '';
+  return stripTags(cta.match(/<a[^>]*class="btn[^"]*"[^>]*>([\s\S]*?)<\/a>/)?.[1] ?? '');
+}
+
+/** The button under the services panel. */
+export function readServicesCta(html: string): string {
+  return readBandCta(sectionByIdOrClass(html, 'services'));
 }
 
 /** The button under the solutions bento. */

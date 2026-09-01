@@ -44,6 +44,7 @@ export default function AdminCaseStudiesPage() {
         result: '',
         metrics: [],
         shot: 'chart' as const,
+        shotCaption: '',
         shotConsole: { command: '', checks: [], summary: '' },
         showInIndex: true,
         detailHref: null,
@@ -103,6 +104,12 @@ export default function AdminCaseStudiesPage() {
                 { value: 'cells', label: 'Cells' },
                 { value: 'code', label: 'Terminal' },
               ]}
+            />
+            <Text
+              label="Interface caption"
+              value={item.shotCaption}
+              onChange={(v) => patch({ shotCaption: v })}
+              hint="Shown under the illustration. Leave empty to hide it."
             />
             <Text
               label="Order"

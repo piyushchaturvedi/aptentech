@@ -4,17 +4,19 @@
   "private": true,
   "main": "dist/server.js",
   "scripts": {
-    "dev": "tsx watch src/server.ts",
+    "dev": "node --watch --import tsx src/server.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "seed": "tsx src/seed/run.ts",
     "create-admin": "tsx src/seed/createAdmin.ts",
+    "reset-admin-password": "tsx src/seed/resetAdminPassword.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "node scripts/run-tests.js"
   },
   "dependencies": {
     "@aptentech/shared": "*",
     "@aws-sdk/client-s3": "^3.712.0",
+    "@aws-sdk/client-sesv2": "^3.1123.0",
     "@aws-sdk/s3-request-presigner": "^3.712.0",
     "@node-rs/argon2": "^2.0.2",
     "cookie-parser": "^1.4.7",
@@ -25,8 +27,9 @@
     "helmet": "^8.0.0",
     "mongoose": "^8.9.2",
     "multer": "^1.4.5-lts.1",
+    "nodemailer": "^6.10.1",
     "pino": "^9.5.0",
-    "sanitize-html": "^2.13.1",
+    "sanitize-html": "2.17.0",
     "zod": "^3.24.1"
   },
   "devDependencies": {
@@ -35,6 +38,7 @@
     "@types/express": "^4.17.21",
     "@types/multer": "^2.2.0",
     "@types/node": "^22.10.2",
+    "@types/nodemailer": "^6.4.24",
     "@types/sanitize-html": "^2.13.0",
     "tsx": "^4.19.2",
     "typescript": "^5.7.2"

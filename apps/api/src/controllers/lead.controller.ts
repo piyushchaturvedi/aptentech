@@ -3,8 +3,10 @@ import type { LeadSubmissionInput, LeadStatus } from '@aptentech/shared';
 import { leadService, type LeadRequestContext } from '../services/lead.service';
 import { leadRepository } from '../repositories/lead.repository';
 import { auditRepository } from '../repositories/system.repository';
+import { conversationService } from '../services/email/conversation.service';
 import { notFound } from '../utils/errors';
 import { ok, paginated } from '../utils/respond';
+import { logger } from '../utils/logger';
 
 const asyncHandler =
   (fn: (req: Request, res: Response) => Promise<unknown>) =>
@@ -48,6 +50,23 @@ export const leadController = {
   submit: asyncHandler(async (req, res) => {
     const input = req.body as LeadSubmissionInput;
     const result = await leadService.submit(input, requestContext(req));
+
+    /*
+      The thread is opened after the lead is stored, and its failure is swallowed.
+
+      Order is the guarantee: by the time this runs the enquiry is already committed, so a
+      mail provider that is down, misconfigured or slow costs a delayed notification and
+      nothing else. Spam is excluded — it is kept for review, but auto-replying to it would
+      mail whoever the spammer forged as the sender.
+    */
+    if (result.lead && !result.duplicate && !result.assessment.isSpam) {
+      await conversationService.openThread(result.lead as never).catch((err: unknown) => {
+        logger.error(
+          { leadId: result.lead?.id, err: err instanceof Error ? err.message : String(err) },
+          'Lead stored but its conversation could not be opened',
+        );
+      });
+    }
 
     return ok(
       res,

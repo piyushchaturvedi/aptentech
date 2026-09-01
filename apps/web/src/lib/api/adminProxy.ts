@@ -76,6 +76,34 @@ export function unavailable(): NextResponse {
   );
 }
 
+/**
+ * Sends the upstream request, retrying a connection that never completed.
+ *
+ * Node keeps sockets alive and reuses them, so a request can claim one the API has already
+ * closed and fail with `ECONNRESET` before a byte is sent. Opening the dashboard should not
+ * turn into a Bad Gateway because of that, and a second attempt opens a fresh socket.
+ *
+ * Only safe methods are repeated. A `POST` that dies mid-flight may still have been applied
+ * upstream, so replaying it could create a second session or a duplicate record; those get
+ * one attempt and an honest error. An HTTP status is the API answering and is never retried.
+ */
+export async function send(url: string, init: RequestInit, method: string): Promise<Response> {
+  const attempts = method === 'GET' || method === 'HEAD' ? 3 : 1;
+  let lastError: unknown;
+
+  for (let attempt = 0; attempt < attempts; attempt += 1) {
+    try {
+      return await fetch(url, init);
+    } catch (cause) {
+      lastError = cause;
+      if (attempt === attempts - 1) break;
+      await new Promise((resolve) => setTimeout(resolve, 300 * (attempt + 1) ** 2));
+    }
+  }
+
+  throw lastError;
+}
+
 /** Forwards a JSON (or bodiless) admin request. */
 export async function forwardJson(request: NextRequest, path: string[]): Promise<NextResponse> {
   const hasBody = request.method !== 'GET' && request.method !== 'HEAD';
@@ -85,14 +113,18 @@ export async function forwardJson(request: NextRequest, path: string[]): Promise
   if (raw !== undefined && raw.length > 0) headers.set('content-type', 'application/json');
 
   try {
-    const upstream = await fetch(upstreamUrl(path, request.nextUrl.search), {
-      method: request.method,
-      headers,
-      ...(raw !== undefined && raw.length > 0 ? { body: raw } : {}),
-      redirect: 'manual',
-      cache: 'no-store',
-      signal: AbortSignal.timeout(30_000),
-    });
+    const upstream = await send(
+      upstreamUrl(path, request.nextUrl.search),
+      {
+        method: request.method,
+        headers,
+        ...(raw !== undefined && raw.length > 0 ? { body: raw } : {}),
+        redirect: 'manual',
+        cache: 'no-store',
+        signal: AbortSignal.timeout(30_000),
+      },
+      request.method,
+    );
     return toNextResponse(upstream);
   } catch {
     return unavailable();

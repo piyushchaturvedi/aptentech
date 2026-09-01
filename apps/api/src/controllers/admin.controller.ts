@@ -3,11 +3,11 @@ import { contentRepository } from '../repositories/content.repository';
 import { leadRepository } from '../repositories/lead.repository';
 import { adminRepository, auditRepository, mediaRepository, settingsRepository } from '../repositories/system.repository';
 import { hydrateService } from '../services/hydrate.service';
-import { sanitizeRichText } from '../services/sanitize.service';
+import { sanitizeRichText, sanitizePageBlocks, sanitizeArticleHtml } from '../services/sanitize.service';
 import { revalidateService, tags } from '../services/revalidate.service';
 import { notFound, badRequest } from '../utils/errors';
 import { ok, paginated } from '../utils/respond';
-import type { ServiceKind } from '@aptentech/shared';
+import { SERVICE_KINDS, type ServiceKind } from '@aptentech/shared';
 
 const asyncHandler =
   (fn: (req: Request, res: Response) => Promise<unknown>) =>
@@ -58,7 +58,7 @@ export const adminController = {
 
   listServicePages: asyncHandler(async (req, res) => {
     const kind = String(req.params.kind) as ServiceKind;
-    if (kind !== 'service' && kind !== 'solution') throw badRequest('Unknown content type');
+    if (!SERVICE_KINDS.includes(kind as ServiceKind)) throw badRequest('Unknown content type');
     const items = await contentRepository.listServicePages(kind, true);
     return ok(res, items);
   }),
@@ -114,7 +114,10 @@ export const adminController = {
 
   updatePage: asyncHandler(async (req, res) => {
     const slug = String(req.params.slug);
-    const updated = await contentRepository.updatePageBySlug(slug, req.body as Record<string, unknown>);
+    const updated = await contentRepository.updatePageBySlug(
+      slug,
+      sanitizePageBlocks(req.body as Record<string, unknown> & { blocks?: unknown }),
+    );
     if (!updated) throw notFound('Page not found');
     await afterWrite(req, 'UPDATE', 'SitePage', updated.id, [tags.page(slug)]);
     return ok(res, updated);
@@ -176,7 +179,7 @@ export const adminController = {
   createBlogPost: asyncHandler(async (req, res) => {
     const body = req.body as Record<string, unknown>;
     // Sanitised before it is ever stored.
-    body.body = sanitizeRichText(String(body.body ?? ''));
+    body.body = sanitizeArticleHtml(String(body.body ?? ''));
     const created = await contentRepository.createBlogPost(body);
     await afterWrite(req, 'CREATE', 'BlogPost', created.id, [tags.blog, tags.post(created.slug)]);
     return ok(res, created, 201);
@@ -185,7 +188,7 @@ export const adminController = {
   updateBlogPost: asyncHandler(async (req, res) => {
     const id = String(req.params.id);
     const body = req.body as Record<string, unknown>;
-    body.body = sanitizeRichText(String(body.body ?? ''));
+    body.body = sanitizeArticleHtml(String(body.body ?? ''));
 
     const updated = await contentRepository.updateBlogPost(id, body);
     if (!updated) throw notFound('Article not found');

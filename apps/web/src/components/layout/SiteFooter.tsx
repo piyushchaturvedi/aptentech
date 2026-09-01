@@ -73,33 +73,25 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
 
             {settings.footerTagline ? <p>{settings.footerTagline}</p> : null}
 
+            {/*
+              Both stay anchors so the row keeps the design's styling and spacing; a
+              placeholder simply carries no target, rather than a `mailto:` that opens an
+              empty draft. Swapping the element for a span made this block 22px taller at
+              tablet and mobile widths.
+            */}
             <div className="f-contact">
               {email ? (
-                isPlaceholder(email) ? (
-                  <span>
-                    <MailIcon />
-                    {email}
-                  </span>
-                ) : (
-                  <a href={`mailto:${email}`}>
-                    <MailIcon />
-                    {email}
-                  </a>
-                )
+                <a {...(isPlaceholder(email) ? {} : { href: `mailto:${email}` })}>
+                  <MailIcon />
+                  {email}
+                </a>
               ) : null}
 
               {phone ? (
-                isPlaceholder(phone) ? (
-                  <span>
-                    <PhoneIcon />
-                    {phone}
-                  </span>
-                ) : (
-                  <a href={`tel:${phone.replace(/[^\d+]/g, '')}`}>
-                    <PhoneIcon />
-                    {phone}
-                  </a>
-                )
+                <a {...(isPlaceholder(phone) ? {} : { href: `tel:${phone.replace(/[^\d+]/g, '')}` })}>
+                  <PhoneIcon />
+                  {phone}
+                </a>
               ) : null}
             </div>
           </div>

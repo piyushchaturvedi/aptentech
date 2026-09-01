@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { LeadFormType } from '@aptentech/shared';
 import { captureAttribution, trackEvent, type ConversionEvent } from '@/lib/utils/analytics';
 
@@ -21,6 +22,7 @@ export interface SubmitState {
 const IDLE: SubmitState = { status: 'idle', message: '', fieldErrors: {} };
 
 export function useLeadSubmit(sourceForm: LeadFormType, event: ConversionEvent) {
+  const router = useRouter();
   const [state, setState] = useState<SubmitState>(IDLE);
 
   // Set once when the hook mounts, so the server can see how long the form was open.
@@ -64,6 +66,19 @@ export function useLeadSubmit(sourceForm: LeadFormType, event: ConversionEvent) 
           message: body.data?.message ?? 'Thank you. We will be in touch within one business day.',
           fieldErrors: {},
         });
+
+        /*
+          The success state above is set before navigating, not instead of it.
+
+          It is what the visitor sees for the moment the route takes to load, and it is what
+          they see if navigation is blocked or JavaScript routing fails — the enquiry is
+          already saved either way, so the confirmation must not depend on the redirect
+          succeeding.
+
+          `push`, not `replace`: going back from the thank-you page should return to the page
+          the visitor was reading, and the form is theirs to use again if they want to.
+        */
+        router.push('/thank-you/');
         return true;
       } catch {
         setState({
@@ -74,7 +89,7 @@ export function useLeadSubmit(sourceForm: LeadFormType, event: ConversionEvent) 
         return false;
       }
     },
-    [sourceForm, event],
+    [sourceForm, event, router],
   );
 
   const clearField = useCallback((name: string) => {

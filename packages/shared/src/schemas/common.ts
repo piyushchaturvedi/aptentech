@@ -55,7 +55,7 @@ export const mediaRefSchema = z.object({
 export const ctaLinkSchema = z.object({
   label: z.string().trim().min(1).max(120),
   href: safeHref,
-  style: z.enum(['primary', 'mint', 'outline', 'glass']).default('primary'),
+  style: z.enum(['primary', 'mint', 'outline', 'glass', 'ghostLight']).default('primary'),
 });
 
 export const seoSchema = z.object({

@@ -48,6 +48,25 @@ Admin UI → /api/admin/... (Next proxy) → API → MongoDB
 The proxy exists so the browser stays same-origin: the session cookie can remain
 `SameSite=Lax`, and the service token stays on the server.
 
+### Connections between the two apps
+
+Every arrow above that crosses from Next.js to the API is an HTTP request over a pooled,
+kept-alive socket, and that pooling has one failure mode worth stating explicitly. Node
+closes an idle keep-alive connection after five seconds by default, while the calling side
+still believes it is usable; a request that picks up such a socket fails with `ECONNRESET`
+before a byte is sent. The visible symptom is a page that errors once and then works on
+reload, which reads as a broken link rather than as a transport problem.
+
+Two things prevent it. The API holds connections open for 65 seconds — longer than any
+caller keeps one — so the client is always the side that closes, and the race has no window
+to occur in. Both callers then retry a connection that never completed, which also covers
+the case where the API is still binding its port during a cold `npm run dev`.
+
+The retry is restricted to reads. A request that dies mid-flight may still have been applied
+upstream, so replaying a write could create a second session or a duplicate record; writes
+get one attempt and surface an honest error. An HTTP status is the API answering and is
+never retried — only a connection that produced no response at all.
+
 ## Content model
 
 Two shapes cover the whole site.
@@ -113,15 +132,25 @@ against a narrow allowlist — on write *and* again on read.
 ## CSS
 
 The 25 source files carried ~2.2 MB of inline CSS between them, which resolved to 1,119
-distinct rules. `scripts/extract-css.js` splits those into:
+distinct rules. `scripts/extract-css.js` splits those **by page family, never inside one**:
 
-- `base.css` — 391 rules present on all 25 pages
-- `service.css` / `solution.css` — the shared service template
-- `home.css`, `about.css`, `portfolio.css`, `blog.css`, `blog-detail.css`, `contact.css`, `legal.css`
+- `site.css` — a service page's complete stylesheet, in source order (79 KB), shared by all
+  17 service and solution pages
+- `solution.css` — what all nine solution pages add on top (1.7 KB)
+- `pageExtras.generated.ts` — what a single page adds beyond that (0–7.4 KB), rendered in
+  that page's own `<style>`
+- `home.css`, `about.css`, `portfolio.css`, `blog.css`, `blog-detail.css`, `contact.css`,
+  `legal.css` — each the complete stylesheet of its page, in source order
+
+Splitting *within* a page is what an earlier version did, and it broke the cascade twice: a
+page rule always lands after every shared rule, even where the source had a shared rule
+after it, and merging one page's extras with another's put the dating page's pink treatment
+on the other eight solution pages. Both were caught by the layout comparison, not by any
+check on content. Keeping each page's sheet whole makes the class of bug impossible.
 
 Every declaration is copied verbatim. `scripts/verify-css.js` confirms that every rule in
-every source page is covered by the stylesheets that page loads — it currently reports
-**every source rule covered**, with one documented exception (see MIGRATION.md).
+every source page is covered by the stylesheets that page loads, including the inline tails —
+it reports **every source rule covered**.
 
 Fonts moved from Google Fonts to `next/font`, which self-hosts the same faces. That removes
 a third-party round trip from the critical path and lets the CSP drop `fonts.googleapis.com`
