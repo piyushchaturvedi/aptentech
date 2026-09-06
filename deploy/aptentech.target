@@ -1,0 +1,17 @@
+[Unit]
+# Groups the two services so one command controls both:
+#
+#   sudo systemctl start   aptentech.target
+#   sudo systemctl restart aptentech.target
+#   sudo systemctl stop    aptentech.target
+#   sudo systemctl status  aptentech.target
+#
+# A target rather than a wrapper script: each service still restarts on its own when it
+# crashes, and `journalctl -u aptentech-api` still shows that one service's log. A single
+# process running both would lose both of those.
+Description=AptenTech website and API
+Wants=aptentech-api.service aptentech-web.service
+After=network-online.target
+
+[Install]
+WantedBy=multi-user.target

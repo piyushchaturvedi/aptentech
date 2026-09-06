@@ -1,0 +1,22 @@
+[Unit]
+Description=AptenTech website
+PartOf=aptentech.target
+# Started after the API, because every page reads its content from it. Not a hard dependency:
+# if the API is briefly down the site still serves its prerendered pages, and the web app's
+# own retry covers a slow start.
+After=network-online.target aptentech-api.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/var/www/aptentech/aptentech-platform/apps/web
+ExecStart=/usr/bin/npm run start
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=aptentech.target

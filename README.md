@@ -182,6 +182,8 @@ Two things about the build worth knowing:
 | `npm run dev` | Runs the API and the web app together |
 | `npm run dev:api` / `npm run dev:web` | Runs one of them |
 | `npm run stop` | Frees ports 3000 and 4000 when a previous run is still holding them |
+| `npm run deploy:prod` | **The only deployment command.** Validates env, builds, restarts PM2, reloads nginx, verifies |
+| `npm run prod:env:check` | Validates the production environment without changing it |
 | `npm run preflight` | Pre-deployment check: config, build output and content that must not ship |
 | `npm run clear-demo` | Hides the demo awards, testimonials and metrics (add `-- --apply`) |
 | `npm run build` | Builds shared, API and web, in that order |

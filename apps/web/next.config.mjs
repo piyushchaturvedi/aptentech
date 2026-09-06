@@ -12,6 +12,17 @@
  * styles for a handful of layout primitives; scripts, which are what actually matter for
  * XSS, do not get that exemption.
  */
+/**
+ * Whether the site is actually reached over TLS.
+ *
+ * `upgrade-insecure-requests` and HSTS both assume a certificate exists. On a production
+ * build served over plain HTTP — an IP address, before the domain is set up — the first tells
+ * the browser to rewrite every request to `https://`, and the page then loads nothing at all.
+ * Keyed off the public URL rather than `NODE_ENV`, so both turn themselves on the moment the
+ * site moves to https and stay off until then.
+ */
+const servedOverHttps = (process.env.NEXT_PUBLIC_SITE_URL ?? '').startsWith('https://');
+
 function csp(nonce, isDev) {
   const directives = [
     `default-src 'self'`,
@@ -24,7 +35,7 @@ function csp(nonce, isDev) {
     `frame-ancestors 'none'`,
     `base-uri 'none'`,
     `object-src 'none'`,
-    isDev ? '' : 'upgrade-insecure-requests',
+    servedOverHttps ? 'upgrade-insecure-requests' : '',
   ];
   return directives.filter(Boolean).join('; ');
 }
@@ -77,7 +88,7 @@ const nextConfig = {
             key: 'Permissions-Policy',
             value: 'camera=(), microphone=(), geolocation=(), interest-cohort=()',
           },
-          ...(process.env.NODE_ENV === 'production'
+          ...(servedOverHttps
             ? [{ key: 'Strict-Transport-Security', value: 'max-age=31536000; includeSubDomains; preload' }]
             : []),
         ],

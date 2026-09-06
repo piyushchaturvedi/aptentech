@@ -104,6 +104,120 @@ Do none of this until measurements say so.
 
 ---
 
+## Production on EC2 — one command
+
+```bash
+npm run deploy:prod
+```
+
+Validates the environment, installs, builds both apps, prepares directories, checks MongoDB,
+starts both under PM2, saves the process list, installs and reloads nginx, then verifies the
+site, the admin and the API health endpoint through nginx. Safe to re-run.
+
+The first time only, pass the address once — it is stored and every other value is derived
+from it:
+
+```bash
+SITE_URL=http://3.94.246.68 npm run deploy:prod
+```
+
+## The environment configures itself
+
+`scripts/prod-env.js` runs as step 1 of the deploy and writes both env files. Nothing in the
+list below has to be edited by hand — each is derived from the site URL and the architecture:
+
+| Derived | Value |
+| --- | --- |
+| `NODE_ENV` | `production` |
+| `PORT` | `4000` |
+| `PUBLIC_SITE_URL`, `NEXT_PUBLIC_SITE_URL` | the site URL |
+| `WEB_ORIGIN` | the site URL — the single CORS origin, never `*` |
+| `API_BASE_URL` | `http://127.0.0.1:4000/api/v1` — loopback, never public |
+| `REVALIDATE_URL` | `http://127.0.0.1:3000/api/revalidate` |
+| `TRUST_PROXY` | `true` — nginx is in front |
+| `MEDIA_DRIVER`, `ALLOW_LOCAL_MEDIA` | `local`, `true` — no S3 |
+| `LOCAL_UPLOAD_DIR` | `/var/www/aptentech/media` |
+| `EMAIL_MESSAGE_ID_DOMAIN` | the site host |
+| `API_SERVICE_TOKEN`, `SESSION_SECRET`, `REVALIDATE_SECRET`, `INBOUND_WEBHOOK_SECRET` | generated if absent |
+
+Three rules it follows without exception:
+
+- **Existing values survive.** The file is edited in place, so comments and any key added by
+  hand stay. A value is replaced only when it is demonstrably wrong for this architecture — a
+  localhost URL in production, `NODE_ENV=development`.
+- **No secret is printed.** A generated secret goes straight to the file and is reported only
+  as "generated". The output is safe to paste anywhere.
+- **External credentials are never invented.** `MONGODB_URI` and the SMTP credentials cannot
+  be guessed; the script names them, exits non-zero and the deploy stops.
+
+Both files are written with mode `600`, and `apps/web/.env.local` is a copy of the API's —
+the two authenticate to each other with a shared token, and copying rather than maintaining
+two files makes a mismatch impossible. A mismatch is not a startup error: the site renders
+every page empty.
+
+Check without changing anything:
+
+```bash
+npm run prod:env:check
+```
+
+## What is exposed, and what is not
+
+nginx publishes three things and nothing else:
+
+| Path | Goes to |
+| --- | --- |
+| `/api/health` | the Node API's `/health` |
+| `/uploads/…` | the Node API, serving media from disk |
+| everything else | Next.js on `:3000` |
+
+**`/api/` as a whole is deliberately not proxied to the API.** Two reasons, either of which is
+sufficient. Next.js owns `/api/leads`, `/api/admin/*` and `/api/revalidate` as its own route
+handlers — sending `/api/` to port 4000 would shadow them and break both the admin and every
+contact form. And `/api/v1/*` is the admin API and the content read API, whose only intended
+client is the Next.js server over the loopback; publishing it would put the CMS on the open
+internet behind nothing but a shared token.
+
+Ports 3000 and 4000 must stay closed in the security group. Open 80, 443 and 22 only.
+
+## Media
+
+Uploads are written to `/var/www/aptentech/media` and served at `/uploads/…`. No S3, and no
+S3 variable is required for anything to work.
+
+The directory sits **outside the code tree on purpose**. A redeploy replaces the tree, so
+uploads written inside `apps/` — including `apps/web/public/images/` — would be destroyed by
+the next release, and silently: the media record would survive in MongoDB while the file
+behind it did not, leaving the CMS listing images that 404. To move them anyway, change
+`LOCAL_UPLOAD_DIR`.
+
+## HTTP versus HTTPS
+
+The scheme in `PUBLIC_SITE_URL` is load-bearing. Two behaviours key off it rather than off
+`NODE_ENV`, which only says the build is a production build — not that anything terminates TLS
+in front of it:
+
+- the session cookie is marked `secure` only when the site is served over TLS
+- the CSP sends `upgrade-insecure-requests` only then
+
+Setting `https://` before a certificate exists makes the admin impossible to sign in to — the
+browser refuses to send back a `secure` cookie over plain HTTP, so the request simply arrives
+unauthenticated with no error anywhere — and makes every asset fail to load. When the
+certificate is in place, re-run the deploy with the new address and both turn themselves on:
+
+```bash
+SITE_URL=https://your-domain.com npm run deploy:prod
+```
+
+## Data
+
+`npm run deploy:prod` never drops, deletes or replaces anything. The content seed runs only
+when the database is completely empty — a first deploy — because reseeding on every
+deployment would overwrite whatever an editor had changed in the CMS since.
+
+
+---
+
 ## Deploying — the short version
 
 Run this before anything else. It reads the configuration and the database the way production

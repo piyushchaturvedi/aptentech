@@ -111,13 +111,24 @@ export async function destroyAllSessionsFor(adminId: string, keepSessionId?: str
   await SessionModel.deleteMany(filter);
 }
 
+/**
+ * Whether the site is actually reached over TLS.
+ *
+ * Derived from the public URL rather than from `NODE_ENV`, which only says the build is a
+ * production build — not that anything terminates TLS in front of it. A production build
+ * served over plain HTTP (an IP address before the domain and certificate exist) would
+ * otherwise set `secure` on the session cookie, the browser would refuse to send it back, and
+ * signing in would fail with no error anywhere: the request simply arrives unauthenticated.
+ */
+export const servedOverHttps = env.PUBLIC_SITE_URL.startsWith('https://');
+
 export function sessionCookieOptions(expiresAt: Date) {
   return {
     httpOnly: true,
     // Lax still sends the cookie on top-level navigation to /admin, while blocking it on
     // cross-site POSTs — which, combined with the CSRF token, closes CSRF properly.
     sameSite: 'lax' as const,
-    secure: env.NODE_ENV === 'production',
+    secure: servedOverHttps,
     path: '/',
     domain: env.COOKIE_DOMAIN || undefined,
     expires: expiresAt,

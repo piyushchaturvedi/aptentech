@@ -1,0 +1,24 @@
+[Unit]
+Description=AptenTech API
+PartOf=aptentech.target
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ec2-user
+WorkingDirectory=/var/www/aptentech/aptentech-platform/apps/api
+ExecStart=/usr/bin/node dist/server.js
+Restart=always
+RestartSec=5
+Environment=NODE_ENV=production
+
+# Uploaded media lives on this instance's disk while MEDIA_DRIVER=local, so the service needs
+# to be able to write there. Everything else stays read-only.
+ReadWritePaths=/var/www/aptentech/aptentech-platform/apps/api/uploads
+
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=aptentech.target

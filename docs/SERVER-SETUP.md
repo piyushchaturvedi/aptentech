@@ -13,6 +13,27 @@ Windows machine instead.
 
 ---
 
+## Quick path — scripted
+
+Everything below is also available as one script. Upload the code, write `apps/api/.env`
+(step 7), then:
+
+```bash
+cd /var/www/aptentech/aptentech-platform
+bash deploy/first-time-setup.sh
+```
+
+It sets up swap, installs Node and nginx, builds, seeds, installs the systemd units and starts
+everything — and it is idempotent, so re-running after a failure picks up rather than
+duplicating work. The manual steps below are what it does, in case a step needs doing by hand.
+
+Afterwards, one command controls both apps:
+
+```bash
+sudo systemctl restart aptentech.target
+```
+
+---
 ## 1. Connect *(local)*
 
 ```powershell
@@ -160,9 +181,15 @@ Fill in, at minimum:
 | --- | --- |
 | `MONGODB_URI` | the Atlas string from step 6 |
 | `API_SERVICE_TOKEN`, `SESSION_SECRET`, `REVALIDATE_SECRET` | the three generated above |
-| `PUBLIC_SITE_URL`, `NEXT_PUBLIC_SITE_URL`, `WEB_ORIGIN` | `https://your-domain.com` |
-| `REVALIDATE_URL` | `https://your-domain.com/api/revalidate` |
+| `PUBLIC_SITE_URL`, `NEXT_PUBLIC_SITE_URL`, `WEB_ORIGIN` | `http://3.94.246.68` while there is no domain |
+| `REVALIDATE_URL` | `http://127.0.0.1:3000/api/revalidate` — stays on the loopback rather than going out and back |
 | `TRUST_PROXY` | `true` — nginx sits in front |
+
+**`http://`, not `https://`, until the certificate exists.** Two things key off that scheme:
+the session cookie sets `secure` only when the site is served over TLS, and the CSP only sends
+`upgrade-insecure-requests` then. Writing `https://` before there is a certificate makes the
+admin impossible to sign in to and every asset fail to load — with no error that says why.
+Change all four to `https://your-domain.com` at the same time as running certbot.
 
 Two settings the API refuses to start on until you decide:
 
@@ -219,69 +246,42 @@ kill %1
 
 ---
 
-## 9. Run both apps under systemd
+## 9. Run both apps under systemd — one command for both
 
-Two services, so each restarts on its own and survives a reboot.
+The unit files are in the repository, so they are version-controlled rather than typed in:
 
 ```bash
-sudo tee /etc/systemd/system/aptentech-api.service >/dev/null <<'EOF'
-[Unit]
-Description=AptenTech API
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=ec2-user
-WorkingDirectory=/var/www/aptentech/aptentech-platform/apps/api
-ExecStart=/usr/bin/node dist/server.js
-Restart=always
-RestartSec=5
-Environment=NODE_ENV=production
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
-sudo tee /etc/systemd/system/aptentech-web.service >/dev/null <<'EOF'
-[Unit]
-Description=AptenTech website
-After=network-online.target aptentech-api.service
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=ec2-user
-WorkingDirectory=/var/www/aptentech/aptentech-platform/apps/web
-ExecStart=/usr/bin/npm run start
-Restart=always
-RestartSec=5
-Environment=NODE_ENV=production
-StandardOutput=journal
-StandardError=journal
-
-[Install]
-WantedBy=multi-user.target
-EOF
-
+cd /var/www/aptentech/aptentech-platform
+sudo cp deploy/aptentech-api.service deploy/aptentech-web.service deploy/aptentech.target /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable --now aptentech-api aptentech-web
+sudo systemctl enable aptentech-api aptentech-web aptentech.target
+sudo systemctl start aptentech.target
 ```
 
-Check both:
+`aptentech.target` groups the two services, so from here on **one command controls both**:
 
 ```bash
-sudo systemctl status aptentech-api aptentech-web --no-pager
-curl -s -o /dev/null -w "api %{http_code}\n" http://127.0.0.1:4000/health
-curl -s -o /dev/null -w "web %{http_code}\n" http://127.0.0.1:3000/
+sudo systemctl restart aptentech.target
+sudo systemctl status  aptentech.target
+sudo systemctl stop    aptentech.target
 ```
 
-If either is failing, the reason is in the log:
+A target rather than a single process running both: each service still restarts on its own
+when it crashes, and each keeps its own log. Running them under one process would lose both.
+
+Check:
 
 ```bash
-sudo journalctl -u aptentech-api -n 50 --no-pager
+curl -s -o /dev/null -w "api %{http_code}
+" http://127.0.0.1:4000/health
+curl -s -o /dev/null -w "web %{http_code}
+" http://127.0.0.1:3000/
+```
+
+Follow both logs together:
+
+```bash
+journalctl -u aptentech-api -u aptentech-web -f
 ```
 
 ---
@@ -320,46 +320,20 @@ Fix anything it still reports as a BLOCKER before pointing the domain here.
 ## 11. nginx
 
 ```bash
-sudo tee /etc/nginx/conf.d/aptentech.conf >/dev/null <<'EOF'
-server {
-    listen 80;
-    server_name your-domain.com www.your-domain.com;
-
-    # Uploaded media is served by the API from its own disk.
-    location /uploads/ {
-        proxy_pass http://127.0.0.1:4000;
-        proxy_set_header Host $host;
-        expires 30d;
-        add_header Cache-Control "public, immutable";
-    }
-
-    location / {
-        proxy_pass http://127.0.0.1:3000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection 'upgrade';
-        proxy_set_header Host $host;
-        # Without these the app sees nginx as every visitor, so rate limiting treats the
-        # whole internet as one client and every lead records the wrong IP.
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
-        proxy_cache_bypass $http_upgrade;
-        client_max_body_size 12M;
-    }
-}
-EOF
-```
-
-Replace `your-domain.com` in that file with the real domain, then:
-
-```bash
+cd /var/www/aptentech/aptentech-platform
+sudo cp deploy/nginx.conf /etc/nginx/conf.d/aptentech.conf
 sudo nginx -t
 sudo systemctl enable --now nginx
 ```
 
-Port 4000 must stay private — nginx reaches it over loopback. In the **EC2 security group**,
-open only 80, 443 and 22 (SSH restricted to your own IP).
+It listens on `server_name _`, which matches anything — that is what lets the site answer on
+the bare IP before a domain exists. `/uploads/` is proxied to the API, which serves media from
+this instance’s disk while `MEDIA_DRIVER=local`.
+
+In the **EC2 security group**, open only **80**, **443** and **22** (SSH restricted to your own
+IP). Ports 3000 and 4000 must stay closed — nginx reaches them over the loopback.
+
+The site is now live at **http://3.94.246.68/**, admin at **http://3.94.246.68/admin**.
 
 ---
 
@@ -375,6 +349,18 @@ sudo systemctl enable --now certbot-renew.timer
 ```
 
 Certbot edits the nginx file to add the certificate and the HTTP→HTTPS redirect.
+
+**Then switch the URLs over and rebuild.** The scheme in `PUBLIC_SITE_URL` decides whether the
+session cookie is marked `secure` and whether the CSP upgrades requests to HTTPS, and both are
+fixed at build time — so changing the certificate without changing these leaves the site on
+the weaker settings:
+
+```bash
+cd /var/www/aptentech/aptentech-platform
+nano apps/api/.env    # PUBLIC_SITE_URL, NEXT_PUBLIC_SITE_URL, WEB_ORIGIN → https://your-domain.com
+cp apps/api/.env apps/web/.env.local
+bash deploy/redeploy.sh
+```
 
 > Use an **Elastic IP**. A stopped instance gets a new public address on restart, and the DNS
 > record would then point at nothing.
