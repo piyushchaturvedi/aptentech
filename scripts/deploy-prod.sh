@@ -128,8 +128,8 @@ fi
 # Leave roughly a quarter of the machine for everything that is not the compiler — mongod,
 # nginx, and the API that is about to start.
 #
-# Written as if/fi rather than `[ test ] && VAR=x`: under `set -e` that one-liner form aborts
-# the whole script whenever the test is false, because the AND-list itself then exits non-zero.
+# Clamped both ways: too small and the compiler dies as it did before, too large and the kernel
+# starts killing things once V8 actually claims what it was allowed.
 HEAP_MB=$(( (MEM_MB + SWAP_MB) * 3 / 4 ))
 if [ "$HEAP_MB" -gt 4096 ]; then HEAP_MB=4096; fi
 if [ "$HEAP_MB" -lt 2048 ]; then HEAP_MB=2048; fi
@@ -143,7 +143,33 @@ npm run build --workspace @aptentech/shared >/dev/null
 npm run build --workspace @aptentech/api >/dev/null
 ok "built"
 
-# ---------------------------------------------------------------- 6. API up first
+# ---------------------------------------------------------------- 6. database
+
+step "Checking MongoDB"
+
+# Deliberately before the API starts, not after. The API exits on a database it cannot reach,
+# so checking afterwards reports "the API did not start" — true, but it names the symptom and
+# hides the cause. Nothing here needs the API: the check and the seed both talk to MongoDB
+# directly.
+if systemctl list-unit-files mongod.service >/dev/null 2>&1; then
+  if ! systemctl is-active mongod >/dev/null 2>&1; then
+    warn "mongod is installed but not running — starting it"
+    sudo systemctl start mongod || die "mongod would not start. Run: sudo journalctl -u mongod -n 50 --no-pager"
+  fi
+  # Running now but not enabled is the quietest way to lose the site on the next reboot: PM2
+  # comes back, both processes come back, and every page renders empty.
+  if systemctl is-enabled mongod >/dev/null 2>&1; then
+    ok "mongod running, starts at boot"
+  else
+    sudo systemctl enable mongod >/dev/null 2>&1 \
+      && ok "mongod running, enabled at boot" \
+      || warn "mongod is not enabled at boot — run: sudo systemctl enable mongod"
+  fi
+fi
+
+node scripts/check-db.js || die "MongoDB is not usable — see above."
+
+# ---------------------------------------------------------------- 7. API up first
 
 step "Starting the API"
 
@@ -159,6 +185,8 @@ for unit in aptentech.target aptentech-api aptentech-web; do
   fi
 done
 
+[ -f apps/api/dist/server.js ] || die "apps/api/dist/server.js is missing — the API build did not produce output."
+
 # Before the web build, which reads its content and redirect table from the API over HTTP.
 # Building against a stopped API silently ships the compiled-in fallbacks instead.
 pm2 startOrReload deploy/ecosystem.config.js --only aptentech-api --update-env >/dev/null
@@ -167,27 +195,16 @@ for _ in $(seq 1 25); do
   curl -sf -o /dev/null http://127.0.0.1:4000/health && break
   sleep 2
 done
-curl -sf -o /dev/null http://127.0.0.1:4000/health \
-  || die "The API did not start. Run: pm2 logs aptentech-api --lines 50"
-ok "API healthy on :4000"
 
-# ---------------------------------------------------------------- 7. database
-
-step "Checking MongoDB"
-node scripts/check-db.js || die "MongoDB is not usable — see above."
-
-# A database that is running now but not enabled at boot is the quietest way to lose the site
-# on the next reboot: PM2 comes back, both processes come back, and every page renders empty.
-# Only meaningful when mongod is this machine's own service — a managed cluster has no unit.
-if systemctl list-unit-files mongod.service >/dev/null 2>&1; then
-  if systemctl is-enabled mongod >/dev/null 2>&1; then
-    ok "mongod starts at boot"
-  else
-    sudo systemctl enable mongod >/dev/null 2>&1 \
-      && ok "enabled mongod at boot" \
-      || warn "mongod is not enabled at boot — run: sudo systemctl enable mongod"
-  fi
+if ! curl -sf -o /dev/null http://127.0.0.1:4000/health; then
+  # Print the reason here rather than naming a command to run. The process has almost certainly
+  # already crashed and been restarted several times by now, so the answer is in the log and
+  # there is no reason to make anyone go and fetch it.
+  printf '\n\033[1m--- pm2 logs aptentech-api ---\033[0m\n' >&2
+  pm2 logs aptentech-api --lines 40 --nostream >&2 2>&1 || true
+  die "The API did not start — see the log above."
 fi
+ok "API healthy on :4000"
 
 # ---------------------------------------------------------------- 8. website build
 
@@ -204,8 +221,11 @@ for _ in $(seq 1 25); do
   curl -sf -o /dev/null http://127.0.0.1:3000/ && break
   sleep 2
 done
-curl -sf -o /dev/null http://127.0.0.1:3000/ \
-  || die "The website did not start. Run: pm2 logs aptentech-web --lines 50"
+if ! curl -sf -o /dev/null http://127.0.0.1:3000/; then
+  printf '\n\033[1m--- pm2 logs aptentech-web ---\033[0m\n' >&2
+  pm2 logs aptentech-web --lines 40 --nostream >&2 2>&1 || true
+  die "The website did not start — see the log above."
+fi
 ok "website healthy on :3000"
 
 # ---------------------------------------------------------------- 10. persist PM2
@@ -237,10 +257,47 @@ fi
 # ---------------------------------------------------------------- 11. nginx
 
 step "Configuring nginx"
+
+CONF=/etc/nginx/conf.d/aptentech.conf
+
 if ! command -v nginx >/dev/null 2>&1; then
   sudo dnf install -y nginx >/dev/null
 fi
-sudo cp deploy/nginx.conf /etc/nginx/conf.d/aptentech.conf
+
+# Set NGINX_FORCE=1 to rewrite the config even when it carries a certificate. Needed when
+# moving back off a domain — the certbot-edited config only names the domain, so a deployment
+# addressed by IP matches no server block and every route answers 404. The certificate itself
+# lives in /etc/letsencrypt and is untouched; `certbot --nginx` re-attaches it later.
+NGINX_FORCE="${NGINX_FORCE:-0}"
+
+SSL_INSTALLED=0
+if [ -f "$CONF" ] && grep -q 'ssl_certificate' "$CONF" && [ "$NGINX_FORCE" != "1" ]; then
+  # certbot edits this file in place, adding the TLS server block and the HTTP-to-HTTPS
+  # redirect. Copying the repository's copy over it would remove the certificate wiring and
+  # drop the site back to plain HTTP — with a valid certificate still on disk, so nothing
+  # would look broken until a browser complained. Leave it alone.
+  SSL_INSTALLED=1
+  warn "this config carries a certificate — left as it is, not overwritten"
+  warn "to rewrite it anyway: NGINX_FORCE=1 npm run deploy:prod"
+else
+  HOST="${SITE_URL#*://}"; HOST="${HOST%%/*}"; HOST="${HOST%%:*}"
+
+  # The loopback names are not optional: the config's default server refuses every host it does
+  # not recognise, and the verification at the end of this script calls 127.0.0.1. Without them
+  # a perfectly healthy deployment reports every route as broken.
+  NAMES="$HOST 127.0.0.1 localhost"
+
+  # A domain is wanted with and without www; an IP has no such variant, and listing the IP
+  # alone is what keeps a domain pointed here from being served before you intend it.
+  if ! printf '%s' "$HOST" | grep -qE '^[0-9]+(\.[0-9]+){3}$'; then
+    NAMES="$HOST www.$HOST 127.0.0.1 localhost"
+  fi
+
+  sed "s/__SERVER_NAMES__/$NAMES/" deploy/nginx.conf | sudo tee "$CONF" >/dev/null
+  ok "answers to: $NAMES"
+  ok "every other hostname is refused"
+fi
+
 sudo nginx -t >/dev/null 2>&1 || die "nginx rejected the configuration: sudo nginx -t"
 sudo systemctl enable nginx >/dev/null 2>&1 || true
 sudo systemctl reload nginx 2>/dev/null || sudo systemctl start nginx
@@ -254,12 +311,23 @@ check() {
   local label="$1" path="$2" expect="${3:-200}"
   local code
   code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "http://127.0.0.1${path}")"
-  if [ "$code" = "$expect" ]; then ok "$label — $code"; else warn "$label — $code (expected $expect)"; FAILED=1; fi
+  # Once a certificate is installed, nginx answers plain HTTP with a redirect to HTTPS. That is
+  # the configuration working, not failing, so accept it rather than reporting every route as
+  # broken on an otherwise healthy site.
+  if [ "$code" = "$expect" ]; then
+    ok "$label — $code"
+  elif [ "$SSL_INSTALLED" = "1" ] && { [ "$code" = "301" ] || [ "$code" = "308" ]; }; then
+    ok "$label — $code to https"
+  else
+    warn "$label — $code (expected $expect)"; FAILED=1
+  fi
 }
 
 FAILED=0
 check "website          " "/"
-check "admin            " "/admin/" 200
+# /admin exists only to send you to /admin/dashboard/, so a redirect here is the correct
+# answer, not a failure. 200 would actually mean the redirect had stopped working.
+check "admin            " "/admin/" 307
 check "API health       " "/api/health"
 check "sitemap          " "/sitemap.xml"
 check "lead endpoint    " "/api/leads/" 405

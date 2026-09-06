@@ -108,9 +108,15 @@ function isReal(value) {
       ['API_BASE_URL', webEnv, 'API address'],
       ['NEXT_PUBLIC_SITE_URL', webEnv, 'canonical URL for the web app'],
     ]) {
+      // Only the three addresses a browser resolves are wrong on loopback. API_BASE_URL and
+      // MONGODB_URI are server-to-server and *should* stay on it: the Next.js server reaches
+      // the API over the loopback, and a MongoDB running on this instance is meant to listen
+      // there and nowhere else — pointing it at a public address would put the database on the
+      // internet, which is the opposite of the fix this check would be asking for.
+      const serverSideOnly = key === 'API_BASE_URL' || key === 'MONGODB_URI';
       const value = env?.[key];
       if (!value) report('BLOCKER', `${key} is not set`, `Required: the ${label}.`);
-      else if (/localhost|127\.0\.0\.1/.test(value) && key !== 'API_BASE_URL') {
+      else if (/localhost|127\.0\.0\.1/.test(value) && !serverSideOnly) {
         report('BLOCKER', `${key} still points at localhost`, value);
       } else report('OK', `${key} = ${value}`);
     }
