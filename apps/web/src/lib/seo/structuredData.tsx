@@ -31,14 +31,79 @@ export function OrganizationSchema({ settings }: { settings: SiteSettings }) {
     url: absoluteUrl('/'),
   };
 
-  // Placeholder contact details are omitted rather than published as if real.
-  const isPlaceholder = (v: string) => /^\[.*\]$/.test(v.trim());
-  if (settings.email && !isPlaceholder(settings.email)) data.email = settings.email;
-  if (settings.phone && !isPlaceholder(settings.phone)) data.telephone = settings.phone;
-  if (settings.logo?.url) data.logo = settings.logo.url;
-  if (settings.socials.length) data.sameAs = settings.socials.map((s) => s.href).filter((h) => /^https?:/.test(h));
+  /*
+    Demo and placeholder values are omitted rather than published.
+
+    Structured data is read by machines and surfaced in search results as fact, so a demo
+    phone number here would be asserted to Google as the company's real one. The bracket form
+    is the source's placeholder; the `example.com` and `+00` forms are the demo values the
+    seed writes. None of them is publishable, and leaving the property out is honest — a
+    partial Organization block is valid, a wrong one is not.
+  */
+  const unusable = (v: string) => {
+    const s = v.trim();
+    return !s || /^\[.*\]$/.test(s) || /example\.com$/i.test(s) || s.startsWith('+00') || /^Demo /i.test(s);
+  };
+
+  if (settings.email && !unusable(settings.email)) data.email = settings.email;
+  if (settings.phone && !unusable(settings.phone)) data.telephone = settings.phone;
+  /*
+    Absolute, because structured data is read away from the page it came from.
+
+    The local media driver returns a site-relative path, and a consumer resolving that against
+    its own host would fetch nothing. `absoluteUrl` leaves an already-absolute CDN URL alone.
+  */
+  if (settings.logo?.url) {
+    data.logo = /^https?:\/\//i.test(settings.logo.url) ? settings.logo.url : absoluteUrl(settings.logo.url);
+  }
+  if (settings.defaultSeo?.description) data.description = settings.defaultSeo.description;
+
+  const address = (settings.addressLines ?? []).filter((line) => !unusable(line));
+  if (address.length) {
+    data.address = { '@type': 'PostalAddress', streetAddress: address.join(', ') };
+  }
+
+  // `sameAs` is how a search engine ties the site to its social profiles; only absolute URLs
+  // qualify, and the site currently has none configured.
+  const sameAs = (settings.socials ?? []).map((s) => s.href).filter((h) => /^https?:/.test(h));
+  if (sameAs.length) data.sameAs = sameAs;
 
   return <JsonLd data={data} />;
+}
+
+/**
+ * An ordered list of what an index page links to.
+ *
+ * The services, solutions, industries and technologies pages are listings, and a listing
+ * whose only structured data is a breadcrumb tells a search engine nothing about what it
+ * contains. `ItemList` names each entry and its URL, which is what lets the set be understood
+ * as a group rather than as one page of links.
+ */
+export function ItemListSchema({
+  items,
+  path,
+}: {
+  items: Array<{ name: string; path: string }>;
+  path: string;
+}) {
+  if (!items.length) return null;
+
+  return (
+    <JsonLd
+      data={{
+        '@context': 'https://schema.org',
+        '@type': 'ItemList',
+        url: absoluteUrl(path),
+        numberOfItems: items.length,
+        itemListElement: items.map((item, index) => ({
+          '@type': 'ListItem',
+          position: index + 1,
+          name: item.name,
+          url: absoluteUrl(item.path),
+        })),
+      }}
+    />
+  );
 }
 
 export function WebSiteSchema({ settings }: { settings: SiteSettings }) {
@@ -142,7 +207,9 @@ export function ArticleSchema({ post, settings }: { post: BlogPost; settings: Si
     data.author = { '@type': 'Person', name: post.authorName };
   }
   if (post.coverImage && 'url' in post.coverImage && post.coverImage.url) {
-    data.image = post.coverImage.url;
+    data.image = /^https?:\/\//i.test(post.coverImage.url)
+      ? post.coverImage.url
+      : absoluteUrl(post.coverImage.url);
   }
 
   return <JsonLd data={data} />;

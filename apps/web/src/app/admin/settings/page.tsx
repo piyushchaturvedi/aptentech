@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import type { AccentToken, SiteSettings } from '@aptentech/shared';
 import { EMPTY_MEDIA } from '@aptentech/shared';
-import { useAdmin } from '@/components/admin/AdminClient';
+import { describeError, useAdmin } from '@/components/admin/AdminClient';
 import { AccentPicker, MediaPicker, Repeater, StringList, Text, TextArea, Toggle } from '@/components/admin/Fields';
 
 /**
@@ -36,7 +36,7 @@ export default function AdminSettingsPage() {
     try {
       setSettings(await request<SiteSettings>('/settings'));
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not load settings.');
+      setError(describeError(e, 'Could not load settings.'));
     }
   }, [request]);
 
@@ -57,7 +57,7 @@ export default function AdminSettingsPage() {
       setNotice('Saved. Header, footer and navigation update across the site within a few seconds.');
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not save settings.');
+      setError(describeError(e, 'Could not save settings.'));
     } finally {
       setBusy(false);
     }
@@ -85,7 +85,7 @@ export default function AdminSettingsPage() {
       // Re-read the session so `mustChangePassword` clears and the CMS unlocks.
       window.location.reload();
     } catch (e) {
-      setPwError(e instanceof Error ? e.message : 'Could not change the password.');
+      setPwError(describeError(e, 'Could not change the password.'));
     }
   }
 

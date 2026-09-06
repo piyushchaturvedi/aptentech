@@ -370,3 +370,288 @@
   color: #111827;
   overflow-x: auto;
 }
+
+/* ------------------------------------------------------------------ blog admin
+
+  The blog screens follow the list-and-editor convention every CMS editor already knows:
+  status tabs with live counts, a search box, a table with row actions, and an editor whose
+  main column is the article with publishing controls in a sidebar.
+
+  These class names are scoped `wp-*` and `rt-*` and are used only under `/admin`. The public
+  site's stylesheet is untouched — nothing here can reach the approved design.
+*/
+
+.wp-subsubsub {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.wp-tab {
+  background: none;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 13px;
+  color: var(--a-text);
+  cursor: pointer;
+}
+.wp-tab:hover { color: var(--a-primary); }
+.wp-tab.active {
+  background: var(--a-primary-soft);
+  border-color: var(--a-primary);
+  color: var(--a-primary);
+  font-weight: 600;
+}
+
+.wp-count {
+  display: inline-block;
+  min-width: 20px;
+  padding: 1px 6px;
+  margin-left: 4px;
+  border-radius: 999px;
+  background: var(--a-sunk);
+  font-size: 11.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--a-muted);
+}
+.wp-tab.active .wp-count { background: #fff; color: var(--a-primary); }
+
+/* Pushed to the far end so the tabs and the search box do not read as one control group. */
+.wp-search { margin-left: auto; max-width: 260px; }
+
+.wp-bulk {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  padding: 10px 12px;
+  margin-bottom: 12px;
+  border: 1px solid var(--a-line);
+  border-radius: 10px;
+  background: var(--a-sunk);
+}
+.wp-bulk-label { font-size: 12.5px; color: var(--a-muted); margin-right: auto; }
+
+/* A destructive action that is still secondary: the solid `.adm-btn.danger` above is for
+   the primary destructive button, this is for one sitting in a row of bulk actions. */
+.adm-btn.ghost.danger {
+  background: var(--a-panel);
+  color: var(--a-danger);
+  border-color: var(--a-danger-soft);
+}
+.adm-btn.ghost.danger:hover:not(:disabled) { border-color: var(--a-danger); filter: none; }
+
+.wp-table .wp-check { width: 34px; text-align: center; }
+
+.wp-rowtitle {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-weight: 600;
+  color: var(--a-primary);
+  text-align: left;
+  cursor: pointer;
+}
+.wp-rowtitle:hover { text-decoration: underline; }
+
+/*
+  Row actions stay in the layout at all times rather than appearing on hover.
+
+  WordPress reveals them on hover, which hides them from touch and keyboard users entirely
+  and makes every row shift as the pointer crosses it.
+*/
+.wp-rowactions {
+  display: flex;
+  gap: 10px;
+  margin-top: 3px;
+  font-size: 12px;
+}
+.wp-rowactions button,
+.wp-rowactions a {
+  background: none;
+  border: 0;
+  padding: 0;
+  font: inherit;
+  font-size: 12px;
+  color: var(--a-muted);
+  text-decoration: none;
+  cursor: pointer;
+}
+.wp-rowactions button:hover,
+.wp-rowactions a:hover { color: var(--a-primary); text-decoration: underline; }
+.wp-rowactions .danger { color: var(--a-danger); }
+
+/* ---- editor ---- */
+
+.wp-editor {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 300px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 1000px) {
+  .wp-editor { grid-template-columns: minmax(0, 1fr); }
+}
+
+.wp-main { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+
+.wp-title {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid var(--a-line);
+  border-radius: 10px;
+  background: var(--a-panel);
+  color: var(--a-ink);
+  font: inherit;
+  font-size: 22px;
+  font-weight: 700;
+}
+.wp-title:focus { outline: 2px solid var(--a-primary); outline-offset: 1px; }
+
+.wp-permalink {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  font-size: 12.5px;
+  color: var(--a-muted);
+  margin-top: -6px;
+}
+.wp-permalink code { background: var(--a-sunk); padding: 2px 6px; border-radius: 6px; }
+.wp-slug {
+  flex: 1 1 180px;
+  min-width: 140px;
+  padding: 5px 8px;
+  border: 1px solid var(--a-line);
+  border-radius: 6px;
+  font: inherit;
+  font-size: 12.5px;
+}
+
+.wp-more {
+  border: 1px solid var(--a-line);
+  border-radius: 10px;
+  background: var(--a-panel);
+  padding: 0 14px;
+}
+.wp-more summary {
+  padding: 11px 0;
+  font-weight: 600;
+  font-size: 13.5px;
+  cursor: pointer;
+}
+.wp-more[open] { padding-bottom: 14px; }
+
+.wp-side { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+.wp-box {
+  border: 1px solid var(--a-line);
+  border-radius: 10px;
+  background: var(--a-panel);
+  overflow: hidden;
+}
+.wp-box h2 {
+  margin: 0;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--a-line);
+  background: var(--a-sunk);
+  font-size: 13px;
+  font-weight: 700;
+}
+.wp-box-body { padding: 14px; display: flex; flex-direction: column; gap: 12px; }
+.wp-box-foot {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  padding: 12px 14px;
+  border-top: 1px solid var(--a-line);
+  background: var(--a-sunk);
+}
+
+/* ---- rich text ---- */
+
+.rt-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+
+.rt-tools {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+  padding: 6px;
+  border: 1px solid var(--a-line);
+  border-bottom: 0;
+  border-radius: 10px 10px 0 0;
+  background: var(--a-sunk);
+}
+
+.rt-group { margin-left: 8px; padding-left: 8px; border-left: 1px solid var(--a-line); }
+
+.rt-btn {
+  min-width: 30px;
+  padding: 5px 8px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+  background: none;
+  font: inherit;
+  font-size: 12.5px;
+  color: var(--a-text);
+  cursor: pointer;
+}
+.rt-btn:hover { background: var(--a-panel); border-color: var(--a-line); color: var(--a-primary); }
+
+.rt-body {
+  padding: 14px 16px;
+  border: 1px solid var(--a-line);
+  border-radius: 0 0 10px 10px;
+  background: var(--a-panel);
+  color: var(--a-ink);
+  font-size: 14px;
+  line-height: 1.65;
+  overflow-wrap: anywhere;
+}
+.rt-body:focus { outline: 2px solid var(--a-primary); outline-offset: -1px; }
+
+/* The editor previews the article's shape, not the site's type scale — a 1:1 match here
+   would fight the admin's own density without making the writing any clearer. */
+.rt-body h2 { font-size: 19px; margin: 1.1em 0 0.4em; }
+.rt-body h3 { font-size: 16.5px; margin: 1em 0 0.35em; }
+.rt-body h4 { font-size: 15px; margin: 0.9em 0 0.3em; }
+.rt-body p { margin: 0 0 0.85em; }
+.rt-body ul, .rt-body ol { margin: 0 0 0.85em; padding-left: 1.4em; }
+.rt-body li { margin-bottom: 0.3em; }
+.rt-body a { color: var(--a-primary); }
+.rt-body blockquote {
+  margin: 0 0 0.85em;
+  padding: 6px 0 6px 14px;
+  border-left: 3px solid var(--a-primary);
+  color: var(--a-text);
+}
+.rt-body pre {
+  margin: 0 0 0.85em;
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--a-sunk);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12.5px;
+  overflow-x: auto;
+}
+.rt-body:empty::before {
+  content: 'Write the article…';
+  color: var(--a-muted);
+}
+
+.rt-source { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12.5px; }
+
+/*
+  Validation banners list one field per line.
+
+  `describeError` joins field errors with newlines, which HTML collapses by default — so a
+  three-field failure rendered as one run-on sentence. `pre-line` keeps the breaks while
+  leaving normal wrapping intact.
+*/
+.adm-alert { white-space: pre-line; }

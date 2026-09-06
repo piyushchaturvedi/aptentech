@@ -104,6 +104,98 @@ Do none of this until measurements say so.
 
 ---
 
+## Deploying — the short version
+
+Run this before anything else. It reads the configuration and the database the way production
+will and reports what would go wrong, changing nothing:
+
+```bash
+npm run preflight
+```
+
+It reports three levels. **BLOCKER** means the deploy fails or ships something untrue about
+the company; **WARNING** means it works with a consequence worth accepting on purpose. It
+exits non-zero on any blocker, so it can gate a pipeline.
+
+### 1. Configuration
+
+`.env.production.example` is the complete list, with every key annotated. Copy it to both
+apps and fill it in:
+
+```bash
+cp .env.production.example apps/api/.env && cp .env.production.example apps/web/.env.local
+```
+
+Generate the three secrets and paste **the same values into both files**:
+
+```bash
+node -e "const c=require('crypto');console.log('API_SERVICE_TOKEN='+c.randomBytes(32).toString('base64url'));console.log('SESSION_SECRET='+c.randomBytes(32).toString('base64url'));console.log('REVALIDATE_SECRET='+c.randomBytes(24).toString('base64url'))"
+```
+
+A mismatch between the two files is not a startup error — the site renders every page empty,
+or CMS edits never reach it. Preflight checks for exactly that, because it is otherwise a
+slow thing to diagnose.
+
+The API refuses to start in production with `MEDIA_DRIVER=local` or `EMAIL_DRIVER=log`.
+Neither is a bug: local media is lost on any host with an ephemeral filesystem, and the log
+driver discards every notification while the site keeps reporting success. Both can be
+accepted deliberately with `ALLOW_LOCAL_MEDIA=true` / `ALLOW_NO_EMAIL=true`, and the choice is
+then restated in the log on every boot so it does not quietly become permanent.
+
+### 2. Build
+
+**Start the API before building.** The web build reads its content and its redirect table over
+HTTP; without the API it falls back to the compiled-in redirect list and prints
+`[redirects] API unreachable`. On a machine with no build cache it has nothing to prerender
+from at all.
+
+```bash
+npm run build          # shared → api → web, in that order
+```
+
+### 3. Run
+
+```bash
+npm run start
+```
+
+Runs both apps from their compiled output on ports 3000 and 4000. Put a reverse proxy in front
+of 3000, keep 4000 private, and set `TRUST_PROXY=true` — without it every visitor appears to
+come from the proxy, so rate limiting treats the whole internet as one client.
+
+Behind a process manager, run the two halves separately rather than through `concurrently`:
+
+```bash
+npm run start:api
+npm run start:web
+```
+
+### 4. First admin
+
+```bash
+npm run create-admin -- --email you@aptentech.com --name "Your Name" --role SUPER_ADMIN
+```
+
+The password is printed once and must be changed at first sign-in. If it is lost,
+`npm run reset-admin-password -- --email you@…` issues a new one and signs out every session.
+
+### What preflight will stop you on
+
+The demo content is deliberately flagged so this check can find it again. None of it is
+publishable:
+
+| Blocker | Fix |
+| --- | --- |
+| Company email and phone are demo values | Settings → Company |
+| 17 pages show "Demo award" / "Demo certification" | Fill in real credentials, or switch the recognition section off |
+| 52 testimonials are demo content | Replace with real quotes, or set them not visible |
+| 81 case studies carry generated metrics | Replace with verified figures, or unpublish the studies |
+
+These are blockers rather than warnings because each one is a claim about the company that
+nobody has verified — an invented award or an unmeasured metric reads as fact to a visitor and
+cannot be told apart from a real one.
+
+
 ## Deploying
 
 ### 1. Database

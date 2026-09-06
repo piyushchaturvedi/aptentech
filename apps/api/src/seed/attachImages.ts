@@ -98,6 +98,31 @@ function markAll(doc: { markModified: (path: string) => void }, obj: Record<stri
   }
 }
 
+/**
+ * Image slots the source never named, but which the design still renders a frame for.
+ *
+ * The 82 slots handled above all carried a `legacyPath` — the source referenced a file that
+ * was never delivered. These are different: nothing was ever referenced, so the frame renders
+ * its "Recommended 4:5 · alt text describes the work shown" prompt instead, which is the
+ * placeholder a visitor sees on the about page.
+ *
+ * Sizes come from the aspect ratio each frame's own hint asks for, so a real upload later
+ * drops in without reflowing anything.
+ */
+const EXTRA_SLOTS = [
+  {
+    collection: 'sitepages' as const,
+    match: { slug: 'about' },
+    // `blocks.<n>.image`, located by block type rather than by index, which shifts when an
+    // editor reorders the page.
+    blockType: 'storyBand',
+    width: 560,
+    height: 700,
+    alt: 'AptenTech engineering team at work',
+    art: '/images/about-story.jpg',
+  },
+];
+
 export async function attachDemoImages(): Promise<{ generated: number; attached: number }> {
   const slots = new Map<string, Slot>();
 
@@ -108,6 +133,52 @@ export async function attachDemoImages(): Promise<{ generated: number; attached:
 
   const settings = await SiteSettingsModel.findOne({ singleton: 'site' }).lean();
   if (settings) collect(settings, slots);
+
+  /*
+    Slots with no source path of their own.
+
+    Registered here so `seedDemoImages` produces artwork for them in the same pass, and so the
+    `legacyPath` it is keyed on is written onto the document below — which is what makes the
+    whole thing idempotent, exactly like the slots the source did name.
+  */
+  for (const extra of EXTRA_SLOTS) {
+    if (!slots.has(extra.art)) {
+      slots.set(extra.art, { legacyPath: extra.art, width: extra.width, height: extra.height, alt: extra.alt });
+    }
+  }
+
+  /*
+    Every page whose positioning section has no image.
+
+    The 36 generated menu pages inherit that section's shape from the page they draw on but
+    carry no asset of their own. They do not render it today — it is not in their section
+    order — so this is not a visible gap; filling it means enabling the section from the CMS
+    produces a finished page rather than an empty frame.
+  */
+  const ctaSlot = '/images/section-cta.jpg';
+  const needsCta = (await ServicePageModel.find({}).select('midCta2Image midCta2MediaLabel').lean()).some(
+    (p) => {
+      const page = p as { midCta2Image?: { mediaId?: unknown }; midCta2MediaLabel?: string };
+      // Only pages that actually render the band — the label is what the frame shows.
+      return Boolean(page.midCta2MediaLabel) && !page.midCta2Image?.mediaId;
+    },
+  );
+  if (needsCta && !slots.has(ctaSlot)) {
+    slots.set(ctaSlot, { legacyPath: ctaSlot, width: 420, height: 340, alt: 'What the engagement produces' });
+  }
+
+  const positioningSlot = '/images/section-positioning.jpg';
+  const needsPositioning = (await ServicePageModel.find({}).select('positioningImage').lean()).some(
+    (p) => !(p as { positioningImage?: { mediaId?: unknown } }).positioningImage?.mediaId,
+  );
+  if (needsPositioning && !slots.has(positioningSlot)) {
+    slots.set(positioningSlot, {
+      legacyPath: positioningSlot,
+      width: 520,
+      height: 420,
+      alt: 'How the work is delivered',
+    });
+  }
 
   const assets = await seedDemoImages([...slots.values()]);
 
@@ -132,6 +203,95 @@ export async function attachDemoImages(): Promise<{ generated: number; attached:
         await doc.save();
         attached += changed;
       }
+    }
+  }
+
+  /* --------------------------------------------------------------- unnamed slots */
+
+  for (const extra of EXTRA_SLOTS) {
+    const asset = assets.get(extra.art);
+    if (!asset) continue;
+
+    const page = await SitePageModel.findOne(extra.match);
+    if (!page) continue;
+
+    /*
+      Read the whole document as a plain object first.
+
+      Reaching into a Mongoose `DocumentArray` and spreading one of its subdocuments copies
+      the internal `_doc` accessors along with the data, and reading those recurses until the
+      stack gives out — which is what "Maximum call stack size exceeded" was. `toObject()`
+      flattens the whole tree once, and the same set/markModified pattern used above writes it
+      back.
+    */
+    const obj = page.toObject() as Record<string, unknown>;
+    const blocks = (obj.blocks ?? []) as Array<Record<string, unknown>>;
+    const index = blocks.findIndex((b) => b.type === extra.blockType);
+    if (index < 0) continue;
+
+    const current = (blocks[index]?.image ?? {}) as Record<string, unknown>;
+    if (current.mediaId) continue;
+
+    blocks[index] = {
+      ...blocks[index],
+      image: {
+        mediaId: asset.mediaId,
+        legacyPath: extra.art,
+        alt: extra.alt,
+        width: extra.width,
+        height: extra.height,
+      },
+    };
+
+    page.set(obj);
+    markAll(page, obj);
+    await page.save();
+    attached += 1;
+  }
+
+  const cta = assets.get(ctaSlot);
+  if (cta) {
+    const pages = await ServicePageModel.find({}).select('midCta2Image midCta2MediaLabel');
+    for (const page of pages) {
+      const obj = page.toObject() as Record<string, unknown>;
+      if (!obj.midCta2MediaLabel) continue;
+      if ((obj.midCta2Image as { mediaId?: unknown } | undefined)?.mediaId) continue;
+
+      obj.midCta2Image = {
+        mediaId: cta.mediaId,
+        legacyPath: ctaSlot,
+        alt: 'What the engagement produces',
+        width: 420,
+        height: 340,
+      };
+
+      page.set(obj);
+      markAll(page, obj);
+      await page.save();
+      attached += 1;
+    }
+  }
+
+  const positioning = assets.get(positioningSlot);
+  if (positioning) {
+    const pages = await ServicePageModel.find({}).select('positioningImage');
+    for (const page of pages) {
+      const obj = page.toObject() as Record<string, unknown>;
+      const current = (obj.positioningImage ?? {}) as Record<string, unknown>;
+      if (current.mediaId) continue;
+
+      obj.positioningImage = {
+        mediaId: positioning.mediaId,
+        legacyPath: positioningSlot,
+        alt: 'How the work is delivered',
+        width: 520,
+        height: 420,
+      };
+
+      page.set(obj);
+      markAll(page, obj);
+      await page.save();
+      attached += 1;
     }
   }
 

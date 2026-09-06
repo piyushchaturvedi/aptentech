@@ -309,6 +309,13 @@ const ServicePageSchema = new Schema(
     midCta2Body: { type: String, default: '', maxlength: 6000 },
     midCta2Button: { type: CtaSchema, default: null },
     midCta2Points: { type: [String], default: [] },
+    /**
+     * The mid-page CTA illustration.
+     *
+     * The source wrote only a label and a hint here — the frame was always a placeholder, with
+     * no field behind it — so the slot could never be filled from the CMS.
+     */
+    midCta2Image: { type: MediaRefSchema, default: () => ({}) },
     midCta2MediaLabel: { type: String, default: '', maxlength: 300 },
     midCta2MediaHint: { type: String, default: '', maxlength: 300 },
     canvasSectionIds: { type: [String], default: [] },
@@ -416,6 +423,16 @@ const CaseStudySchema = new Schema(
      * like everything else — an editor renames it, or empties it to hide the caption.
      */
     shotCaption: { type: String, default: '', maxlength: 200 },
+    /**
+     * Marks a record the demo seed created rather than a real one.
+     *
+     * Read by `npm run preflight`, which blocks a deploy while any of these are still live —
+     * they are claims about the company that nobody verified. Declared on the schema because
+     * Mongoose silently drops a field the schema does not know, which is how an earlier
+     * version of this flag came to be written and never stored.
+     */
+    demoContent: { type: Boolean, default: false },
+
     shotConsole: {
       type: new Schema(
         {
@@ -497,6 +514,15 @@ const TestimonialSchema = new Schema(
      * an editor — or the demo-content pass — is expected to rewrite. Keying on mutable text
      * meant the next seed no longer recognised the record and inserted a second copy.
      */
+    /**
+     * Marks a record the demo seed created rather than a real one.
+     *
+     * Read by `npm run preflight`, which blocks a deploy while any of these are still live —
+     * they are claims about the company that nobody verified. Declared on the schema because
+     * Mongoose silently drops a field the schema does not know, which is how an earlier
+     * version of this flag came to be written and never stored.
+     */
+    demoContent: { type: Boolean, default: false },
     sourceKey: { type: String, default: null, maxlength: 160 },
     name: { type: String, required: true, maxlength: 300 },
     designation: { type: String, default: '', maxlength: 300 },

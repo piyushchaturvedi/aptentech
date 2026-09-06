@@ -5,7 +5,7 @@ import { adminRepository, auditRepository, mediaRepository, settingsRepository }
 import { hydrateService } from '../services/hydrate.service';
 import { sanitizeRichText, sanitizePageBlocks, sanitizeArticleHtml } from '../services/sanitize.service';
 import { revalidateService, tags } from '../services/revalidate.service';
-import { notFound, badRequest } from '../utils/errors';
+import { notFound, badRequest, conflict } from '../utils/errors';
 import { ok, paginated } from '../utils/respond';
 import { SERVICE_KINDS, type ServiceKind } from '@aptentech/shared';
 
@@ -119,8 +119,64 @@ export const adminController = {
       sanitizePageBlocks(req.body as Record<string, unknown> & { blocks?: unknown }),
     );
     if (!updated) throw notFound('Page not found');
-    await afterWrite(req, 'UPDATE', 'SitePage', updated.id, [tags.page(slug)]);
+    await afterWrite(req, 'UPDATE', 'SitePage', updated.id, [tags.page(slug), tags.pages]);
     return ok(res, updated);
+  }),
+
+
+  /**
+   * Slugs a custom page may not take.
+   *
+   * Two separate reasons, both of which produce a page that exists but never renders:
+   * the seven core pages have their own routes and their own block shapes, and the listed
+   * paths are real routes in the app. Next resolves a static segment before the catch-all,
+   * so a page created at `services` would save cleanly and then be permanently unreachable —
+   * the most confusing possible outcome for an editor.
+   */
+  RESERVED_SLUGS: new Set([
+    'home', 'about', 'contact', 'case-studies', 'blog',
+    'privacy-policy', 'terms-conditions', 'thank-you',
+    'services', 'solutions', 'industries', 'technologies',
+    // The listing routes read these by slug; deleting one leaves its route with no copy.
+    'services-index', 'solutions-index', 'industries-index', 'technologies-index',
+    'admin', 'api', 'uploads', 'sitemap', 'robots', '_next',
+  ]),
+
+  createPage: asyncHandler(async (req, res) => {
+    const input = sanitizePageBlocks(req.body as Record<string, unknown> & { blocks?: unknown; slug?: string });
+    const slug = String(input.slug ?? '').trim();
+
+    if (adminController.RESERVED_SLUGS.has(slug)) {
+      throw badRequest(`"${slug}" is reserved by an existing page or route. Choose another address.`);
+    }
+
+    const existing = await contentRepository.findPageBySlug(slug, true);
+    if (existing) throw conflict(`A page already lives at /${slug}/`);
+
+    const created = await contentRepository.createPage(input);
+    await afterWrite(req, 'CREATE', 'SitePage', created.id, [tags.page(slug), tags.pages]);
+    return ok(res, created, 201);
+  }),
+
+  deletePage: asyncHandler(async (req, res) => {
+    const slug = String(req.params.slug);
+
+    /*
+      The core pages cannot be deleted.
+
+      Each has a route that reads it by slug, so deleting one does not remove a page from the
+      site — it leaves the route rendering nothing. Emptying its blocks is the supported way
+      to clear a core page.
+    */
+    if (adminController.RESERVED_SLUGS.has(slug)) {
+      throw badRequest(`"${slug}" is a built-in page and cannot be deleted. Clear its blocks instead.`);
+    }
+
+    const removed = await contentRepository.deletePageBySlug(slug);
+    if (!removed) throw notFound('Page not found');
+
+    await afterWrite(req, 'DELETE', 'SitePage', slug, [tags.page(slug), tags.pages]);
+    return ok(res, { deleted: true });
   }),
 
   /* ------------------------------------------------------------------ case studies */
@@ -160,14 +216,40 @@ export const adminController = {
   /* ------------------------------------------------------------------ blog */
 
   listBlogPosts: asyncHandler(async (req, res) => {
-    const q = req.query as unknown as { page: number; pageSize: number; search?: string };
-    const { items, total } = await contentRepository.listBlogPosts({
-      includeDrafts: true,
-      page: q.page,
-      pageSize: q.pageSize,
-      search: q.search,
+    const q = req.query as unknown as {
+      page: number;
+      pageSize: number;
+      search?: string;
+      status?: string;
+      category?: string;
+    };
+
+    // "ALL" is the list screen's own word for "no filter"; it is not a stored status.
+    const status = q.status && q.status !== "ALL" ? q.status : undefined;
+
+    const [{ items, total }, counts] = await Promise.all([
+      contentRepository.listBlogPosts({
+        includeDrafts: true,
+        page: q.page,
+        pageSize: q.pageSize,
+        search: q.search,
+        status,
+        category: q.category,
+      }),
+      contentRepository.blogStatusCounts(),
+    ]);
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        items,
+        total,
+        page: q.page,
+        pageSize: q.pageSize,
+        totalPages: q.pageSize > 0 ? Math.ceil(total / q.pageSize) : 0,
+        counts,
+      },
     });
-    return paginated(res, items, total, q.page, q.pageSize);
   }),
 
   getBlogPost: asyncHandler(async (req, res) => {

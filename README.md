@@ -40,7 +40,7 @@ the compiler, not by convention.
 | `apps/api` | Node.js + Express REST API. Routes → controllers → services → repositories → MongoDB. |
 | `packages/shared` | Types and zod schemas used by both, so the two cannot drift apart. |
 | `scripts` | CSS extraction, and the checks that prove the migration: structure, layout, links, CSS coverage, security, performance. |
-| `docs` | Architecture, deployment, security and content guides. |
+| `docs` | Architecture, deployment, security and content guides. `SERVER-SETUP.md` is the step-by-step EC2 install. |
 
 ---
 
@@ -182,6 +182,8 @@ Two things about the build worth knowing:
 | `npm run dev` | Runs the API and the web app together |
 | `npm run dev:api` / `npm run dev:web` | Runs one of them |
 | `npm run stop` | Frees ports 3000 and 4000 when a previous run is still holding them |
+| `npm run preflight` | Pre-deployment check: config, build output and content that must not ship |
+| `npm run clear-demo` | Hides the demo awards, testimonials and metrics (add `-- --apply`) |
 | `npm run build` | Builds shared, API and web, in that order |
 | `npm run start` | Runs both from their production builds |
 | `npm run seed` | Re-imports content from the original HTML (idempotent) |
@@ -191,6 +193,7 @@ Two things about the build worth knowing:
 | `npm run typecheck` | Type-checks every workspace |
 | `node scripts/verify-placeholders.js` | Crawls the site for placeholder text a visitor would see |
 | `node scripts/verify-cms-flow.js <password>` | Proves an admin edit reaches the public site without a deploy |
+| `node scripts/verify-pages.js <password>` | Creates, renders, menus, edits and deletes a CMS page end to end |
 | `node scripts/verify-parity.js` | Compares all 25 migrated routes against the original HTML on title, description, canonical and every heading |
 | `node scripts/verify-links.js` | Crawls the built site and reports dead links, `#` links and broken anchors |
 | `node scripts/verify-css.js` | Confirms no CSS rule was lost in extraction |

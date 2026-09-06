@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { content } from '@/lib/api/content';
 import { buildMetadata } from '@/lib/seo/metadata';
-import { BreadcrumbSchema } from '@/lib/seo/structuredData';
+import { BreadcrumbSchema, ItemListSchema } from '@/lib/seo/structuredData';
 import { IndexBand } from '@/components/sections/IndexBand';
 import { ScrollReveal } from '@/components/sections/ScrollReveal';
 import '@/styles/site.css';
@@ -40,6 +40,11 @@ export default async function ServicesIndex() {
           { name: 'Home', path: '/' },
           { name: band.crumbLabel || 'Services', path: '/services/' },
         ]}
+      />
+
+      <ItemListSchema
+        items={services.map((item) => ({ name: item.name, path: `/services/${item.slug}/` }))}
+        path="/services/"
       />
 
       <IndexBand

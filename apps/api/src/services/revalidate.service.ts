@@ -49,6 +49,8 @@ export const tags = {
   solutions: 'solutions',
   service: (slug: string) => `service:${slug}`,
   solution: (slug: string) => `solution:${slug}`,
+  /** The list of pages and their statuses — what the navigation filters against. */
+  pages: 'pages',
   page: (slug: string) => `page:${slug}`,
   blog: 'blog',
   post: (slug: string) => `post:${slug}`,

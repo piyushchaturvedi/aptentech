@@ -24,9 +24,10 @@ import type {
 /** A media reference once the API has resolved its stored asset. */
 export type ResolvedMedia = MediaRef & { url: string | null };
 
-export type ResolvedServicePage = Omit<ServicePage, 'heroImage' | 'positioningImage'> & {
+export type ResolvedServicePage = Omit<ServicePage, 'heroImage' | 'positioningImage' | 'midCta2Image'> & {
   heroImage: ResolvedMedia;
   positioningImage: ResolvedMedia;
+  midCta2Image: ResolvedMedia;
   caseStudies: CaseStudy[];
   testimonials: Testimonial[];
   latestPosts: BlogPostSummary[];
@@ -78,6 +79,11 @@ export const content = {
   technology: (slug: string) =>
     api.optional<ResolvedServicePage>(`/technologies/${encodeURIComponent(slug)}`, {
       tags: [tags.technologies, tags.technology(slug), tags.caseStudies, tags.testimonials],
+    }),
+
+  pages: () =>
+    api.request<Array<{ slug: string; title: string; status: string; updatedAt?: string; custom: boolean }>>('/pages', {
+      tags: [tags.pages],
     }),
 
   page: (slug: string) =>

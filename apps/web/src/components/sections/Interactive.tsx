@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState } from 'react';
+import { Fragment, useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
 import type { CaseStudy, FeatureGroup, ProcessStep, ServiceItem, TechStackGroup, FaqItem } from '@aptentech/shared';
 import { ACCENT_HEX } from '@aptentech/shared';
@@ -642,7 +642,15 @@ export function FaqAccordion({
               </button>
             ))}
           </div>
-          {aside}
+          {/*
+            Wrapped in a keyed fragment, which adds no DOM.
+
+            `aside` is built by `FaqShell` — a server component — and handed to this client
+            component as a prop, so it crosses the RSC boundary and arrives as a deserialised
+            child. React validates those as a list and warns that the child has no key. The
+            fragment gives it one without changing what is rendered.
+          */}
+          {aside ? <Fragment key="faq-aside">{aside}</Fragment> : null}
         </div>
       ) : null}
 

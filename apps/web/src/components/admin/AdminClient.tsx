@@ -58,6 +58,63 @@ export class AdminApiError extends Error {
   }
 }
 
+/**
+ * Turns a technical field path into the label the editor actually sees.
+ *
+ * The API reports the path it validated — `seo.canonical`, `faqs.0.question` — which is
+ * accurate and useless to someone looking at a form. Array indexes are rendered as a
+ * human-counted position, and known paths get the wording used on screen.
+ */
+const FIELD_LABELS: Readonly<Record<string, string>> = {
+  'seo.canonical': 'Canonical URL',
+  'seo.title': 'SEO title',
+  'seo.description': 'Meta description',
+  'seo.ogTitle': 'Social title',
+  'seo.ogDescription': 'Social description',
+  slug: 'Slug',
+  title: 'Title',
+  excerpt: 'Excerpt',
+  body: 'Article body',
+  categoryName: 'Category',
+  authorName: 'Author name',
+  publishedAt: 'Publish date',
+  readingMinutes: 'Reading time',
+  html: 'Body',
+  href: 'Link',
+  email: 'Email address',
+  phone: 'Phone number',
+};
+
+function labelFor(path: string): string {
+  if (FIELD_LABELS[path]) return FIELD_LABELS[path]!;
+
+  // `faqs.0.question` → "Article FAQs #1 · question"
+  const parts = path.split('.');
+  const readable = parts
+    .map((part) => (/^\d+$/.test(part) ? `#${Number(part) + 1}` : FIELD_LABELS[part] ?? part))
+    .join(' · ');
+
+  return readable;
+}
+
+/**
+ * A message that names what is wrong and where.
+ *
+ * The API's own message is deliberately generic ("Please check the highlighted fields") because
+ * it cannot know how the form is laid out. Without expanding `details` the editor is told
+ * something failed and nothing else — which is what a "test" in the Canonical URL field looked
+ * like: a red banner, no highlight, and no way to find the field.
+ */
+export function describeError(error: unknown, fallback = 'That request failed.'): string {
+  if (error instanceof AdminApiError && error.details) {
+    const lines = Object.entries(error.details).map(
+      ([path, messages]) => `${labelFor(path)}: ${messages.join(' ')}`,
+    );
+    if (lines.length) return lines.join('\n');
+  }
+  return error instanceof Error ? error.message : fallback;
+}
+
 export function AdminProvider({ children }: { children: React.ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);

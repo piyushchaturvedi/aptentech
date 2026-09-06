@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import type { TechStackGroup } from '@aptentech/shared';
 import { content } from '@/lib/api/content';
 import { buildMetadata } from '@/lib/seo/metadata';
-import { BreadcrumbSchema } from '@/lib/seo/structuredData';
+import { BreadcrumbSchema, ItemListSchema } from '@/lib/seo/structuredData';
 import { IndexBand } from '@/components/sections/IndexBand';
 import { TechStackTabs } from '@/components/sections/Interactive';
 import { ScrollReveal } from '@/components/sections/ScrollReveal';
@@ -44,6 +44,11 @@ export default async function TechnologiesIndex() {
           { name: 'Home', path: '/' },
           { name: crumbLabel, path: '/technologies/' },
         ]}
+      />
+
+      <ItemListSchema
+        items={technologies.map((item) => ({ name: item.name, path: `/technologies/${item.slug}/` }))}
+        path="/technologies/"
       />
 
       <IndexBand

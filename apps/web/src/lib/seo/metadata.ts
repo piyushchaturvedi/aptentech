@@ -51,7 +51,14 @@ export function buildMetadata({
   // up self-referencing the wrong URL by omission.
   const canonical = seo?.canonical ? absoluteUrl(seo.canonical) : absoluteUrl(path);
 
-  const image = ogImage?.url ?? defaults?.ogImage?.url ?? null;
+  /*
+    Social images must be absolute.
+
+    A crawler fetches `og:image` from its own context, so a site-relative path — which the
+    local media driver returns — resolves against the wrong host and the card renders blank.
+  */
+  const rawImage = ogImage?.url ?? defaults?.ogImage?.url ?? null;
+  const image = rawImage ? (/^https?:\/\//i.test(rawImage) ? rawImage : absoluteUrl(rawImage)) : null;
 
   const robots = {
     index: seo?.robotsIndex ?? true,

@@ -68,6 +68,15 @@ const envSchema = z
     /** Shared secret an inbound-mail webhook must present. Without it the endpoint is closed. */
     INBOUND_WEBHOOK_SECRET: z.string().optional(),
 
+    /**
+     * Deliberate acceptances of a production configuration that is normally refused.
+     *
+     * Both exist so the refusal can be overridden knowingly rather than by weakening the
+     * check for everyone. Neither changes behaviour — they only allow the boot to proceed.
+     */
+    ALLOW_LOCAL_MEDIA: z.coerce.boolean().default(false),
+    ALLOW_NO_EMAIL: z.coerce.boolean().default(false),
+
     MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(10 * 1024 * 1024),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
     TRUST_PROXY: z.coerce.boolean().default(false),
@@ -96,20 +105,40 @@ const envSchema = z
           message: 'Default development secrets must be replaced before running in production',
         });
       }
-      if (v.MEDIA_DRIVER === 'local') {
+      /*
+        Local media in production is refused unless it is explicitly accepted.
+
+        On a platform with an ephemeral filesystem — a container, most PaaS hosts — every
+        upload is lost on the next deploy, and it fails silently: the media record survives
+        in MongoDB while the file behind it does not, so the CMS lists an image that 404s.
+        On a single VPS with a persistent disk it is perfectly reasonable, which is why this
+        is a confirmation rather than a hard block.
+      */
+      if (v.MEDIA_DRIVER === 'local' && !v.ALLOW_LOCAL_MEDIA) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['MEDIA_DRIVER'],
-          message: 'MEDIA_DRIVER=local is a development fallback; use s3 in production',
+          message:
+            'MEDIA_DRIVER=local loses uploads on any host with an ephemeral filesystem. ' +
+            'Use s3, or set ALLOW_LOCAL_MEDIA=true if this server has a persistent disk.',
         });
       }
-      if (v.EMAIL_DRIVER === 'log') {
-        // Silently discarding every notification in production would look exactly like
-        // working software right up until someone asks why no enquiry was answered.
+      /*
+        Same reasoning for mail.
+
+        `log` in production discards every notification and every client confirmation while
+        the site keeps reporting success — it looks exactly like working software until
+        someone asks why no enquiry was ever answered. Leads are still stored, so launching
+        without mail is a defensible temporary choice; it just has to be a choice.
+      */
+      if (v.EMAIL_DRIVER === 'log' && !v.ALLOW_NO_EMAIL) {
         ctx.addIssue({
           code: z.ZodIssueCode.custom,
           path: ['EMAIL_DRIVER'],
-          message: 'EMAIL_DRIVER=log discards mail; configure ses or smtp in production',
+          message:
+            'EMAIL_DRIVER=log discards every notification and confirmation. ' +
+            'Configure smtp or ses, or set ALLOW_NO_EMAIL=true to launch without mail ' +
+            '(leads are still saved and visible in the admin).',
         });
       }
     }
@@ -127,3 +156,26 @@ if (!parsed.success) {
 export const env = parsed.data;
 export const isProd = env.NODE_ENV === 'production';
 export const isTest = env.NODE_ENV === 'test';
+
+/*
+  An accepted risk is printed on every boot.
+
+  Both overrides are meant to be temporary, and a `.env` file is the easiest place in a
+  system for a temporary decision to become permanent unnoticed. Restating it in the log at
+  every start is what keeps it visible after the person who set it has moved on.
+*/
+if (isProd && env.MEDIA_DRIVER === 'local') {
+  // eslint-disable-next-line no-console
+  console.warn(
+    '[config] MEDIA_DRIVER=local in production. Uploads live on this server\'s disk and are ' +
+      'lost if it is replaced. Move to S3 before scaling beyond one instance.',
+  );
+}
+
+if (isProd && env.EMAIL_DRIVER === 'log') {
+  // eslint-disable-next-line no-console
+  console.warn(
+    '[config] EMAIL_DRIVER=log in production. No notification or confirmation email is being ' +
+      'sent. Leads are still saved and visible in the admin.',
+  );
+}

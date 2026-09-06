@@ -663,7 +663,14 @@ export function LatestInsightsBand({
                 <Media
                   media={post.coverImage as ResolvedMedia}
                   sizes="(max-width: 900px) 100vw, 380px"
-                  fallback={<span className="ph">[BLOG THUMBNAIL]</span>}
+                  /*
+                    Empty rather than a bracketed label.
+
+                    The `.ph` block keeps the card's shape, so the grid does not move; the
+                    text does not, because an article published without a featured image
+                    would otherwise print "[BLOG THUMBNAIL]" on every page that lists it.
+                  */
+                  fallback={<span className="ph" aria-hidden="true" />}
                 />
               </div>
               <div className="blog-body">

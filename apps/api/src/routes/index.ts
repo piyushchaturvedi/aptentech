@@ -4,6 +4,7 @@ import {
   adminLoginSchema,
   adminReplySchema,
   adminPasswordChangeSchema,
+  blogListQuerySchema,
   blogPostSchema,
   blogCategorySchema,
   caseStudySchema,
@@ -64,6 +65,7 @@ pub.get('/industries', publicController.listIndustries);
 pub.get('/industries/:slug', publicController.getIndustry);
 pub.get('/technologies', publicController.listTechnologies);
 pub.get('/technologies/:slug', publicController.getTechnology);
+pub.get('/pages', publicController.listPages);
 pub.get('/pages/:slug', publicController.getPage);
 pub.get('/case-studies', validate(publicListQuerySchema, 'query'), publicController.listCaseStudies);
 pub.get('/case-studies/:slug', publicController.getCaseStudy);
@@ -202,7 +204,9 @@ admin.delete(
 // Static pages
 admin.get('/pages', adminController.listPages);
 admin.get('/pages/:slug', adminController.getPage);
+admin.post('/pages', validate(sitePageSchema), adminController.createPage);
 admin.put('/pages/:slug', validate(sitePageSchema), adminController.updatePage);
+admin.delete('/pages/:slug', requireRole('ADMIN'), adminController.deletePage);
 
 // Case studies
 admin.get('/case-studies', validate(paginationSchema, 'query'), adminController.listCaseStudies);
@@ -221,7 +225,7 @@ admin.delete(
 );
 
 // Blog
-admin.get('/blog', validate(paginationSchema, 'query'), adminController.listBlogPosts);
+admin.get('/blog', validate(blogListQuerySchema, 'query'), adminController.listBlogPosts);
 admin.get('/blog/categories', adminController.listBlogCategories);
 admin.post('/blog/categories', validate(blogCategorySchema), adminController.upsertBlogCategory);
 admin.get('/blog/:id', validate(idParamSchema, 'params'), adminController.getBlogPost);

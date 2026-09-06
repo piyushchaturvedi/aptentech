@@ -133,6 +133,8 @@ export const tags = {
   industry: (slug: string) => `industry:${slug}`,
   technologies: 'technologies',
   technology: (slug: string) => `technology:${slug}`,
+  /** The list of pages and their statuses — what the navigation filters against. */
+  pages: 'pages',
   page: (slug: string) => `page:${slug}`,
   blog: 'blog',
   post: (slug: string) => `post:${slug}`,

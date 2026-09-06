@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { content } from '@/lib/api/content';
 import { buildMetadata } from '@/lib/seo/metadata';
-import { BreadcrumbSchema } from '@/lib/seo/structuredData';
+import { BreadcrumbSchema, ItemListSchema } from '@/lib/seo/structuredData';
 import { IndexBand } from '@/components/sections/IndexBand';
 import { ScrollReveal } from '@/components/sections/ScrollReveal';
 import '@/styles/site.css';
@@ -36,6 +36,11 @@ export default async function IndustriesIndex() {
           { name: 'Home', path: '/' },
           { name: band.crumbLabel || 'Industries', path: '/industries/' },
         ]}
+      />
+
+      <ItemListSchema
+        items={industries.map((item) => ({ name: item.name, path: `/industries/${item.slug}/` }))}
+        path="/industries/"
       />
 
       <IndexBand

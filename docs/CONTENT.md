@@ -133,6 +133,92 @@ re-seed never repaints the site.
 The logo, favicon and OG card are stored the same way and referenced from Settings, so the
 brand assets are replaceable from `/admin/media` too.
 
+### Search-engine metadata
+
+Every page carries a canonical URL, a title and description, robots directives, an Open Graph
+block and a Twitter card, all editable per page in the CMS with the site defaults as fallback.
+Social and logo URLs are made absolute before they are emitted — a crawler fetches them from
+its own context, so a site-relative path resolves against the wrong host and the card renders
+blank.
+
+Structured data is emitted server-side, from content that is actually on the page:
+
+| Where | What |
+| --- | --- |
+| Every page | `Organization`, `WebSite` |
+| Every page with a trail | `BreadcrumbList` |
+| Service, solution, industry, technology | `Service`, plus `FAQPage` where the page has FAQs |
+| The four index pages | `ItemList` naming each entry |
+| Articles | `BlogPosting` with author, dates and cover image |
+
+`Organization` deliberately omits any contact detail that is still a demo value. Structured
+data is asserted to search engines as fact, so publishing `+00 0000000000` there would state
+it as the company's real number. Fill the real details in under Settings and the properties
+appear on their own.
+
+`robots.txt` disallows `/admin` and `/api` and advertises the sitemap absolutely; the sitemap
+lists all 115 public URLs, including every generated page.
+
+
+### Editing the blog
+
+`/admin/blog` follows the list-and-editor convention rather than the generic collection form
+the other content types use, because managing fifty articles and writing one are different
+jobs. The list has status tabs with live counts, a search box, bulk publish/draft/archive/delete,
+and per-row Edit, View and Delete. The editor puts the article in the main column with the
+publishing controls, category, tags, featured image and author in a sidebar.
+
+The body is written through a toolbar — headings, bold, italic, lists, quotes, code and links —
+with an HTML toggle for anyone who prefers markup. The toolbar produces only the tags the
+article stylesheet already styles, and there is no way to type a class or a colour, so an
+editor cannot introduce an element the design has no rules for. That is a convenience, not the
+boundary: every save is still sanitised on the server against the same allowlist, and pasted
+content is flattened to plain text on the way in.
+
+The slug follows the title while you type and stops the moment you edit it yourself. Publishing
+without a date fills in today, and leaving reading time at zero calculates it from the body.
+
+### When a save is rejected
+
+A failed save names the field and says what is wrong with it, one per line:
+
+> Canonical URL: Link must be a site path, #anchor, http(s) URL, mailto:, tel:, or a placeholder
+
+The API validates by field path — `seo.canonical`, `faqs.0.question` — and the admin maps
+those to the labels on screen before showing them. Before this it showed only "Please check the
+highlighted fields" with nothing highlighted, which gave an editor no way to find the field.
+
+The one that catches people is **Canonical URL**. It is optional: leave it empty and the page
+uses its own address. If you do fill it in, it has to be a path (`/blog/my-article/`) or a full
+`https://` address — a bare word is refused, because a canonical that is not a URL silently
+tells search engines the wrong thing about the page.
+
+### Creating pages
+
+`/admin/pages` → **Add new page** creates a page at any address the site does not already
+use. It starts as a draft with three sections — a header, a body and a closing call to action —
+all of them types the design already styles, and the address follows the title while you type.
+
+The same dialog can place the page in the navigation: **Main menu (top level)** adds it beside
+About and Contact, or pick a column inside a mega-menu to add it as a sub-entry. Deleting the
+page removes its menu entry too, so a menu can never be left pointing at a page that no longer
+exists.
+
+Two guards worth knowing about, both of which prevent a page that saves cleanly and then
+behaves oddly:
+
+- **Reserved addresses are refused.** `services`, `about`, `admin` and the rest are real
+  routes; Next resolves those before the catch-all, so a page created there would never render.
+- **Core pages cannot be deleted.** The eleven built-in pages each have a route that reads them
+  by slug — deleting the document would leave the route rendering nothing rather than removing
+  a page. Clear its sections instead.
+
+A page still in draft is hidden from the menus automatically, so adding it to the navigation
+before it is finished does not put a 404 in the header.
+
+Run `node scripts/verify-pages.js <admin-password>` to exercise the whole flow — create,
+render, add to menu, edit, delete, and both guards.
+
 ### Verifying the round trip
 
 `node scripts/verify-cms-flow.js <admin-password>` proves the claim that matters: it signs in

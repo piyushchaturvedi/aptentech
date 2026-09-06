@@ -91,6 +91,34 @@ export const publicController = {
     return ok(res, data);
   }),
 
+  /**
+   * Every published page, flagged by whether it has a route of its own.
+   *
+   * The Next catch-all prerenders only the custom ones: the seven core pages already have
+   * their own files, and listing them here would have them built twice under two URLs.
+   */
+  listPages: asyncHandler(async (_req, res) => {
+    const CORE = new Set([
+      'home', 'about', 'contact', 'case-studies', 'blog',
+      'privacy-policy', 'terms-conditions',
+      'services-index', 'solutions-index', 'industries-index', 'technologies-index',
+    ]);
+    // Drafts are included so the site can tell "no such page" from "not published yet" —
+    // the navigation needs to hide a link to either. Only slugs and status cross the
+    // boundary, never draft content.
+    const pages = await contentRepository.listPages(true);
+    return ok(
+      res,
+      pages.map((p) => ({
+        slug: p.slug,
+        title: p.title,
+        status: p.status,
+        updatedAt: p.updatedAt,
+        custom: !CORE.has(p.slug),
+      })),
+    );
+  }),
+
   getPage: asyncHandler(async (req, res) => {
     const stored = await contentRepository.findPageBySlug(String(req.params.slug));
     if (!stored) throw notFound('Page not found');

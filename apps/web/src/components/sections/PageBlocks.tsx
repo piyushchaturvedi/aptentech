@@ -350,8 +350,25 @@ export function PageBlocks({ page, settings }: { page: ResolvedSitePage; setting
               </Section>
             );
 
+          /*
+            Prose, using the same markup the legal pages use.
+
+            These two previously fell through to `HomeHero`, which would have rendered a body
+            of text as a full-bleed hero. Nothing used them, so it never showed — but a custom
+            page built in the CMS is exactly what would have hit it first.
+          */
           case 'textSection':
           case 'richText':
+            return (
+              <Section key={key}>
+                <div className="wrap">
+                  {block.title ? <h2 className="h2">{String(block.title)}</h2> : null}
+                  {/* Sanitised on write and again on read, against the narrow rich-text profile. */}
+                  <div className="prose" dangerouslySetInnerHTML={{ __html: String(block.html ?? '') }} />
+                </div>
+              </Section>
+            );
+
           case 'homeHero':
             return <HomeHero key={key} block={block} />;
 

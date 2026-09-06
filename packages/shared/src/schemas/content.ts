@@ -1,12 +1,15 @@
 import { z } from 'zod';
 import { emailListSchema, headerSafeText, optionalEmail } from './email';
 import { BLOCK_TYPES, CASE_SHOTS, HERO_DECORATIONS } from '../types/content';
+import { PUBLISH_STATUSES } from '../types/primitives';
 import {
   accentSchema,
   ctaLinkSchema,
   mediaRefSchema,
   objectIdSchema,
+  paginationSchema,
   publishStatusSchema,
+  queryString,
   safeHref,
   seoSchema,
   serviceKindSchema,
@@ -537,6 +540,7 @@ export const servicePageSchema = z.object({
   midCta2Body: longText.default(''),
   midCta2Button: ctaLinkSchema.nullable().default(null),
   midCta2Points: z.array(z.string().trim().max(400)).max(12).default([]),
+  midCta2Image: mediaRefSchema,
   midCta2MediaLabel: shortText.default(''),
   midCta2MediaHint: shortText.default(''),
   canvasSectionIds: z.array(z.string().trim().max(60)).max(40).default([]),
@@ -681,4 +685,21 @@ export const publicListQuerySchema = z.object({
   pageSize: z.coerce.number().int().min(1).max(50).default(9),
   category: z.string().trim().max(120).optional(),
   tag: z.string().trim().max(60).optional(),
+});
+
+/**
+ * The blog list screen's query.
+ *
+ * `status` is validated against the publish statuses plus `ALL`, the screen's own word for
+ * "no filter" — accepting an arbitrary string here would let a crafted query select on a
+ * value the collection never stores, and `queryString` exists because Express happily parses
+ * `?status[$ne]=DRAFT` into an object.
+ */
+export const blogListQuerySchema = paginationSchema.extend({
+  search: queryString,
+  category: queryString,
+  status: z.preprocess(
+    (v) => (typeof v === 'string' ? v : undefined),
+    z.enum(['ALL', ...PUBLISH_STATUSES]).optional(),
+  ),
 });

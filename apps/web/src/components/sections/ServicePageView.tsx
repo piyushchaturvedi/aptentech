@@ -522,8 +522,18 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                 </div>
                 <figure className="cta-media">
                   <div className="cm-frame">
-                    <span className="im-label">{page.midCta2MediaLabel}</span>
-                    <span className="im-hint">{page.midCta2MediaHint}</span>
+                    {/* The source's own label and hint stay as the fallback, so the frame
+                        still looks deliberate before an asset is uploaded. */}
+                    <Media
+                      media={page.midCta2Image}
+                      sizes="(max-width: 900px) 100vw, 420px"
+                      fallback={
+                        <>
+                          <span className="im-label">{page.midCta2MediaLabel}</span>
+                          <span className="im-hint">{page.midCta2MediaHint}</span>
+                        </>
+                      }
+                    />
                   </div>
                 </figure>
               </div>
@@ -711,7 +721,14 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                     <Media
                       media={post.coverImage as ResolvedMedia}
                       sizes="(max-width: 900px) 100vw, 380px"
-                      fallback={<span className="ph">[BLOG THUMBNAIL]</span>}
+                      /*
+                    Empty rather than a bracketed label.
+
+                    The `.ph` block keeps the card's shape, so the grid does not move; the
+                    text does not, because an article published without a featured image
+                    would otherwise print "[BLOG THUMBNAIL]" on every page that lists it.
+                  */
+                  fallback={<span className="ph" aria-hidden="true" />}
                     />
                   </div>
                   <div className="blog-body">

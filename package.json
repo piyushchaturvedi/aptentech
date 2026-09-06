@@ -13,6 +13,8 @@
   "scripts": {
     "dev": "concurrently -n api,web -c magenta,cyan -k \"npm:dev:api\" \"npm:dev:web\"",
     "stop": "node scripts/stop.js",
+    "preflight": "node scripts/preflight.js",
+    "clear-demo": "node scripts/clear-demo-content.js",
     "dev:api": "npm run dev --workspace @aptentech/api",
     "dev:web": "npm run dev --workspace @aptentech/web",
     "build": "npm run build --workspace @aptentech/shared && npm run build --workspace @aptentech/api && npm run build --workspace @aptentech/web",

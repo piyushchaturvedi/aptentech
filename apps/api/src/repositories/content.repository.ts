@@ -117,6 +117,16 @@ export const contentRepository = {
     return docs.map(toDto);
   },
 
+  async createPage(data: Record<string, unknown>) {
+    const doc = await SitePageModel.create(data);
+    return toDto(doc.toObject());
+  },
+
+  async deletePageBySlug(slug: string) {
+    const res = await SitePageModel.deleteOne({ slug });
+    return res.deletedCount === 1;
+  },
+
   async updatePageBySlug(slug: string, data: Record<string, unknown>) {
     const doc = await SitePageModel.findOneAndUpdate({ slug }, { $set: data }, { new: true, runValidators: true }).lean();
     return doc ? toDto(doc) : null;
@@ -199,17 +209,17 @@ export const contentRepository = {
       collection is small enough that the scan is not worth an index.
     */
     if (search) {
-      const safe = search.replace(/[.*+?^${}()|[]\]/g, '\    const { includeDrafts = false, page = 1, pageSize = 9, category, tag, search } = opts;
-    const filter: Record<string, unknown> = includeDrafts ? {} : { ...PUBLIC };
-    if (category) filter.categoryName = category;
-    if (tag) filter.tags = tag;
-    if (search) filter.$text = trusted({ $search: search });');
-      filter.$or = trusted([
-        { title: { $regex: safe, $options: 'i' } },
-        { slug: { $regex: safe, $options: 'i' } },
-        { excerpt: { $regex: safe, $options: 'i' } },
-        { categoryName: { $regex: safe, $options: 'i' } },
-      ]);
+      const safe = search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+      /*
+        `trusted()` goes on each operator object, not on the array around them.
+
+        The global sanitiser strips operators it did not write, and it inspects the value at
+        each field — so wrapping the `$or` array leaves every `{ $regex }` inside it still
+        looking like untrusted input, and Mongoose then tries to cast the object to a string.
+      */
+      const like = trusted({ $regex: safe, $options: 'i' });
+      filter.$or = [{ title: like }, { slug: like }, { excerpt: like }, { categoryName: like }];
     }
 
     const [items, total] = await Promise.all([
@@ -233,10 +243,12 @@ export const contentRepository = {
   async blogStatusCounts(): Promise<Record<string, number>> {
     const rows = await BlogPostModel.aggregate([{ $group: { _id: '$status', n: { $sum: 1 } } }]);
     const counts: Record<string, number> = { ALL: 0, PUBLISHED: 0, DRAFT: 0, ARCHIVED: 0 };
+    let all = 0;
     for (const row of rows as Array<{ _id: string; n: number }>) {
       counts[row._id] = row.n;
-      counts.ALL += row.n;
+      all += row.n;
     }
+    counts.ALL = all;
     return counts;
   },
 

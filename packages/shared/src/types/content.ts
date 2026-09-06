@@ -323,6 +323,7 @@ export interface ServicePage {
   midCta2Button: CtaLink | null;
   midCta2Points: string[];
   /** Labels inside the second CTA strip's image frame, kept from the source placeholder. */
+  midCta2Image: MediaRef;
   midCta2MediaLabel: string;
   midCta2MediaHint: string;
   /** Button under the solutions bento (`.cc-cta > .btn-lg`). */

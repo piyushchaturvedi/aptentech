@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
-import { useAdmin } from './AdminClient';
+import { describeError, useAdmin } from './AdminClient';
 
 /**
  * Generic list-and-edit screen for the simpler CMS collections.
@@ -62,7 +62,7 @@ export function CollectionAdmin<T extends { id: string }>({
       }
       setError('');
     } catch (e) {
-      setError(e instanceof Error ? e.message : `Could not load ${title.toLowerCase()}.`);
+      setError(describeError(e, `Could not load ${title.toLowerCase()}.`));
     }
   }, [request, endpoint, paginated, page, title]);
 
@@ -91,7 +91,7 @@ export function CollectionAdmin<T extends { id: string }>({
       setIsNew(false);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not save.');
+      setError(describeError(e, 'Could not save.'));
     } finally {
       setBusy(false);
     }
@@ -106,7 +106,7 @@ export function CollectionAdmin<T extends { id: string }>({
       setEditing(null);
       await load();
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not delete.');
+      setError(describeError(e, 'Could not delete.'));
     } finally {
       setBusy(false);
     }
