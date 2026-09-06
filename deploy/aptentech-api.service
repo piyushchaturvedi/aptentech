@@ -1,3 +1,9 @@
+# SUPERSEDED — do not install this unit.
+#
+# The apps run under PM2 now (npm run deploy:prod). Installing this alongside PM2 means both
+# supervisors start at boot and race for the same port. If it is already installed,
+# npm run deploy:prod disables it. Safe to delete.
+
 [Unit]
 Description=AptenTech API
 PartOf=aptentech.target

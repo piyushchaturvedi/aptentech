@@ -13,27 +13,34 @@ Windows machine instead.
 
 ---
 
-## Quick path — scripted
+## Quick path — one command
 
-Everything below is also available as one script. Upload the code, write `apps/api/.env`
-(step 7), then:
+Everything below is also available as a single command. Upload the code, then:
 
 ```bash
 cd /var/www/aptentech/aptentech-platform
-bash deploy/first-time-setup.sh
+SITE_URL=http://your-server-ip npm run deploy:prod
 ```
 
-It sets up swap, installs Node and nginx, builds, seeds, installs the systemd units and starts
-everything — and it is idempotent, so re-running after a failure picks up rather than
-duplicating work. The manual steps below are what it does, in case a step needs doing by hand.
+It writes both env files, installs, builds the shared package, the API and the site, starts
+both under PM2, registers PM2 with systemd so they come back after a reboot, installs and
+reloads nginx, then verifies the site, the admin and the API through nginx. Pass `SITE_URL`
+only the first time — it is stored. Nothing about it is destructive: it never drops or deletes
+data, and the content seed runs only when the database is empty.
+
+Two things it cannot invent and will stop for: `MONGODB_URI`, and the SMTP credentials if you
+want mail. Section 6 and section 7 cover those.
+
+The manual steps below are what it does, in case one needs doing by hand.
 
 Afterwards, one command controls both apps:
 
 ```bash
-sudo systemctl restart aptentech.target
+pm2 restart all
 ```
 
 ---
+
 ## 1. Connect *(local)*
 
 ```powershell
@@ -238,7 +245,7 @@ npm run seed
 npm run build --workspace @aptentech/web
 ```
 
-Stop the temporary API — systemd takes over next:
+Stop the temporary API — PM2 takes over next:
 
 ```bash
 kill %1
@@ -246,28 +253,64 @@ kill %1
 
 ---
 
-## 9. Run both apps under systemd — one command for both
+## 9. Run both apps under PM2 — one command for both
 
-The unit files are in the repository, so they are version-controlled rather than typed in:
+PM2 is the process supervisor. One command starts both apps, and it is the same command used
+for every later deploy:
 
 ```bash
 cd /var/www/aptentech/aptentech-platform
-sudo cp deploy/aptentech-api.service deploy/aptentech-web.service deploy/aptentech.target /etc/systemd/system/
-sudo systemctl daemon-reload
-sudo systemctl enable aptentech-api aptentech-web aptentech.target
-sudo systemctl start aptentech.target
+SITE_URL=http://your-server-ip npm run deploy:prod
 ```
 
-`aptentech.target` groups the two services, so from here on **one command controls both**:
+Two processes rather than one, so each restarts on its own and each keeps its own log; a single
+process running both would lose both.
+
+From here on:
 
 ```bash
-sudo systemctl restart aptentech.target
-sudo systemctl status  aptentech.target
-sudo systemctl stop    aptentech.target
+pm2 status           both processes, memory, restart count
+pm2 restart all      restart both
+pm2 logs             follow both
+pm2 logs aptentech-api --lines 50
 ```
 
-A target rather than a single process running both: each service still restarts on its own
-when it crashes, and each keeps its own log. Running them under one process would lose both.
+### Staying up permanently
+
+Three different failures, three different mechanisms — the deploy sets all three up:
+
+| If | What brings it back |
+| --- | --- |
+| you close the SSH session | PM2 runs both under its own daemon, detached from your shell |
+| a process crashes or leaks memory | `autorestart`, plus a 400 MB ceiling so one leak cannot OOM a 1 GB instance |
+| the server reboots | `pm2-<user>.service`, installed by `pm2 startup` under sudo, which replays the list saved by `pm2 save` |
+
+The reboot one is the easy one to get wrong: `pm2 startup` run *without* sudo only prints the
+command to install the unit, it installs nothing. Confirm it is really in place:
+
+```bash
+systemctl is-enabled pm2-$USER
+```
+
+That must print `enabled`. `mongod` and `nginx` need the same treatment, and the deploy
+enables them too:
+
+```bash
+systemctl is-enabled mongod nginx
+```
+
+The honest test is the real one:
+
+```bash
+sudo reboot
+```
+
+Wait a minute, reconnect, and `pm2 status` should show both processes online without you
+having started anything.
+
+> Do **not** also install `deploy/aptentech-*.service`. Those units are superseded; with both
+> supervisors enabled, each boot starts two copies that race for ports 3000 and 4000.
+> `npm run deploy:prod` disables them if an earlier run installed them.
 
 Check:
 
@@ -276,12 +319,6 @@ curl -s -o /dev/null -w "api %{http_code}
 " http://127.0.0.1:4000/health
 curl -s -o /dev/null -w "web %{http_code}
 " http://127.0.0.1:3000/
-```
-
-Follow both logs together:
-
-```bash
-journalctl -u aptentech-api -u aptentech-web -f
 ```
 
 ---
@@ -357,10 +394,11 @@ the weaker settings:
 
 ```bash
 cd /var/www/aptentech/aptentech-platform
-nano apps/api/.env    # PUBLIC_SITE_URL, NEXT_PUBLIC_SITE_URL, WEB_ORIGIN → https://your-domain.com
-cp apps/api/.env apps/web/.env.local
-bash deploy/redeploy.sh
+SITE_URL=https://your-domain.com npm run deploy:prod
 ```
+
+Passing the new address is all that is needed — it rewrites those three variables in both env
+files, rebuilds against them and restarts. Every secret already in the files is preserved.
 
 > Use an **Elastic IP**. A stopped instance gets a new public address on restart, and the DNS
 > record would then point at nothing.
@@ -382,17 +420,14 @@ Then open `https://your-domain.com/` and `https://your-domain.com/admin`.
 
 ## Redeploying after a change
 
+Same command as the first deploy — `SITE_URL` is already stored, so it is just:
+
 ```bash
 cd /var/www/aptentech/aptentech-platform
-npm ci
-npm run build --workspace @aptentech/shared
-npm run build --workspace @aptentech/api
-sudo systemctl restart aptentech-api
-sleep 5
-npm run build --workspace @aptentech/web
-sudo systemctl restart aptentech-web
+npm run deploy:prod
 ```
 
-The API restarts before the web build because the build reads its content over HTTP. Content
-edited in the CMS reaches the running site without any of this — only a code change needs a
-rebuild.
+It restarts the API *before* building the site, because the build reads its content from the
+API over HTTP; building against a stopped or stale API silently bakes the wrong content into
+the pages. Content edited in the CMS reaches the running site without any of this — only a
+code change needs a rebuild.

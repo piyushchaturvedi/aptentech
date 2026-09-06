@@ -30,9 +30,12 @@ module.exports = {
       env: { NODE_ENV: 'production' },
       max_memory_restart: MAX_MEMORY,
       autorestart: true,
-      // Back off rather than hammering a database that is refusing connections.
-      restart_delay: 4000,
-      max_restarts: 10,
+      // Back off rather than hammering a database that is refusing connections: 2s, then 4s,
+      // 8s, up to a 15s ceiling. The raised restart cap is the point — with the default of 10,
+      // an API that starts before mongod is ready after a reboot exhausts its retries in under
+      // a minute and stays dead, which is exactly the failure this is meant to survive.
+      exp_backoff_restart_delay: 2000,
+      max_restarts: 1000,
       merge_logs: true,
       time: true,
     },
@@ -48,8 +51,8 @@ module.exports = {
       env: { NODE_ENV: 'production' },
       max_memory_restart: MAX_MEMORY,
       autorestart: true,
-      restart_delay: 4000,
-      max_restarts: 10,
+      exp_backoff_restart_delay: 2000,
+      max_restarts: 1000,
       merge_logs: true,
       time: true,
     },
