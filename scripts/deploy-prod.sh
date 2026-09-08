@@ -307,17 +307,31 @@ ok "nginx reloaded"
 
 step "Verifying through nginx"
 
+# Where to send the verification requests.
+#
+# Plain HTTP goes to 127.0.0.1, which the server_name list includes for exactly this reason.
+#
+# Once certbot has run that stops working: it rewrites the port-80 block to redirect the
+# certificate's own names and answer everything else with 404, so a loopback request reports
+# the whole site broken while it is in fact fine. Ask over HTTPS instead, and use --resolve so
+# the request still goes to this machine while carrying the real hostname — the Host header and
+# the SNI name both have to be the certificate's, or nginx picks the wrong server block and TLS
+# fails the name check.
+VERIFY_HOST="${SITE_URL#*://}"; VERIFY_HOST="${VERIFY_HOST%%/*}"; VERIFY_HOST="${VERIFY_HOST%%:*}"
+CURL_ARGS=()
+if [ "$SSL_INSTALLED" = "1" ]; then
+  BASE="https://$VERIFY_HOST"
+  CURL_ARGS=(--resolve "$VERIFY_HOST:443:127.0.0.1")
+else
+  BASE="http://127.0.0.1"
+fi
+
 check() {
   local label="$1" path="$2" expect="${3:-200}"
   local code
-  code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "http://127.0.0.1${path}")"
-  # Once a certificate is installed, nginx answers plain HTTP with a redirect to HTTPS. That is
-  # the configuration working, not failing, so accept it rather than reporting every route as
-  # broken on an otherwise healthy site.
+  code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 "${CURL_ARGS[@]+"${CURL_ARGS[@]}"}" "${BASE}${path}")"
   if [ "$code" = "$expect" ]; then
     ok "$label — $code"
-  elif [ "$SSL_INSTALLED" = "1" ] && { [ "$code" = "301" ] || [ "$code" = "308" ]; }; then
-    ok "$label — $code to https"
   else
     warn "$label — $code (expected $expect)"; FAILED=1
   fi
