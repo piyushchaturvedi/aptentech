@@ -383,12 +383,44 @@ export function TechStackTabs({ groups }: { groups: TechStackGroup[] }) {
       </div>
 
       <div className="tech-grid rv d1" id="techGrid">
-        {group.items.map((name) => (
-          <div key={name} className="tech" style={{ ['--c' as string]: ACCENT_HEX[group.accent] }}>
-            <i aria-hidden="true">{name.slice(0, 2).toUpperCase()}</i>
-            {name}
-          </div>
-        ))}
+        {group.items.map((item, index) => {
+          /*
+            Three ways to fill the mark, in the order they are preferred: an uploaded logo,
+            then a registry icon, then the first two letters of the name. The initials are the
+            design's original behaviour and stay as the fallback, so a chip with no mark set
+            looks exactly as it did before.
+
+            Keyed by position rather than by label: the same technology legitimately appears in
+            more than one category, and a duplicate key is a React error.
+          */
+          /*
+            Tolerate the old shape. Chips used to be bare strings, and a record written before
+            the migration — or restored from an older dump — still is one. Reading `.label` off
+            a string yields undefined and took the whole page down at build time, so normalise
+            here rather than trusting every row to have been converted.
+          */
+          const chip = typeof item === 'string' ? { label: item, icon: '', image: undefined } : item;
+          const logo = (chip.image as { url?: string | null } | undefined)?.url ?? null;
+
+          return (
+            <div key={`${group.category}-${index}`} className="tech" style={{ ['--c' as string]: ACCENT_HEX[group.accent] }}>
+              <i aria-hidden="true">
+                {logo ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  // Sized inline rather than through a class: the mark box is styled
+                  // identically in eight per-page stylesheets, and adding a rule would mean
+                  // editing all of them.
+                  <img src={logo} alt="" style={{ width: 18, height: 18, objectFit: 'contain', display: 'block' }} />
+                ) : chip.icon ? (
+                  <Icon name={item.icon} size={18} />
+                ) : (
+                  String(chip.label ?? '').slice(0, 2).toUpperCase()
+                )}
+              </i>
+              {chip.label}
+            </div>
+          );
+        })}
       </div>
     </>
   );

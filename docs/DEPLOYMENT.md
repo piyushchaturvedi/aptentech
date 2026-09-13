@@ -118,7 +118,7 @@ The first time only, pass the address once — it is stored and every other valu
 from it:
 
 ```bash
-SITE_URL=http://3.94.246.68 npm run deploy:prod
+SITE_URL=http://3.218.41.249 npm run deploy:prod
 ```
 
 ## The environment configures itself

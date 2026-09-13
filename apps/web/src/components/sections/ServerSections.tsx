@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { inlineLinks } from '@/components/shared/InlineLinks';
 import type {
   ComplianceBadge,
   SolutionItem,
@@ -62,7 +63,7 @@ export function SectionHead({
       <h2 className="h2 rv" {...(headingId ? { id: headingId } : {})}>
         {title}
       </h2>
-      {lede ? <p className="lede rv d1">{lede}</p> : null}
+      {lede ? <p className="lede rv d1">{inlineLinks(lede)}</p> : null}
     </div>
   );
 }

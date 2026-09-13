@@ -29,7 +29,9 @@
     "reset-admin-password": "npm run reset-admin-password --workspace @aptentech/api --",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "npm run lint --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present"
+    "test": "npm run test --workspaces --if-present",
+    "migrate-tech-stack": "node scripts/migrate-tech-stack.js",
+    "migrate-home-growth": "node scripts/migrate-home-growth.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",

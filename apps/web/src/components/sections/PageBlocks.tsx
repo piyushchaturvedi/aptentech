@@ -1,4 +1,6 @@
 import Link from 'next/link';
+import { inlineLinks } from '@/components/shared/InlineLinks';
+import { GrowthBand } from '@/components/sections/GrowthBand';
 import type { PageBlock, SiteSettings, LeadFormConfig } from '@aptentech/shared';
 import { ACCENT_HEX } from '@aptentech/shared';
 import type { ResolvedSitePage } from '@/lib/api/content';
@@ -180,7 +182,7 @@ export function PageBlocks({ page, settings }: { page: ResolvedSitePage; setting
                     <h1 className="h1 rv d1" id="hero-h1">
                       {block.title}
                     </h1>
-                    {block.body ? <p className="hero-sub rv d2">{block.body}</p> : null}
+                    {block.body ? <p className="hero-sub rv d2">{inlineLinks(block.body)}</p> : null}
                     <CtaList ctas={block.ctas} />
                     {block.image && (block.image.legacyPath || (block.image as { url?: string }).url) ? (
                       <div className="im-frame rv d3">
@@ -200,7 +202,7 @@ export function PageBlocks({ page, settings }: { page: ResolvedSitePage; setting
                     <h2 className="h2-sm" id="res-h2">
                       {block.title}
                     </h2>
-                    {block.body ? <p className="ks">{block.body}</p> : null}
+                    {block.body ? <p className="ks">{inlineLinks(block.body)}</p> : null}
                     <StatCounters stats={(block.stats ?? []) as never} />
                   </div>
                 </div>
@@ -410,6 +412,20 @@ export function PageBlocks({ page, settings }: { page: ResolvedSitePage; setting
           case 'aiGrid':
             return <AiGridBand key={key} block={block} />;
 
+          case 'growthBand':
+            return (
+              <GrowthBand
+                key={key}
+                eyebrow={String(block.eyebrow ?? '')}
+                title={String(block.title ?? '')}
+                lede={String(block.lede ?? block.body ?? '')}
+                funnelLabel={String(block.funnelLabel ?? '')}
+                ctaLabel={String(block.ctaLabel ?? '')}
+                stages={(block.stages ?? []) as never}
+                channels={(block.channels ?? []) as never}
+              />
+            );
+
           case 'faqShell':
             return <FaqShell key={key} block={block} />;
 
@@ -470,7 +486,7 @@ export function PageBlocks({ page, settings }: { page: ResolvedSitePage; setting
                         <h2 className="h2" id={headingId}>
                           {block.title}
                         </h2>
-                        {block.body ? <p>{block.body}</p> : null}
+                        {block.body ? <p>{inlineLinks(block.body)}</p> : null}
                         <CtaList ctas={block.ctas} className="" />
                       </div>
 

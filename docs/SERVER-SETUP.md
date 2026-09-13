@@ -139,7 +139,7 @@ up, and free at this size.
 1. Create a free M0 cluster at <https://cloud.mongodb.com>, in **AWS / us-east-1** so it sits
    beside this instance.
 2. Add a database user.
-3. Under **Network Access**, allow this server's public IP (`3.94.246.68`).
+3. Under **Network Access**, allow this server's public IP (`3.218.41.249`).
 4. Copy the connection string — it looks like
    `mongodb+srv://user:password@cluster.mongodb.net/?retryWrites=true&w=majority`.
 
@@ -188,7 +188,7 @@ Fill in, at minimum:
 | --- | --- |
 | `MONGODB_URI` | the Atlas string from step 6 |
 | `API_SERVICE_TOKEN`, `SESSION_SECRET`, `REVALIDATE_SECRET` | the three generated above |
-| `PUBLIC_SITE_URL`, `NEXT_PUBLIC_SITE_URL`, `WEB_ORIGIN` | `http://3.94.246.68` while there is no domain |
+| `PUBLIC_SITE_URL`, `NEXT_PUBLIC_SITE_URL`, `WEB_ORIGIN` | `http://3.218.41.249` while there is no domain |
 | `REVALIDATE_URL` | `http://127.0.0.1:3000/api/revalidate` — stays on the loopback rather than going out and back |
 | `TRUST_PROXY` | `true` — nginx sits in front |
 
@@ -370,13 +370,13 @@ this instance’s disk while `MEDIA_DRIVER=local`.
 In the **EC2 security group**, open only **80**, **443** and **22** (SSH restricted to your own
 IP). Ports 3000 and 4000 must stay closed — nginx reaches them over the loopback.
 
-The site is now live at **http://3.94.246.68/**, admin at **http://3.94.246.68/admin**.
+The site is now live at **http://3.218.41.249/**, admin at **http://3.218.41.249/admin**.
 
 ---
 
 ## 12. Domain and HTTPS
 
-Point an **A record** for your domain at `3.94.246.68`. Give DNS a few minutes, confirm it
+Point an **A record** for your domain at `3.218.41.249`. Give DNS a few minutes, confirm it
 resolves, then:
 
 ```bash

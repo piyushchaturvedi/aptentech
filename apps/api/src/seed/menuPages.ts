@@ -54,7 +54,11 @@ interface SourcePage {
   solutions?: SourceItem[];
   technologies?: SourceItem[];
   features?: SourceItem[];
-  techStack?: Array<{ category: string; accent?: string; items?: string[] }>;
+  techStack?: Array<{
+    category: string;
+    accent?: string;
+    items?: Array<{ label: string; icon: string; image: unknown }>;
+  }>;
   process?: unknown[];
   why?: unknown[];
   faqs?: unknown[];

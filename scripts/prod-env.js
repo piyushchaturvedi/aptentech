@@ -176,7 +176,7 @@ function main() {
     console.error(
       'No production site URL.\n\n' +
         '  Pass it once and it is stored:\n' +
-        '    SITE_URL=http://3.94.246.68 node scripts/prod-env.js\n',
+        '    SITE_URL=http://3.218.41.249 node scripts/prod-env.js\n',
     );
     process.exit(1);
   }

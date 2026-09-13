@@ -1,0 +1,47 @@
+name: Deploy
+
+# Merging to main is the deploy. `workflow_dispatch` adds a manual button for redeploying the
+# same commit — useful when a deploy failed for a reason outside the code, such as the database
+# being unreachable.
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+# One deploy at a time. Without this, two merges a minute apart start two builds against the
+# same working tree on the server. `cancel-in-progress: false` because a half-finished deploy
+# is worse than a queued one — the site would be left running a build that was killed midway.
+concurrency:
+  group: deploy-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    # The build happens on the server, so this job only has to hold an SSH connection open.
+    # Generous enough for a cold install plus two builds on a t3.micro using swap.
+    timeout-minutes: 40
+
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.DEPLOY_HOST }}
+          username: ${{ secrets.DEPLOY_USER }}
+          key: ${{ secrets.DEPLOY_SSH_KEY }}
+          # The server does the work; this waits for it. Anything shorter kills a legitimate
+          # first build rather than reporting a failure.
+          command_timeout: 40m
+          script: |
+            set -euo pipefail
+            cd ${{ secrets.DEPLOY_PATH }}
+            bash scripts/ci-deploy.sh main
+
+      # Runs whether the deploy passed or failed, so a green tick means the site is actually
+      # answering — not merely that the script exited zero.
+      - name: Verify the site is answering
+        if: always()
+        run: |
+          code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "${{ secrets.DEPLOY_SITE_URL }}/")"
+          echo "site responded $code"
+          [ "$code" = "200" ] || [ "$code" = "301" ] || [ "$code" = "308" ]

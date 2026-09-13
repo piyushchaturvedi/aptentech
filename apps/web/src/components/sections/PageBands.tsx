@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { inlineLinks } from '@/components/shared/InlineLinks';
 import type { CaseStudy, FaqItem, ServiceItem, TechStackGroup, TechnologyItem } from '@aptentech/shared';
 import { ACCENT_HEX } from '@aptentech/shared';
 import { Icon, ArrowIcon, TickIcon } from '@/components/shared/Icon';
@@ -414,7 +415,7 @@ export function AwardsBand({ block, canvas }: { block: Block; canvas: boolean })
           <div className="aw-lead rv">
             <div>
               <h3>{lead.title}</h3>
-              <p>{lead.body}</p>
+              <p>{inlineLinks(lead.body)}</p>
             </div>
             <div className="rating">
               <Stars />

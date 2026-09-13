@@ -16,7 +16,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
-import { accentFromHex, type AccentToken } from '@aptentech/shared';
+import { accentFromHex, EMPTY_MEDIA, type AccentToken } from '@aptentech/shared';
 
 export interface IconRegistry {
   [key: string]: string;
@@ -404,7 +404,17 @@ export function readTechStack(js: string) {
   if (!raw) return [];
   return raw
     .filter((row) => Array.isArray(row))
-    .map((row) => ({ category: text(row[0]), accent: accentFromHex(row[1]) as AccentToken, items: list(row[2]) }));
+    /*
+      Chips are stored as documents now, so a name from the source HTML becomes one with only
+      its label filled in. The mark fields stay empty and the design falls back to the initials
+      it has always shown, leaving seeded pages looking exactly as before until someone uploads
+      a logo in the admin.
+    */
+    .map((row) => ({
+      category: text(row[0]),
+      accent: accentFromHex(row[1]) as AccentToken,
+      items: list(row[2]).map((label) => ({ label, icon: '', image: { ...EMPTY_MEDIA } })),
+    }));
 }
 
 export function readWhy(js: string) {

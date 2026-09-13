@@ -987,3 +987,54 @@ ul{margin:0; padding:0; list-style:none}
   background:#FFF8E8; border:1px solid #F0D9A0}
 .legal-notice p{margin:0; font-size:.88rem; color:#6B5320; line-height:1.6}
 .legal-notice b{color:#4A3812}
+
+/* ---- growth & marketing: funnel + channel list (distinct from the icon-grid pattern) ---- */
+.gm-shell{display:grid; grid-template-columns:.78fr 1.22fr; gap:clamp(28px,3.2vw,52px); align-items:start; margin-top:clamp(28px,3vw,40px)}
+.gm-k{font-family:var(--mono); font-size:10px; letter-spacing:.16em; text-transform:uppercase; color:#8E97C8; margin-bottom:18px}
+
+.gm-funnel{position:relative; padding:26px 24px 24px; border-radius:var(--r-lg,18px); background:rgba(255,255,255,.045); border:1px solid rgba(255,255,255,.1)}
+.gm-stages{position:relative; display:grid; gap:0}
+.gm-stages::before{content:""; position:absolute; left:19px; top:6px; bottom:6px; width:1px;
+  background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.22) 15%, rgba(255,255,255,.22) 85%, rgba(255,255,255,.05))}
+.gm-stage{position:relative; display:flex; gap:16px; padding:14px 0}
+.gm-stage .dot{position:relative; z-index:1; flex:none; width:39px; height:39px; border-radius:50%;
+  display:grid; place-items:center; background:#141338; border:1.5px solid var(--c); color:var(--c);
+  font-family:var(--mono); font-size:12px; font-weight:700}
+.gm-stage .body b{display:block; font-family:var(--display); font-size:.98rem; color:#fff}
+.gm-stage .body span{display:block; margin-top:3px; font-size:.82rem; color:#A7AFD6; line-height:1.5}
+.gm-cta{width:100%; justify-content:center; margin-top:22px}
+
+.gm-list{display:grid; gap:0}
+.gm-list-wrap{display:flex; flex-direction:column}
+.gm-list-view{overflow:hidden}
+.gm-list-view .gm-list{transition:transform .5s cubic-bezier(.65,0,.35,1); will-change:transform}
+.gm-pager{display:flex; align-items:center; justify-content:center; gap:16px; margin-top:18px}
+.gm-arrow{width:38px; height:38px; border-radius:50%; flex:none; display:grid; place-items:center; cursor:pointer;
+  border:1px solid rgba(255,255,255,.18); background:rgba(255,255,255,.05); color:#fff; transition:.25s var(--ease)}
+.gm-arrow:hover{background:rgba(255,255,255,.13); border-color:rgba(255,255,255,.34)}
+.gm-arrow[disabled]{opacity:.32; cursor:default; pointer-events:none}
+.gm-dots{display:flex; align-items:center; gap:7px}
+.gm-dots button{width:7px; height:7px; padding:0; border:0; border-radius:4px; background:rgba(255,255,255,.25); cursor:pointer; transition:.25s var(--ease)}
+.gm-dots button.is-active{width:22px; background:#5EF2D6}
+@media (max-width:900px){
+  .gm-list-view{height:auto !important; overflow:visible}
+  .gm-list-view .gm-list{transform:none !important}
+  .gm-pager{display:none}
+}
+.gm-row{position:relative; display:grid; grid-template-columns:auto 1fr auto; align-items:center; gap:16px;
+  padding:16px 6px; border-top:1px solid rgba(255,255,255,.09); transition:background .3s var(--ease), padding-left .3s var(--ease)}
+.gm-row:last-child{border-bottom:1px solid rgba(255,255,255,.09)}
+.gm-row:hover{background:rgba(255,255,255,.04); padding-left:14px}
+.gm-row .ic{width:40px; height:40px; border-radius:11px; flex:none; display:grid; place-items:center; color:#fff;
+  background:color-mix(in srgb,var(--c) 30%,transparent); border:1px solid color-mix(in srgb,var(--c) 45%,transparent); transition:.3s var(--ease)}
+.gm-row:hover .ic{background:var(--c); box-shadow:0 12px 22px -12px var(--c)}
+.gm-row .tx b{display:block; font-family:var(--display); font-size:.95rem; color:#fff}
+.gm-row .tx span{display:block; margin-top:3px; font-size:.83rem; color:#A7AFD6; line-height:1.5}
+.gm-row .out{font-family:var(--mono); font-size:9px; letter-spacing:.09em; text-transform:uppercase; color:var(--c);
+  text-align:right; white-space:nowrap; padding-left:10px}
+@media (max-width:900px){
+  .gm-shell{grid-template-columns:1fr}
+  .gm-row{grid-template-columns:auto 1fr; row-gap:6px}
+  .gm-row .out{grid-column:2; text-align:left; padding-left:0}
+}
+@media (max-width:560px){ .gm-row .tx span{display:none} }

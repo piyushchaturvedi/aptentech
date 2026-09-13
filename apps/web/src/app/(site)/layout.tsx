@@ -1,5 +1,7 @@
+import type { Metadata } from 'next';
 import type { SiteSettings } from '@aptentech/shared';
 import { content } from '@/lib/api/content';
+import type { ResolvedMedia } from '@/lib/api/content';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { Analytics } from '@/components/layout/Analytics';
@@ -37,6 +39,32 @@ function hideUnpublished(settings: SiteSettings, unavailable: Set<string>): Site
       .map((group) => ({ ...group, columns: group.columns.map((c) => ({ ...c, links: c.links.filter(keep) })) })),
     footerColumns: settings.footerColumns.map((column) => ({ ...column, links: column.links.filter(keep) })),
     mobileNavigation: settings.mobileNavigation?.map((item) => ({ ...item, links: item.links.filter(keep) })),
+  };
+}
+
+/**
+ * The browser-tab icon, from the CMS.
+ *
+ * Settings has carried a `favicon` field that an admin could set since the migration, and
+ * nothing ever rendered it — so every page asked for /favicon.ico, got a 404, and the tab
+ * showed the browser's blank-page glyph. Declaring it here rather than shipping a file keeps
+ * it editable: replacing the image in Settings changes the icon with no redeploy.
+ *
+ * Nested layout metadata merges with the root's, so this adds icons without disturbing the
+ * title template or metadataBase. If no favicon is set the key is omitted entirely, which
+ * leaves the previous behaviour rather than pointing at a broken URL.
+ */
+export async function generateMetadata(): Promise<Metadata> {
+  const settings = await content.settings();
+  const url = (settings.favicon as ResolvedMedia | undefined)?.url;
+  if (!url) return {};
+
+  return {
+    icons: {
+      icon: [{ url }],
+      shortcut: [{ url }],
+      apple: [{ url }],
+    },
   };
 }
 

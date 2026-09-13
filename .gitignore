@@ -13,3 +13,10 @@ uploads/
 *.log
 npm-debug.log*
 .turbo/
+
+# A local database dump. Committing one would put content — and any lead that was in it when
+# the dump was taken — into the repository's history, where deleting the file later does not
+# remove it.
+db/
+dump/
+*.bson

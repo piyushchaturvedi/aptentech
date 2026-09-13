@@ -126,8 +126,26 @@ const ProcessStepSchema = new Schema(
   { _id: false },
 );
 
+/*
+  Tech-stack chips were stored as bare strings and now carry an optional mark. Mongoose reads
+  the existing string arrays as documents with only `label` set, because the zod layer upgrades
+  them on the way in — so no migration is needed and nothing already stored is lost.
+*/
+const TechStackItemSchema = new Schema(
+  {
+    label: { type: String, required: true, maxlength: 400 },
+    icon: { type: String, default: '', maxlength: 64 },
+    image: { type: MediaRefSchema, default: () => ({}) },
+  },
+  { _id: false },
+);
+
 const TechStackGroupSchema = new Schema(
-  { category: { type: String, required: true, maxlength: 300 }, accent, items: { type: [String], default: [] } },
+  {
+    category: { type: String, required: true, maxlength: 300 },
+    accent,
+    items: { type: [TechStackItemSchema], default: [] },
+  },
   { _id: false },
 );
 

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { inlineLinks } from '@/components/shared/InlineLinks';
 import type { SiteSettings } from '@aptentech/shared';
 import { ACCENT_HEX } from '@aptentech/shared';
 import type { ResolvedMedia, ResolvedServicePage } from '@/lib/api/content';
@@ -61,7 +62,7 @@ function SectHead({
       <h2 className="h2 rv" id={headingId}>
         {title}
       </h2>
-      {lede ? <p className="lede rv d1">{lede}</p> : null}
+      {lede ? <p className="lede rv d1">{inlineLinks(lede)}</p> : null}
     </div>
   );
 }
@@ -161,7 +162,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                 ) : null}
               </h1>
 
-              <p className="hs-lede rv d1">{page.heroDescription}</p>
+              <p className="hs-lede rv d1">{inlineLinks(page.heroDescription)}</p>
 
               {page.heroPoints?.length ? (
                 <ul className="hs-points rv d2">
@@ -266,7 +267,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                 </h2>
                 {page.positioningBody ? (
                   <p className="lede rv d1" style={{ marginTop: 16 }}>
-                    {page.positioningBody}
+                    {inlineLinks(page.positioningBody)}
                   </p>
                 ) : null}
 
@@ -328,7 +329,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                 <h2 className="h2-sm" id="stats-h2">
                   {page.statsTitle}
                 </h2>
-                {page.statsNote ? <p className="ks">{page.statsNote}</p> : null}
+                {page.statsNote ? <p className="ks">{inlineLinks(page.statsNote)}</p> : null}
                 <StatCounters stats={page.stats} />
               </div>
             </div>
@@ -365,7 +366,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                   <h2 className="h2" id="cta1-h2">
                     {page.midCtaTitle}
                   </h2>
-                  {page.midCtaBody ? <p>{page.midCtaBody}</p> : null}
+                  {page.midCtaBody ? <p>{inlineLinks(page.midCtaBody)}</p> : null}
                   {page.midCtaButton ? (
                     <a href={page.midCtaButton.href} className="btn btn-mint">
                       {page.midCtaButton.label}
@@ -512,7 +513,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                   <h2 className="h2" id="cta2-h2">
                     {page.midCta2Title}
                   </h2>
-                  {page.midCta2Body ? <p>{page.midCta2Body}</p> : null}
+                  {page.midCta2Body ? <p>{inlineLinks(page.midCta2Body)}</p> : null}
                   {page.midCta2Button ? (
                     <a href={page.midCta2Button.href} className="btn btn-mint">
                       {page.midCta2Button.label}
@@ -679,7 +680,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
             <FaqAccordion faqs={page.faqs} wide />
             {page.faqAfter ? (
               <div className="faq-after rv">
-                <p>{page.faqAfter}</p>
+                <p>{inlineLinks(page.faqAfter)}</p>
                 <a href="#contact" className="btn btn-primary">
                   {page.faqAfterCtaLabel}
                   <ArrowIcon size={15} />
@@ -700,7 +701,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                 <h2 className="h2 rv d1" id="blog-h2" style={{ marginTop: 12 }}>
                   {page.latestInsightsTitle}
                 </h2>
-                {page.latestInsightsBody ? <p className="lede rv d2">{page.latestInsightsBody}</p> : null}
+                {page.latestInsightsBody ? <p className="lede rv d2">{inlineLinks(page.latestInsightsBody)}</p> : null}
               </div>
               <Link href="/blog/" className="blog-btn rv d2">
                 View all blogs

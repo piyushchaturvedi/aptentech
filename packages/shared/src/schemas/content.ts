@@ -70,10 +70,35 @@ export const processStepSchema = z.object({
   deliverables: bulletList,
 });
 
+/**
+ * One technology chip.
+ *
+ * Stored as an object so a chip can carry a mark of its own — Swift, Kotlin and React Native
+ * are recognised by their logos, and the design was falling back to the first two letters of
+ * the name because there was nowhere to put one.
+ *
+ * Two ways to give it a mark, in the order the renderer prefers them: `image` is an uploaded
+ * asset, which is what a brand logo has to be; `icon` is a key into the design's own registry
+ * for the generic cases. Neither accepts markup — an uploaded SVG is sanitised by the media
+ * pipeline, and a registry key cannot express anything the design does not already ship.
+ *
+ * Entries used to be bare strings, and the site's stored content is full of them, so the
+ * preprocess upgrades one as it is read. Without it every existing tech-stack section would
+ * fail validation the first time an admin opened the page.
+ */
+export const techStackItemSchema = z.preprocess(
+  (value) => (typeof value === 'string' ? { label: value } : value),
+  z.object({
+    label: z.string().trim().min(1).max(400),
+    icon: iconKey,
+    image: mediaRefSchema,
+  }),
+);
+
 export const techStackGroupSchema = z.object({
   category: shortText.min(1),
   accent: accentSchema,
-  items: bulletList,
+  items: z.array(techStackItemSchema).max(30).default([]),
 });
 
 export const whyItemSchema = z.object({
@@ -285,6 +310,30 @@ export const pageBlockSchema = z
     logoSlots: z.array(shortText).max(40).optional().default([]),
     capabilitiesTitle: shortText.optional().default(''),
     capabilities: z.array(shortText).max(20).optional().default([]),
+    /*
+      Growth band. The funnel stages carry their own number rather than being numbered by
+      position, because the design prints "01"–"04" as content and an editor reordering the
+      list should not silently renumber it.
+    */
+    funnelLabel: shortText.optional().default(''),
+    stages: z
+      .array(z.object({ number: shortText.default(''), title: shortText, description: longText.default('') }))
+      .max(8)
+      .optional()
+      .default([]),
+    channels: z
+      .array(
+        z.object({
+          accent: accentSchema,
+          icon: iconKey,
+          title: shortText,
+          description: longText.default(''),
+          outcome: shortText.default(''),
+        }),
+      )
+      .max(20)
+      .optional()
+      .default([]),
     mediaLabel: shortText.optional().default(''),
     mediaHint: shortText.optional().default(''),
     quickCards: z.array(iconCardSchema).max(8).optional().default([]),

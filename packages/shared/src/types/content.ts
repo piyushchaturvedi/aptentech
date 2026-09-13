@@ -78,11 +78,20 @@ export interface ProcessStep {
   deliverables: string[];
 }
 
+/** One chip inside a tech-stack group: a name, and optionally a mark to show beside it. */
+export interface TechStackItem {
+  label: string;
+  /** Key into the design's icon registry. */
+  icon: string;
+  /** An uploaded asset, which is what a brand logo has to be. Takes precedence over `icon`. */
+  image: MediaRef;
+}
+
 /** Source: `TECH` — tabbed tech-stack groups. */
 export interface TechStackGroup {
   category: string;
   accent: AccentToken;
-  items: string[];
+  items: TechStackItem[];
 }
 
 /** Source: `WHY` — the numbered "why Aptentech" list. */
@@ -429,6 +438,10 @@ export interface SitePage {
  */
 export const BLOCK_TYPES = [
   'hero',
+  // The growth-and-marketing band: a funnel down the left, a scrolling channel list on the
+  // right. It replaced the AI card grid on the home page, and is a distinct type rather than a
+  // variant of `aiGrid` because the two share neither their markup nor their data.
+  'growthBand',
   'textSection',
   'imageText',
   'featureGrid',
@@ -782,6 +795,33 @@ export interface AiGridBlock extends BaseBlock {
   items: TechnologyItem[];
 }
 
+/** The growth-and-marketing band: a funnel beside a scrolling list of channels. */
+export interface GrowthStageItem {
+  /** Printed as content ("01"–"04"), so reordering the list does not renumber it. */
+  number: string;
+  title: string;
+  description: string;
+}
+
+export interface GrowthChannelItem {
+  accent: AccentToken;
+  icon: string;
+  title: string;
+  description: string;
+  /** The short right-aligned result line, e.g. "Compounding pipeline". */
+  outcome: string;
+}
+
+export interface GrowthBandBlock extends BaseBlock {
+  type: 'growthBand';
+  lede: string;
+  /** The kicker above the funnel, e.g. "How the programme compounds". */
+  funnelLabel: string;
+  ctaLabel: string;
+  stages: GrowthStageItem[];
+  channels: GrowthChannelItem[];
+}
+
 export interface FaqShellBlock extends BaseBlock {
   type: 'faqShell';
   lede: string;
@@ -907,6 +947,7 @@ export type PageBlock =
   | CaseCarouselBlock
   | TechTabsBlock
   | AiGridBlock
+  | GrowthBandBlock
   | FaqShellBlock
   | LatestInsightsBlock
   | CaseStudyListBlock

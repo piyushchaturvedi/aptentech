@@ -231,19 +231,44 @@ export function IconPicker({ value, onChange }: { value: string; onChange: (v: s
  * knows exactly which asset belongs there. Choosing one sets `mediaId` and the public site
  * swaps the placeholder for the real image on the next revalidation.
  */
+/** Formats a byte count the way a person reading an upload form would say it. */
+function fileSize(bytes: number | null | undefined): string | null {
+  if (!bytes || bytes < 0) return null;
+  if (bytes < 1024) return `${bytes} B`;
+  if (bytes < 1024 * 1024) return `${Math.round(bytes / 1024)} KB`;
+  return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+}
+
 export function MediaPicker({
   label,
   value,
   onChange,
+  recommended,
 }: {
   label: string;
   value: MediaRef;
   onChange: (v: MediaRef) => void;
+  /**
+   * The size this slot is designed around, e.g. `"1200×900"`. Shown before anything is
+   * uploaded, which is the only moment it can still influence what someone picks — telling an
+   * editor the expected proportions after they have already cropped and uploaded is too late.
+   */
+  recommended?: string;
 }) {
   const { request, session } = useAdmin();
   const [open, setOpen] = useState(false);
   const [assets, setAssets] = useState<MediaAsset[]>([]);
   const [busy, setBusy] = useState(false);
+  /*
+    Dimensions are stored on the reference, but not every record has them: anything seeded from
+    the original HTML carries a path and no measurements. Reading them off the rendered image
+    covers those without a migration, and costs nothing — the browser has already decoded it.
+  */
+  const [measured, setMeasured] = useState<{ width: number; height: number } | null>(null);
+
+  useEffect(() => {
+    setMeasured(null);
+  }, [value.mediaId, value.legacyPath]);
 
   useEffect(() => {
     if (!open || !session) return;
@@ -269,6 +294,13 @@ export function MediaPicker({
   const current = assets.find((a) => a.id === value.mediaId);
   const preview = (value as MediaRef & { url?: string }).url ?? current?.url ?? null;
 
+  // Three sources, best first: what the reference records, what the media library reports,
+  // and what the browser measured off the rendered image.
+  const width = value.width ?? current?.width ?? measured?.width ?? null;
+  const height = value.height ?? current?.height ?? measured?.height ?? null;
+  const dimensions = width && height ? `${width}×${height}` : null;
+  const sizeOnDisk = fileSize(current?.bytes);
+
   return (
     <div className="adm-field">
       <label>{label}</label>
@@ -292,21 +324,35 @@ export function MediaPicker({
         >
           {preview ? (
             // eslint-disable-next-line @next/next/no-img-element
-            <img src={preview} alt="" style={{ width: '100%', height: 'auto', display: 'block' }} />
+            <img
+              src={preview}
+              alt=""
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+              onLoad={(e) => {
+                const img = e.currentTarget;
+                if (img.naturalWidth && img.naturalHeight) {
+                  setMeasured({ width: img.naturalWidth, height: img.naturalHeight });
+                }
+              }}
+            />
           ) : (
-            <span>
-              Not uploaded
-              {value.width && value.height ? (
-                <>
-                  <br />
-                  {value.width}×{value.height}
-                </>
-              ) : null}
-            </span>
+            <span>Not uploaded</span>
           )}
         </div>
 
         <div style={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 8 }}>
+          <span className="hint">
+            {dimensions ? (
+              <>
+                Size: <strong>{dimensions}</strong>
+                {sizeOnDisk ? ` · ${sizeOnDisk}` : ''}
+              </>
+            ) : (
+              'Size: unknown'
+            )}
+            {recommended ? ` · designed for ${recommended}` : ''}
+          </span>
+
           {value.legacyPath ? (
             <span className="hint">
               Original path: <code>{value.legacyPath}</code>

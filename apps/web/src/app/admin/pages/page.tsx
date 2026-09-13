@@ -1,10 +1,43 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { SitePage, SiteSettings } from '@aptentech/shared';
+import type { AccentToken, SitePage, SiteSettings } from '@aptentech/shared';
 import { EMPTY_MEDIA, EMPTY_SEO } from '@aptentech/shared';
 import { describeError, useAdmin } from '@/components/admin/AdminClient';
-import { MediaPicker, Repeater, Select, StringList, Text, TextArea, Toggle } from '@/components/admin/Fields';
+import {
+  AccentPicker,
+  IconPicker,
+  MediaPicker,
+  Repeater,
+  Select,
+  StringList,
+  Text,
+  TextArea,
+  Toggle,
+} from '@/components/admin/Fields';
+
+/** The card shape shared by the quick-facts, values, reasons and feature grids. */
+interface IconCard {
+  accent: AccentToken;
+  icon: string;
+  title: string;
+  description: string;
+}
+
+/*
+  Block keys that hold a list of icon cards.
+
+  They are the same shape and differ only in which grid they feed, so one editor serves all
+  of them and the label is what tells an editor which part of the page they are looking at.
+*/
+const ICON_CARD_KEYS = ['items', 'quickCards', 'values', 'reasons'] as const;
+
+const ICON_CARD_LABELS: Record<string, string> = {
+  items: 'Cards',
+  quickCards: 'Quick facts',
+  values: 'Values',
+  reasons: 'Reasons',
+};
 
 /**
  * Static pages — home, about, contact, case studies, blog landing and the two legal pages.
@@ -331,13 +364,22 @@ export default function AdminPagesPage() {
             <span className="hint">Reorder or switch off — the available types are fixed by the design.</span>
           </div>
           <div className="adm-panel-body">
+            <div className="adm-alert ok" style={{ marginBottom: 14 }}>
+              <strong>Links inside text.</strong> In any body or description field, write{' '}
+              <code>[the words to link](/where/it/goes/)</code> to turn a phrase into a link. It prints underlined in
+              the surrounding colour.
+            </div>
+
             <Repeater<Block>
               label="Blocks"
               items={blocks}
               onChange={(next) => patch({ blocks: next as SitePage['blocks'] })}
               itemLabel={(b) => `${b.type}${b.title ? ` · ${String(b.title).slice(0, 40)}` : ''}`}
               create={() => ({ key: `block-${Date.now()}`, type: 'textSection', enabled: true, title: '', body: '', html: '' }) as Block}
-              render={(block, update) => (
+              render={(block, update) => {
+                const has = (key: string) => key in (block as Record<string, unknown>);
+
+                return (
                 <>
                   <div className="adm-grid2">
                     <Text label="Eyebrow" value={String(block.eyebrow ?? '')} onChange={(v) => update({ eyebrow: v } as Partial<Block>)} />
@@ -442,13 +484,306 @@ export default function AdminPagesPage() {
                     />
                   ) : null}
 
+                  {/*
+                    Everything below appears only when the block actually carries that field.
+
+                    Blocks are a permissive union: each type uses its own subset of a shared
+                    bag of keys, and which subset is decided by the renderer, not by anything
+                    the editor can read. Keying on presence is what makes the rule reliable —
+                    if the live page is printing a tick list, the block holds `bullets`, so the
+                    tick-list editor appears. It was the absence of exactly these that left the
+                    admin showing headings and nothing else.
+                  */}
+                  {has('lede') ? (
+                    <TextArea
+                      label="Text under the heading"
+                      value={String(block.lede ?? '')}
+                      onChange={(v) => update({ lede: v } as Partial<Block>)}
+                      rows={3}
+                    />
+                  ) : null}
+
+                  {has('sub') ? (
+                    <TextArea
+                      label="Sub-heading line"
+                      value={String(block.sub ?? '')}
+                      onChange={(v) => update({ sub: v } as Partial<Block>)}
+                      rows={2}
+                    />
+                  ) : null}
+
+                  {has('note') ? (
+                    <Text label="Note" value={String(block.note ?? '')} onChange={(v) => update({ note: v } as Partial<Block>)} />
+                  ) : null}
+
+                  {has('kicker') ? (
+                    <Text label="Kicker" value={String(block.kicker ?? '')} onChange={(v) => update({ kicker: v } as Partial<Block>)} />
+                  ) : null}
+
+                  {has('pillText') || has('pillStrong') ? (
+                    <div className="adm-grid2">
+                      <Text
+                        label="Pill text"
+                        value={String(block.pillText ?? '')}
+                        onChange={(v) => update({ pillText: v } as Partial<Block>)}
+                      />
+                      <Text
+                        label="Pill emphasis"
+                        value={String(block.pillStrong ?? '')}
+                        onChange={(v) => update({ pillStrong: v } as Partial<Block>)}
+                      />
+                    </div>
+                  ) : null}
+
+                  {has('bullets') ? (
+                    <StringList
+                      label="Tick points"
+                      items={(block.bullets as string[]) ?? []}
+                      onChange={(v) => update({ bullets: v } as unknown as Partial<Block>)}
+                    />
+                  ) : null}
+
+                  {has('trustedLabel') || has('logoSlots') ? (
+                    <>
+                      <Text
+                        label="Client strip label"
+                        value={String(block.trustedLabel ?? '')}
+                        onChange={(v) => update({ trustedLabel: v } as Partial<Block>)}
+                      />
+                      <StringList
+                        label="Logo slots"
+                        items={(block.logoSlots as string[]) ?? []}
+                        onChange={(v) => update({ logoSlots: v } as unknown as Partial<Block>)}
+                      />
+                    </>
+                  ) : null}
+
+                  {has('capabilities') || has('capabilitiesTitle') ? (
+                    <>
+                      <Text
+                        label="Capability list heading"
+                        value={String(block.capabilitiesTitle ?? '')}
+                        onChange={(v) => update({ capabilitiesTitle: v } as Partial<Block>)}
+                      />
+                      <StringList
+                        label="Capabilities"
+                        items={(block.capabilities as string[]) ?? []}
+                        onChange={(v) => update({ capabilities: v } as unknown as Partial<Block>)}
+                      />
+                    </>
+                  ) : null}
+
+                  {has('mediaLabel') || has('mediaHint') ? (
+                    <div className="adm-grid2">
+                      <Text
+                        label="Media caption"
+                        value={String(block.mediaLabel ?? '')}
+                        onChange={(v) => update({ mediaLabel: v } as Partial<Block>)}
+                      />
+                      <Text
+                        label="Media sub-caption"
+                        value={String(block.mediaHint ?? '')}
+                        onChange={(v) => update({ mediaHint: v } as Partial<Block>)}
+                      />
+                    </div>
+                  ) : null}
+
+                  {ICON_CARD_KEYS.filter((key) => has(key)).map((key) => (
+                    <Repeater
+                      key={key}
+                      label={ICON_CARD_LABELS[key] ?? key}
+                      items={(block[key] as IconCard[]) ?? []}
+                      onChange={(next) => update({ [key]: next } as unknown as Partial<Block>)}
+                      itemLabel={(c) => c.title || 'Untitled'}
+                      create={() => ({ accent: 'indigo' as AccentToken, icon: '', title: '', description: '' })}
+                      render={(card, updateCard) => (
+                        <>
+                          <Text label="Title" value={card.title} onChange={(v) => updateCard({ title: v })} />
+                          <TextArea
+                            label="Description"
+                            value={card.description}
+                            onChange={(v) => updateCard({ description: v })}
+                          />
+                          <div className="adm-grid2">
+                            <AccentPicker value={card.accent} onChange={(v) => updateCard({ accent: v })} />
+                            <IconPicker value={card.icon} onChange={(v) => updateCard({ icon: v })} />
+                          </div>
+                        </>
+                      )}
+                    />
+                  ))}
+
+                  {has('funnelLabel') || has('stages') ? (
+                    <>
+                      <Text
+                        label="Funnel kicker"
+                        value={String(block.funnelLabel ?? '')}
+                        onChange={(v) => update({ funnelLabel: v } as Partial<Block>)}
+                      />
+                      <Repeater
+                        label="Funnel stages"
+                        items={(block.stages as Array<{ number: string; title: string; description: string }>) ?? []}
+                        onChange={(stages) => update({ stages } as unknown as Partial<Block>)}
+                        itemLabel={(s) => s.title || 'Stage'}
+                        create={() => ({ number: '', title: '', description: '' })}
+                        render={(stage, updateStage) => (
+                          <>
+                            <div className="adm-grid2">
+                              <Text label="Number" value={stage.number} onChange={(v) => updateStage({ number: v })} />
+                              <Text label="Title" value={stage.title} onChange={(v) => updateStage({ title: v })} />
+                            </div>
+                            <TextArea
+                              label="Description"
+                              value={stage.description}
+                              onChange={(v) => updateStage({ description: v })}
+                              rows={2}
+                            />
+                          </>
+                        )}
+                      />
+                      <p className="hint">
+                        The number is content, not a position — reordering stages does not renumber them.
+                      </p>
+                    </>
+                  ) : null}
+
+                  {has('channels') ? (
+                    <Repeater
+                      label="Channels"
+                      items={
+                        (block.channels as Array<{
+                          accent: AccentToken;
+                          icon: string;
+                          title: string;
+                          description: string;
+                          outcome: string;
+                        }>) ?? []
+                      }
+                      onChange={(channels) => update({ channels } as unknown as Partial<Block>)}
+                      itemLabel={(c) => c.title || 'Channel'}
+                      create={() => ({ accent: 'indigo' as AccentToken, icon: '', title: '', description: '', outcome: '' })}
+                      render={(channel, updateChannel) => (
+                        <>
+                          <Text label="Title" value={channel.title} onChange={(v) => updateChannel({ title: v })} />
+                          <TextArea
+                            label="Description"
+                            value={channel.description}
+                            onChange={(v) => updateChannel({ description: v })}
+                            rows={2}
+                          />
+                          <Text
+                            label="Outcome"
+                            value={channel.outcome}
+                            onChange={(v) => updateChannel({ outcome: v })}
+                          />
+                          <div className="adm-grid2">
+                            <AccentPicker value={channel.accent} onChange={(v) => updateChannel({ accent: v })} />
+                            <IconPicker value={channel.icon} onChange={(v) => updateChannel({ icon: v })} />
+                          </div>
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('principles') ? (
+                    <Repeater
+                      label="Principles"
+                      items={(block.principles as Array<{ accent: AccentToken; number: string; title: string; description: string }>) ?? []}
+                      onChange={(principles) => update({ principles } as unknown as Partial<Block>)}
+                      itemLabel={(p) => p.title || 'Untitled'}
+                      create={() => ({ accent: 'indigo' as AccentToken, number: '', title: '', description: '' })}
+                      render={(item, updateItem) => (
+                        <>
+                          <div className="adm-grid2">
+                            <Text label="Number" value={item.number} onChange={(v) => updateItem({ number: v })} />
+                            <Text label="Title" value={item.title} onChange={(v) => updateItem({ title: v })} />
+                          </div>
+                          <TextArea
+                            label="Description"
+                            value={item.description}
+                            onChange={(v) => updateItem({ description: v })}
+                          />
+                          <AccentPicker value={item.accent} onChange={(v) => updateItem({ accent: v })} />
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('steps') ? (
+                    <Repeater
+                      label="Steps"
+                      items={(block.steps as Array<{ title: string; description: string; deliverables: string[] }>) ?? []}
+                      onChange={(steps) => update({ steps } as unknown as Partial<Block>)}
+                      itemLabel={(s) => s.title || 'Step'}
+                      create={() => ({ title: '', description: '', deliverables: [] })}
+                      render={(step, updateStep) => (
+                        <>
+                          <Text label="Title" value={step.title} onChange={(v) => updateStep({ title: v })} />
+                          <TextArea
+                            label="Description"
+                            value={step.description}
+                            onChange={(v) => updateStep({ description: v })}
+                          />
+                          <StringList
+                            label="Deliverables"
+                            items={step.deliverables ?? []}
+                            onChange={(v) => updateStep({ deliverables: v })}
+                          />
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('badges') ? (
+                    <Repeater
+                      label="Badges"
+                      items={(block.badges as Array<{ accent: AccentToken; label: string; icon: string }>) ?? []}
+                      onChange={(badges) => update({ badges } as unknown as Partial<Block>)}
+                      itemLabel={(b) => b.label || 'Badge'}
+                      create={() => ({ accent: 'indigo' as AccentToken, label: '', icon: '' })}
+                      render={(badge, updateBadge) => (
+                        <>
+                          <Text label="Label" value={badge.label} onChange={(v) => updateBadge({ label: v })} />
+                          <div className="adm-grid2">
+                            <AccentPicker value={badge.accent} onChange={(v) => updateBadge({ accent: v })} />
+                            <IconPicker value={badge.icon} onChange={(v) => updateBadge({ icon: v })} />
+                          </div>
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('items') && Array.isArray(block.items) && typeof block.items[0] === 'string' ? (
+                    <StringList
+                      label="Items"
+                      items={block.items as string[]}
+                      onChange={(v) => update({ items: v } as unknown as Partial<Block>)}
+                    />
+                  ) : null}
+
+                  {has('formTitle') || has('formNote') ? (
+                    <div className="adm-grid2">
+                      <Text
+                        label="Form heading"
+                        value={String(block.formTitle ?? '')}
+                        onChange={(v) => update({ formTitle: v } as Partial<Block>)}
+                      />
+                      <Text
+                        label="Form note"
+                        value={String(block.formNote ?? '')}
+                        onChange={(v) => update({ formNote: v } as Partial<Block>)}
+                      />
+                    </div>
+                  ) : null}
+
                   <Toggle
                     label="Show this section"
                     value={block.enabled !== false}
                     onChange={(v) => update({ enabled: v } as Partial<Block>)}
                   />
                 </>
-              )}
+                );
+              }}
             />
           </div>
         </div>
