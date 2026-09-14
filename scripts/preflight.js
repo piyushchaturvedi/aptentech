@@ -148,6 +148,15 @@ function isReal(value) {
       report('OK', 'Email over Amazon SES');
     }
 
+    if (apiEnv.EMAIL_DRIVER !== 'log' && !apiEnv.ADMIN_NOTIFICATION_EMAIL) {
+      report(
+        'WARNING',
+        'ADMIN_NOTIFICATION_EMAIL not set',
+        'New-enquiry notifications have nowhere to go unless a CMS notify-to address is\\n' +
+          'configured in Settings. Set ADMIN_NOTIFICATION_EMAIL to fix this from the environment.',
+      );
+    }
+
     if (apiEnv.TRUST_PROXY !== 'true') {
       report(
         'WARNING',

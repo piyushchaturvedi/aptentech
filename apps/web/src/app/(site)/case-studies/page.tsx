@@ -45,7 +45,7 @@ export async function generateMetadata({ searchParams }: { searchParams: Search 
     near-duplicate of a page that already ranks.
   */
   if (!industryFilter(params)) return base;
-  return { ...base, robots: { index: false, follow: true } };
+  return { ...base, robots: { index: false, follow: false } };
 }
 
 export default async function CaseStudiesPage({ searchParams }: { searchParams: Search }) {

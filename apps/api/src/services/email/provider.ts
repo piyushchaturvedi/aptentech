@@ -77,7 +77,10 @@ class LogProvider implements EmailProvider {
   readonly name = 'log';
 
   async send(message: OutgoingEmail): Promise<SendResult> {
-    logger.info(
+    // `warn`, not `info` — this is the #1 cause of "the form works but no email arrived"
+    // confusion, so it needs to stand out in a terminal full of request logs rather than
+    // blend in as routine activity.
+    logger.warn(
       {
         to: message.to,
         cc: message.cc,
@@ -86,7 +89,7 @@ class LogProvider implements EmailProvider {
         inReplyTo: message.inReplyTo,
         bytes: message.html.length,
       },
-      'Email (log driver — not delivered)',
+      'EMAIL NOT SENT — EMAIL_DRIVER=log, so this message was only recorded, not delivered. Set EMAIL_DRIVER=smtp (or ses) in apps/api/.env to actually send mail.',
     );
     return { providerId: null };
   }

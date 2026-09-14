@@ -2,6 +2,24 @@ import 'dotenv/config';
 import { z } from 'zod';
 
 /**
+ * A `.env` boolean, parsed properly.
+ *
+ * `z.coerce.boolean()` runs `Boolean(value)` under the hood, and `Boolean("false")` is
+ * `true` — any non-empty string is truthy in JavaScript. That silently inverted every
+ * "=false" in this file's .env consumers (SMTP_SECURE=false was read as true, which is
+ * exactly what broke SMTP over STARTTLS). This reads the conventional string forms instead.
+ */
+const envBoolean = (defaultValue: boolean) =>
+  z.preprocess((val) => {
+    if (typeof val !== 'string') return val;
+    const v = val.trim().toLowerCase();
+    if (v === '') return undefined;
+    if (['true', '1', 'yes', 'on'].includes(v)) return true;
+    if (['false', '0', 'no', 'off'].includes(v)) return false;
+    return val;
+  }, z.boolean().default(defaultValue));
+
+/**
  * Environment is validated once at boot and the process refuses to start if anything
  * required is missing or weak. Failing loudly here is much safer than discovering at
  * runtime that, say, SESSION_SECRET was undefined and sessions were unsignable.
@@ -62,9 +80,11 @@ const envSchema = z
     EMAIL_MESSAGE_ID_DOMAIN: z.string().min(3).default('aptentech.com'),
     SMTP_HOST: z.string().optional(),
     SMTP_PORT: z.coerce.number().int().min(1).max(65535).default(587),
-    SMTP_SECURE: z.coerce.boolean().default(false),
+    SMTP_SECURE: envBoolean(false),
     SMTP_USER: z.string().optional(),
     SMTP_PASSWORD: z.string().optional(),
+    /** Who gets the "new enquiry" notification. Deployment config, not CMS content — so it can never be left blank in the database by accident. */
+    ADMIN_NOTIFICATION_EMAIL: z.string().email().optional(),
     /** Shared secret an inbound-mail webhook must present. Without it the endpoint is closed. */
     INBOUND_WEBHOOK_SECRET: z.string().optional(),
 
@@ -74,12 +94,12 @@ const envSchema = z
      * Both exist so the refusal can be overridden knowingly rather than by weakening the
      * check for everyone. Neither changes behaviour — they only allow the boot to proceed.
      */
-    ALLOW_LOCAL_MEDIA: z.coerce.boolean().default(false),
-    ALLOW_NO_EMAIL: z.coerce.boolean().default(false),
+    ALLOW_LOCAL_MEDIA: envBoolean(false),
+    ALLOW_NO_EMAIL: envBoolean(false),
 
     MAX_UPLOAD_BYTES: z.coerce.number().int().positive().default(10 * 1024 * 1024),
     LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace']).default('info'),
-    TRUST_PROXY: z.coerce.boolean().default(false),
+    TRUST_PROXY: envBoolean(false),
   })
   .superRefine((v, ctx) => {
     if (v.MEDIA_DRIVER === 's3' && !v.S3_BUCKET) {

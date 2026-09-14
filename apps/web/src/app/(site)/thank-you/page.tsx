@@ -20,7 +20,8 @@ export const metadata: Metadata = {
   description: 'Your enquiry has reached us. A senior engineer will reply within one business day.',
   alternates: { canonical: '/thank-you/' },
   // A confirmation page has no search value and would only ever be reached by mistake.
-  robots: { index: false, follow: true },
+  // Also part of the site-wide noindex/nofollow.
+  robots: { index: false, follow: false },
 };
 
 export default function ThankYouPage() {

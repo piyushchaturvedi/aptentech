@@ -80,7 +80,10 @@ export async function emailSettings() {
   const siteEmail = usable(settings?.email);
 
   return {
-    notifyTo: usable(configured.notifyTo) || siteEmail,
+    // The env var is the source of truth: deployment config, never hardcoded or left to a
+    // database field someone forgot to fill in. The CMS value is only a fallback for
+    // installs that haven't set it, so an admin can still self-serve if the env var is unset.
+    notifyTo: usable(env.ADMIN_NOTIFICATION_EMAIL) || usable(configured.notifyTo) || siteEmail,
     notifyCc: Array.isArray(configured.notifyCc) ? (configured.notifyCc as string[]).filter(Boolean) : [],
     notifyBcc: Array.isArray(configured.notifyBcc) ? (configured.notifyBcc as string[]).filter(Boolean) : [],
     senderName: (typeof configured.senderName === 'string' && configured.senderName.trim()) || 'AptenTech',

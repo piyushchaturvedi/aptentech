@@ -1871,6 +1871,9 @@ async function seedSettings(): Promise<void> {
           robotsFollow: true,
         },
         analytics: { gaMeasurementId: '', gtmContainerId: '', enabled: false },
+        // Notification recipient is deliberately NOT seeded here — it comes from the
+        // ADMIN_NOTIFICATION_EMAIL environment variable (see apps/api/src/config/env.ts),
+        // so it's never hardcoded in content and never depends on someone filling in a CMS field.
       },
     },
     { upsert: true },

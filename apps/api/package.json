@@ -8,6 +8,7 @@
     "build": "tsc -p tsconfig.json",
     "start": "node dist/server.js",
     "seed": "tsx src/seed/run.ts",
+    "test-email": "tsx src/scripts/testEmail.ts",
     "create-admin": "tsx src/seed/createAdmin.ts",
     "reset-admin-password": "tsx src/seed/resetAdminPassword.ts",
     "typecheck": "tsc -p tsconfig.json --noEmit",

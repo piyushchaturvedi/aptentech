@@ -60,9 +60,10 @@ export function buildMetadata({
   const rawImage = ogImage?.url ?? defaults?.ogImage?.url ?? null;
   const image = rawImage ? (/^https?:\/\//i.test(rawImage) ? rawImage : absoluteUrl(rawImage)) : null;
 
+  // Site-wide noindex/nofollow: forced off regardless of the CMS per-page flags.
   const robots = {
-    index: seo?.robotsIndex ?? true,
-    follow: seo?.robotsFollow ?? true,
+    index: false,
+    follow: false,
   };
 
   return {
