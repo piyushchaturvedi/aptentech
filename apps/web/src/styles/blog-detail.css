@@ -1228,7 +1228,32 @@ ul{margin:0; padding:0; list-style:none}
 }
 @media (max-width:560px){ .gm-row .tx span{display:none} }
 
-/* ---------------------------------------------------------------- mobile corrections */
+/* ---------------------------------------------------------------- shared corrections */
+/*
+  Everything below is applied to all eight page stylesheets by scripts/patch-shared-css.js.
+  Edit it there, not here — a change made in one copy reaches one template and no others.
+*/
+
+/*
+  Grid items may shrink below their contents.
+
+  A grid item's `min-width` defaults to `auto`, which means "never narrower than my own
+  min-content width". Both shells below put a row of nowrap chips in one of their columns on
+  mobile, and that row's min-content width — every chip laid end to end, about 510px — became
+  the column's floor. The grid could not collapse to the 324px available, so the document came
+  out 528px wide inside a 360px viewport.
+
+  Nothing looked wrong, because `body{overflow-x:hidden}` clipped the excess and made
+  `scrollWidth` report the viewport width. What it could not hide is Chrome on Android, which
+  sizes its minimum zoom from the real content width: the page could be pinched out to 68%
+  — 360/528 — leaving the site occupying two thirds of the screen with white beside it.
+
+  `min-width:0` lifts that floor, so the chip rows scroll inside their column as intended
+  instead of propping it open. At desktop the tracks are far wider than their content, so this
+  changes nothing there.
+*/
+.faq-shell > *,
+.svc-shell > *{min-width:0}
 
 /*
   The eyebrow pill is a flex row of three items: the dot, the phrase, and the accent phrase.
@@ -1248,9 +1273,9 @@ ul{margin:0; padding:0; list-style:none}
   starting "/ MUSIC APP DEVELOPMENT".
 
   Putting it on `::after` of every item but the last glues each separator to the crumb it
-  follows. A line may now end with one, which is what a separator is for, and can never
-  start with one. Spacing is unchanged: either form is a flex item inside the same `li`,
-  with the same gap on both sides.
+  follows. A line may now end with one, which is what a separator is for, and can never start
+  with one. Spacing is unchanged: either form is a flex item inside the same `li`, with the
+  same gap on both sides.
 */
 .crumb li+li::before{content:none}
 .crumb li:not(:last-child)::after{content:"/"; color:#6C77B8}
