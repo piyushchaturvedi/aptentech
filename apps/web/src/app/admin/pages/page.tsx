@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import type { AccentToken, SitePage, SiteSettings } from '@aptentech/shared';
+import type { AccentToken, CtaLink, MediaRef, SitePage, SiteSettings } from '@aptentech/shared';
 import { EMPTY_MEDIA, EMPTY_SEO } from '@aptentech/shared';
 import { describeError, useAdmin } from '@/components/admin/AdminClient';
 import {
@@ -15,6 +15,91 @@ import {
   TextArea,
   Toggle,
 } from '@/components/admin/Fields';
+
+/** The hero's heading, stored in three parts so the gradient span is content, not markup. */
+interface SplitHeading {
+  lead: string;
+  highlight: string;
+  trail: string;
+}
+
+/** One tech-stack category and its chips. A chip may carry an uploaded logo or a registry icon. */
+interface TechGroup {
+  category: string;
+  accent: AccentToken;
+  items: Array<{ label: string; icon: string; image: MediaRef }>;
+}
+
+/** One office card: a place, its address, and the two ways to reach it. */
+interface OfficeCard {
+  accent: AccentToken;
+  kind?: string;
+  city?: string;
+  addressLines?: string[];
+  phoneLabel?: string;
+  phoneHref?: string;
+  emailLabel?: string;
+  emailHref?: string;
+}
+
+/*
+  Single-line wording carried by several block types, and the longer prose beside it.
+
+  These have no shape of their own — a breadcrumb label and a sidebar heading are both just a
+  line of text — so they are listed rather than each getting a hand-written conditional. A field
+  renders only when the block being edited actually carries it.
+*/
+const PLAIN_TEXT_KEYS = [
+  'crumbLabel',
+  'label',
+  'heading',
+  'listHeading',
+  'sidebarTitle',
+  'tocLabel',
+  'shareLabel',
+  'authorLabel',
+  'prevLabel',
+  'nextLabel',
+  'relatedTitle',
+  'meta',
+] as const;
+
+const LONG_TEXT_KEYS = ['sidebarSubtitle', 'formSubtitle', 'relatedLede', 'notice', 'bodyHtml', 'defaultBody'] as const;
+
+const PLAIN_TEXT_LABELS: Record<string, string> = {
+  crumbLabel: 'Breadcrumb label',
+  label: 'Strip label',
+  heading: 'Heading',
+  listHeading: 'List heading',
+  sidebarTitle: 'Sidebar heading',
+  sidebarSubtitle: 'Sidebar body',
+  tocLabel: 'Contents label',
+  shareLabel: 'Share label',
+  authorLabel: 'Author label',
+  prevLabel: 'Previous link label',
+  nextLabel: 'Next link label',
+  relatedTitle: 'Related heading',
+  relatedLede: 'Related body',
+  meta: 'Meta line',
+  notice: 'Notice',
+  formSubtitle: 'Form subheading',
+  bodyHtml: 'Document body',
+  defaultBody: 'Default article body',
+};
+
+/** The enquiry form's labels and options, shared by every lead form on the site. */
+interface LeadFormConfig {
+  title?: string;
+  submitLabel?: string;
+  serviceLabel?: string;
+  serviceOptions?: string[];
+  budgetLabel?: string;
+  budgetOptions?: string[];
+  budgetNote?: string;
+  detailsLabel?: string;
+  detailsPlaceholder?: string;
+  reassurance?: string;
+}
 
 /** The card shape shared by the quick-facts, values, reasons and feature grids. */
 interface IconCard {
@@ -392,7 +477,7 @@ export default function AdminPagesPage() {
                     onChange={(v) => update({ body: v } as Partial<Block>)}
                   />
 
-                  {block.type === 'hero' || block.type === 'imageText' || block.type === 'ctaSection' ? (
+                  {has('image') || block.type === 'hero' || block.type === 'imageText' || block.type === 'ctaSection' ? (
                     <MediaPicker
                       label="Image"
                       value={(block.image as never) ?? { ...EMPTY_MEDIA }}
@@ -400,7 +485,7 @@ export default function AdminPagesPage() {
                     />
                   ) : null}
 
-                  {block.type === 'statsBar' ? (
+                  {has('stats') ? (
                     <Repeater
                       label="Statistics"
                       items={(block.stats as Array<{ value: string; suffix: string; label: string }>) ?? []}
@@ -417,7 +502,7 @@ export default function AdminPagesPage() {
                     />
                   ) : null}
 
-                  {block.type === 'faqSection' ? (
+                  {has('faqs') ? (
                     <Repeater
                       label="Questions"
                       items={(block.faqs as Array<{ question: string; answer: string; category?: string; visible?: boolean }>) ?? []}
@@ -434,7 +519,7 @@ export default function AdminPagesPage() {
                     />
                   ) : null}
 
-                  {block.type === 'officeGrid' ? (
+                  {has('offices') ? (
                     <Repeater
                       label="Offices"
                       items={(block.offices as Array<{ city: string; lines: string[] }>) ?? []}
@@ -460,7 +545,7 @@ export default function AdminPagesPage() {
                     />
                   ) : null}
 
-                  {block.type === 'leadFormSection' ? (
+                  {has('submitLabel') || has('serviceOptions') ? (
                     <>
                       <Text
                         label="Submit button label"
@@ -680,6 +765,487 @@ export default function AdminPagesPage() {
                             <AccentPicker value={channel.accent} onChange={(v) => updateChannel({ accent: v })} />
                             <IconPicker value={channel.icon} onChange={(v) => updateChannel({ icon: v })} />
                           </div>
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('splitHeading') ? (
+                    <>
+                      <div className="adm-grid2">
+                        <Text
+                          label="Heading — first part"
+                          value={String((block.splitHeading as SplitHeading)?.lead ?? '')}
+                          onChange={(v) =>
+                            update({
+                              splitHeading: { ...(block.splitHeading as SplitHeading), lead: v },
+                            } as unknown as Partial<Block>)
+                          }
+                        />
+                        <Text
+                          label="Heading — highlighted part"
+                          value={String((block.splitHeading as SplitHeading)?.highlight ?? '')}
+                          onChange={(v) =>
+                            update({
+                              splitHeading: { ...(block.splitHeading as SplitHeading), highlight: v },
+                            } as unknown as Partial<Block>)
+                          }
+                        />
+                      </div>
+                      <Text
+                        label="Heading — after the highlight"
+                        value={String((block.splitHeading as SplitHeading)?.trail ?? '')}
+                        onChange={(v) =>
+                          update({
+                            splitHeading: { ...(block.splitHeading as SplitHeading), trail: v },
+                          } as unknown as Partial<Block>)
+                        }
+                      />
+                      <p className="hint">
+                        The highlighted part prints in the brand gradient. Leave the third box empty unless the
+                        heading continues after it.
+                      </p>
+                    </>
+                  ) : null}
+
+                  {has('ctas') ? (
+                    <Repeater
+                      label="Buttons"
+                      items={(block.ctas as CtaLink[]) ?? []}
+                      onChange={(ctas) => update({ ctas } as unknown as Partial<Block>)}
+                      itemLabel={(c) => c.label || 'Button'}
+                      create={() => ({ label: '', href: '#contact', style: 'primary' as const })}
+                      render={(cta, updateCta) => (
+                        <>
+                          <div className="adm-grid2">
+                            <Text label="Label" value={cta.label} onChange={(v) => updateCta({ label: v })} />
+                            <Text label="Link" value={cta.href} onChange={(v) => updateCta({ href: v })} />
+                          </div>
+                          <Select
+                            label="Style"
+                            value={cta.style}
+                            onChange={(v) => updateCta({ style: v as CtaLink['style'] })}
+                            options={[
+                              { value: 'primary', label: 'Primary' },
+                              { value: 'mint', label: 'Mint' },
+                              { value: 'outline', label: 'Outline' },
+                              { value: 'glass', label: 'Glass' },
+                              { value: 'ghostLight', label: 'Ghost' },
+                            ]}
+                          />
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('ctaLabel') || has('ctaHref') || has('buttonLabel') ? (
+                    <div className="adm-grid2">
+                      {has('ctaLabel') || has('buttonLabel') ? (
+                        <Text
+                          label="Link label"
+                          value={String(block.ctaLabel ?? block.buttonLabel ?? '')}
+                          onChange={(v) =>
+                            update(
+                              (has('ctaLabel') ? { ctaLabel: v } : { buttonLabel: v }) as Partial<Block>,
+                            )
+                          }
+                        />
+                      ) : null}
+                      {has('ctaHref') ? (
+                        <Text
+                          label="Link target"
+                          value={String(block.ctaHref ?? '')}
+                          onChange={(v) => update({ ctaHref: v } as Partial<Block>)}
+                        />
+                      ) : null}
+                    </div>
+                  ) : null}
+
+                  {has('points') ? (
+                    <StringList
+                      label="Points"
+                      items={(block.points as string[]) ?? []}
+                      onChange={(v) => update({ points: v } as unknown as Partial<Block>)}
+                    />
+                  ) : null}
+
+                  {has('askTitle') || has('askBody') || has('askCtaLabel') ? (
+                    <>
+                      <Text
+                        label="Side panel heading"
+                        value={String(block.askTitle ?? '')}
+                        onChange={(v) => update({ askTitle: v } as Partial<Block>)}
+                      />
+                      <TextArea
+                        label="Side panel body"
+                        value={String(block.askBody ?? '')}
+                        onChange={(v) => update({ askBody: v } as Partial<Block>)}
+                        rows={2}
+                      />
+                      <Text
+                        label="Side panel button"
+                        value={String(block.askCtaLabel ?? '')}
+                        onChange={(v) => update({ askCtaLabel: v } as Partial<Block>)}
+                      />
+                    </>
+                  ) : null}
+
+                  {has('awardLead') ? (
+                    <>
+                      <Text
+                        label="Lead card heading"
+                        value={String((block.awardLead as Record<string, string>)?.title ?? '')}
+                        onChange={(v) =>
+                          update({
+                            awardLead: { ...(block.awardLead as object), title: v },
+                          } as unknown as Partial<Block>)
+                        }
+                      />
+                      <TextArea
+                        label="Lead card body"
+                        value={String((block.awardLead as Record<string, string>)?.body ?? '')}
+                        onChange={(v) =>
+                          update({
+                            awardLead: { ...(block.awardLead as object), body: v },
+                          } as unknown as Partial<Block>)
+                        }
+                      />
+                      <div className="adm-grid2">
+                        <Text
+                          label="Rating"
+                          value={String((block.awardLead as Record<string, string>)?.rating ?? '')}
+                          onChange={(v) =>
+                            update({
+                              awardLead: { ...(block.awardLead as object), rating: v },
+                            } as unknown as Partial<Block>)
+                          }
+                        />
+                        <Text
+                          label="Rating note"
+                          value={String((block.awardLead as Record<string, string>)?.ratingNote ?? '')}
+                          onChange={(v) =>
+                            update({
+                              awardLead: { ...(block.awardLead as object), ratingNote: v },
+                            } as unknown as Partial<Block>)
+                          }
+                        />
+                      </div>
+                    </>
+                  ) : null}
+
+                  {has('awards') ? (
+                    <>
+                      <Repeater
+                        label="Awards"
+                        items={(block.awards as Array<{ accent: AccentToken; icon: string; title: string; meta: string }>) ?? []}
+                        onChange={(awards) => update({ awards } as unknown as Partial<Block>)}
+                        itemLabel={(a) => a.title || 'Award'}
+                        create={() => ({ accent: 'indigo' as AccentToken, icon: '', title: '', meta: '' })}
+                        render={(award, updateAward) => (
+                          <>
+                            <Text label="Award" value={award.title} onChange={(v) => updateAward({ title: v })} />
+                            <Text
+                              label="Awarded by / year"
+                              value={award.meta}
+                              onChange={(v) => updateAward({ meta: v })}
+                            />
+                            <div className="adm-grid2">
+                              <AccentPicker value={award.accent} onChange={(v) => updateAward({ accent: v })} />
+                              <IconPicker value={award.icon} onChange={(v) => updateAward({ icon: v })} />
+                            </div>
+                          </>
+                        )}
+                      />
+                      <p className="hint">
+                        A visitor cannot tell an invented award from a real one. List only recognition AptenTech
+                        actually holds, and switch this section off otherwise.
+                      </p>
+                    </>
+                  ) : null}
+
+                  {has('insightCards') ? (
+                    <Repeater
+                      label="Featured articles"
+                      items={(block.insightCards as Array<{ slug: string; label: string; accent: AccentToken }>) ?? []}
+                      onChange={(insightCards) => update({ insightCards } as unknown as Partial<Block>)}
+                      itemLabel={(c) => c.label || c.slug || 'Article'}
+                      create={() => ({ slug: '', label: '', accent: 'indigo' as AccentToken })}
+                      render={(card, updateCard) => (
+                        <>
+                          <div className="adm-grid2">
+                            <Text label="Article slug" value={card.slug} onChange={(v) => updateCard({ slug: v })} />
+                            <Text label="Badge label" value={card.label} onChange={(v) => updateCard({ label: v })} />
+                          </div>
+                          <AccentPicker value={card.accent} onChange={(v) => updateCard({ accent: v })} />
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('groups') ? (
+                    <Repeater
+                      label="Technology categories"
+                      items={(block.groups as TechGroup[]) ?? []}
+                      onChange={(groups) => update({ groups } as unknown as Partial<Block>)}
+                      itemLabel={(g) => g.category || 'Category'}
+                      create={() => ({ category: '', accent: 'indigo' as AccentToken, items: [] })}
+                      render={(group, updateGroup) => (
+                        <>
+                          <Text
+                            label="Category"
+                            value={group.category}
+                            onChange={(v) => updateGroup({ category: v })}
+                          />
+                          <AccentPicker value={group.accent} onChange={(v) => updateGroup({ accent: v })} />
+                          <Repeater
+                            label="Technologies"
+                            items={group.items ?? []}
+                            onChange={(items) => updateGroup({ items })}
+                            itemLabel={(t) => t.label || 'Technology'}
+                            create={() => ({ label: '', icon: '', image: { ...EMPTY_MEDIA } })}
+                            render={(tech, updateTech) => (
+                              <>
+                                <Text label="Name" value={tech.label} onChange={(v) => updateTech({ label: v })} />
+                                <MediaPicker
+                                  label="Logo"
+                                  value={tech.image}
+                                  onChange={(v) => updateTech({ image: v })}
+                                  recommended="64×64, square, transparent background"
+                                />
+                                <IconPicker value={tech.icon} onChange={(v) => updateTech({ icon: v })} />
+                                <p className="hint">
+                                  The logo is used if set, otherwise the icon, otherwise the first two letters of the
+                                  name.
+                                </p>
+                              </>
+                            )}
+                          />
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('leadForm') ? (
+                    (() => {
+                      /*
+                        The enquiry form's own labels and options, stored as one nested object.
+
+                        Written through a helper so each field merges into the object rather than
+                        replacing it — editing the submit button must not drop the service list.
+                      */
+                      const form = (block.leadForm as LeadFormConfig) ?? {};
+                      const setForm = (patch: Partial<LeadFormConfig>) =>
+                        update({ leadForm: { ...form, ...patch } } as unknown as Partial<Block>);
+
+                      return (
+                        <>
+                          <div className="adm-grid2">
+                            <Text
+                              label="Form heading"
+                              value={String(form.title ?? '')}
+                              onChange={(v) => setForm({ title: v })}
+                            />
+                            <Text
+                              label="Submit button"
+                              value={String(form.submitLabel ?? '')}
+                              onChange={(v) => setForm({ submitLabel: v })}
+                            />
+                          </div>
+                          <div className="adm-grid2">
+                            <Text
+                              label="Service field label"
+                              value={String(form.serviceLabel ?? '')}
+                              onChange={(v) => setForm({ serviceLabel: v })}
+                            />
+                            <Text
+                              label="Budget field label"
+                              value={String(form.budgetLabel ?? '')}
+                              onChange={(v) => setForm({ budgetLabel: v })}
+                            />
+                          </div>
+                          <StringList
+                            label="Service options"
+                            items={form.serviceOptions ?? []}
+                            onChange={(v) => setForm({ serviceOptions: v })}
+                          />
+                          <StringList
+                            label="Budget options"
+                            items={form.budgetOptions ?? []}
+                            onChange={(v) => setForm({ budgetOptions: v })}
+                          />
+                          <Text
+                            label="Details field label"
+                            value={String(form.detailsLabel ?? '')}
+                            onChange={(v) => setForm({ detailsLabel: v })}
+                          />
+                          <TextArea
+                            label="Details placeholder"
+                            value={String(form.detailsPlaceholder ?? '')}
+                            onChange={(v) => setForm({ detailsPlaceholder: v })}
+                            rows={2}
+                          />
+                          <TextArea
+                            label="Budget note"
+                            value={String(form.budgetNote ?? '')}
+                            onChange={(v) => setForm({ budgetNote: v })}
+                            rows={2}
+                          />
+                          <TextArea
+                            label="Reassurance line"
+                            value={String(form.reassurance ?? '')}
+                            onChange={(v) => setForm({ reassurance: v })}
+                            rows={2}
+                          />
+                        </>
+                      );
+                    })()
+                  ) : null}
+
+                  {/*
+                    Plain wording that several block types carry — breadcrumbs, sidebar headings,
+                    the labels on an article's navigation. Each is a single line of text with no
+                    shape of its own, so one loop serves all of them rather than thirty near
+                    identical conditionals. A field appears only when its block actually has it.
+                  */}
+                  {PLAIN_TEXT_KEYS.filter((key) => has(key)).map((key) => (
+                    <Text
+                      key={key}
+                      label={PLAIN_TEXT_LABELS[key] ?? key}
+                      value={String(block[key] ?? '')}
+                      onChange={(v) => update({ [key]: v } as unknown as Partial<Block>)}
+                    />
+                  ))}
+
+                  {LONG_TEXT_KEYS.filter((key) => has(key)).map((key) => (
+                    <TextArea
+                      key={key}
+                      label={PLAIN_TEXT_LABELS[key] ?? key}
+                      value={String(block[key] ?? '')}
+                      onChange={(v) => update({ [key]: v } as unknown as Partial<Block>)}
+                      rows={key === 'bodyHtml' || key === 'defaultBody' ? 14 : 3}
+                      {...(key === 'bodyHtml' || key === 'defaultBody'
+                        ? { hint: 'Headings, paragraphs and lists only — sanitised on save.' }
+                        : {})}
+                    />
+                  ))}
+
+                  {has('cards') ? (
+                    <Repeater
+                      label="Office cards"
+                      items={(block.cards as OfficeCard[]) ?? []}
+                      onChange={(cards) => update({ cards } as unknown as Partial<Block>)}
+                      itemLabel={(o) => o.city || o.kind || 'Office'}
+                      create={() => ({
+                        accent: 'indigo' as AccentToken,
+                        kind: '',
+                        city: '',
+                        addressLines: [],
+                        phoneLabel: '',
+                        phoneHref: '',
+                        emailLabel: '',
+                        emailHref: '',
+                      })}
+                      render={(office, updateOffice) => (
+                        <>
+                          <div className="adm-grid2">
+                            <Text label="Kind" value={office.kind ?? ''} onChange={(v) => updateOffice({ kind: v })} />
+                            <Text label="City" value={office.city ?? ''} onChange={(v) => updateOffice({ city: v })} />
+                          </div>
+                          <StringList
+                            label="Address"
+                            items={office.addressLines ?? []}
+                            onChange={(v) => updateOffice({ addressLines: v })}
+                          />
+                          <div className="adm-grid2">
+                            <Text
+                              label="Phone"
+                              value={office.phoneLabel ?? ''}
+                              onChange={(v) => updateOffice({ phoneLabel: v, phoneHref: `tel:${v.replace(/[^\d+]/g, '')}` })}
+                            />
+                            <Text
+                              label="Email"
+                              value={office.emailLabel ?? ''}
+                              onChange={(v) => updateOffice({ emailLabel: v, emailHref: `mailto:${v}` })}
+                            />
+                          </div>
+                          <AccentPicker value={office.accent} onChange={(v) => updateOffice({ accent: v })} />
+                          <p className="hint">
+                            Published exactly as written, and the phone and email become working links. Use real
+                            details only.
+                          </p>
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('stepCards') ? (
+                    <Repeater
+                      label="Steps"
+                      items={(block.stepCards as Array<{ accent: AccentToken; number: string; title: string; description: string }>) ?? []}
+                      onChange={(stepCards) => update({ stepCards } as unknown as Partial<Block>)}
+                      itemLabel={(s) => s.title || 'Step'}
+                      create={() => ({ accent: 'indigo' as AccentToken, number: '', title: '', description: '' })}
+                      render={(step, updateStep) => (
+                        <>
+                          <div className="adm-grid2">
+                            <Text label="Number" value={step.number} onChange={(v) => updateStep({ number: v })} />
+                            <Text label="Title" value={step.title} onChange={(v) => updateStep({ title: v })} />
+                          </div>
+                          <TextArea
+                            label="Description"
+                            value={step.description}
+                            onChange={(v) => updateStep({ description: v })}
+                            rows={2}
+                          />
+                          <AccentPicker value={step.accent} onChange={(v) => updateStep({ accent: v })} />
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('routes') ? (
+                    <Repeater
+                      label="Routes"
+                      items={(block.routes as IconCard[]) ?? []}
+                      onChange={(routes) => update({ routes } as unknown as Partial<Block>)}
+                      itemLabel={(r) => r.title || 'Route'}
+                      create={() => ({ accent: 'indigo' as AccentToken, icon: '', title: '', description: '' })}
+                      render={(route, updateRoute) => (
+                        <>
+                          <Text label="Title" value={route.title} onChange={(v) => updateRoute({ title: v })} />
+                          <TextArea
+                            label="Description"
+                            value={route.description}
+                            onChange={(v) => updateRoute({ description: v })}
+                            rows={2}
+                          />
+                          <div className="adm-grid2">
+                            <AccentPicker value={route.accent} onChange={(v) => updateRoute({ accent: v })} />
+                            <IconPicker value={route.icon} onChange={(v) => updateRoute({ icon: v })} />
+                          </div>
+                        </>
+                      )}
+                    />
+                  ) : null}
+
+                  {has('clauses') ? (
+                    <Repeater
+                      label="Contents"
+                      items={(block.clauses as Array<{ id: string; number: string; title: string }>) ?? []}
+                      onChange={(clauses) => update({ clauses } as unknown as Partial<Block>)}
+                      itemLabel={(c) => c.title || 'Clause'}
+                      create={() => ({ id: '', number: '', title: '' })}
+                      render={(clause, updateClause) => (
+                        <>
+                          <div className="adm-grid2">
+                            <Text label="Number" value={clause.number} onChange={(v) => updateClause({ number: v })} />
+                            <Text
+                              label="Anchor id"
+                              value={clause.id}
+                              onChange={(v) => updateClause({ id: v })}
+                            />
+                          </div>
+                          <Text label="Title" value={clause.title} onChange={(v) => updateClause({ title: v })} />
                         </>
                       )}
                     />

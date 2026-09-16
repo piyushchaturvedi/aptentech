@@ -34,7 +34,8 @@
     "migrate-home-growth": "node scripts/migrate-home-growth.js",
     "build-home-growth": "node scripts/build-home-growth.js",
     "find-duplicate-blocks": "node scripts/find-duplicate-blocks.js",
-    "apply-home-content": "node scripts/apply-home-content.js"
+    "apply-home-content": "node scripts/apply-home-content.js",
+    "verify-admin-coverage": "node scripts/verify-admin-coverage.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
