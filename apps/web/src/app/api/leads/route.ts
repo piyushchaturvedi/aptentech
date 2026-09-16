@@ -100,6 +100,21 @@ export async function POST(request: NextRequest) {
           status: res.status,
         });
       }
+
+      /*
+        Say what went wrong, in the server log.
+
+        The visitor gets a deliberately vague message — an enquiry form should not report the
+        state of the backend to whoever is filling it in. But this used to discard the API's
+        response entirely, so the only record of a failed submission anywhere was a 502 in an
+        access log with no cause attached, and the enquiry was gone. The cause belongs
+        somewhere; it belongs here.
+      */
+      console.error(
+        `[leads] API rejected the submission — ${res.status} ${res.statusText}: ` +
+          `${JSON.stringify(body ?? {}).slice(0, 400)}`,
+      );
+
       return NextResponse.json(
         { success: false, error: { code: 'SUBMIT_FAILED', message: 'We could not send that just now. Please try again.' } },
         { status: 502 },
@@ -107,7 +122,15 @@ export async function POST(request: NextRequest) {
     }
 
     return NextResponse.json(body, { status: 201 });
-  } catch {
+  } catch (error) {
+    /*
+      The API could not be reached at all — it is down, still starting, or `API_BASE_URL` points
+      somewhere wrong. Distinguishing that from "the API said no" above is the difference between
+      restarting a process and fixing a payload, so the two are logged separately.
+    */
+    const reason = error instanceof Error ? `${error.name}: ${error.message}` : String(error);
+    console.error(`[leads] Could not reach the API at ${API_BASE}/leads — ${reason}`);
+
     return NextResponse.json(
       { success: false, error: { code: 'SUBMIT_FAILED', message: 'We could not send that just now. Please try again.' } },
       { status: 502 },
