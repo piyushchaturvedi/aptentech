@@ -99,7 +99,7 @@ one line from `authorized_keys` and your own access is unaffected.
 | `DEPLOY_USER` | `ec2-user` |
 | `DEPLOY_SSH_KEY` | the entire private key from step 2, including the `BEGIN`/`END` lines |
 | `DEPLOY_PATH` | `/home/ec2-user/aptentech` |
-| `DEPLOY_SITE_URL` | `http://3.218.41.249` — or the domain once it is live |
+| `DEPLOY_SITE_URL` | `https://aptentech.com` |
 | `SMTP_PASSWORD` | the mailbox password for `sales@aptentech.com` |
 
 `SMTP_PASSWORD` is the only mail setting kept as a secret. The host, port, TLS mode and mailbox
@@ -108,8 +108,11 @@ credential, and keeping them in the repository is what lets a deploy configure m
 The password stays out because Git history is permanent: one committed and later deleted is
 still in every clone and every fork.
 
-`DEPLOY_SITE_URL` is only used by the final check that the site answers. Update it when you move
-to the domain, otherwise a perfectly good deploy reports failure.
+`DEPLOY_SITE_URL` is only used by the final check that the site answers, and it has to be the
+domain over HTTPS. The Elastic IP no longer works for it: nginx answers the IP with `return 444`,
+which closes the connection without a reply, so `curl` reports `000` and a perfectly good deploy
+is marked failed. Anything that moves the public address — a new domain, a CloudFront
+distribution — has to change this secret in the same breath.
 
 ### 4 · Push
 
