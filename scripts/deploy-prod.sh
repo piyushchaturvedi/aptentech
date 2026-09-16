@@ -270,12 +270,17 @@ fi
 # lives in /etc/letsencrypt and is untouched; `certbot --nginx` re-attaches it later.
 NGINX_FORCE="${NGINX_FORCE:-0}"
 
-# Transfer settings go in their own file, always, even when the server block below is left
-# alone because certbot owns it. Compression is http-level and belongs to no server block, so
-# it can be refreshed on every deploy without touching the certificate wiring — which is the
-# whole reason it is not in aptentech.conf.
-sudo cp deploy/nginx-performance.conf /etc/nginx/conf.d/aptentech-performance.conf
-ok "compression and transfer settings installed"
+# An http-level tuning file used to be installed here and has been removed.
+#
+# It set gzip plus sendfile, tcp_nopush and keepalive_timeout. Amazon Linux's own nginx.conf
+# already sets the last three, and a directive repeated in the same context is a hard error —
+# so `nginx -t` failed and the deploy stopped at this step.
+#
+# It is not coming back in a trimmed form either. The measurement that prompted it turned out
+# to be wrong: Next.js already compresses everything it serves (181KB of home page HTML leaves
+# as 33KB), and the only uncompressed responses left are 1-3KB SVGs behind /uploads/. The whole
+# win was a couple of kilobytes, which is not worth a file that can stop a deploy — or worse,
+# stop nginx from starting after a reboot.
 
 SSL_INSTALLED=0
 if [ -f "$CONF" ] && grep -q 'ssl_certificate' "$CONF" && [ "$NGINX_FORCE" != "1" ]; then
