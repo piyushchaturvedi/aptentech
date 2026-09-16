@@ -32,127 +32,182 @@ function envValue(key) {
 /* ------------------------------------------------------------------ design tokens */
 
 const INK = '#141338';
-const BODY = '#3F4468';
-const MUTED = '#8E97C8';
-const LINE = '#E7E9F5';
-const PANEL = '#F6F7FC';
+const BODY = '#43496E';
+const MUTED = '#8A93C4';
+const LINE = '#E9EBF6';
+const PANEL = '#F7F8FD';
 const INDIGO = '#3A31DB';
+const DEEP = '#1B1A4A';
 const MINT = '#00C9A7';
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 
 /**
- * The outer shell both messages share.
+ * A button that also renders in Outlook.
  *
- * `role="presentation"` on every layout table stops screen readers announcing the scaffolding
- * as a data table, which is the single most common accessibility fault in HTML email.
+ * Outlook desktop lays out with Word, which ignores padding on an anchor — so a styled link
+ * collapses to plain blue text, which is what a "button" in an HTML email usually turns out to
+ * be. The VML rectangle inside the mso conditional is what Outlook draws instead; every other
+ * client skips it and uses the anchor below.
  */
-const shell = (accent, eyebrow, heading, inner) => `
-<div style="margin:0;padding:28px 12px;background-color:${PANEL};font-family:${FONT};">
-  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-    <tr><td align="center">
-      <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
-             style="width:600px;max-width:100%;background-color:#ffffff;border-radius:14px;overflow:hidden;border:1px solid ${LINE};">
+const button = (label, href, colour = INDIGO) => `
+<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td>
+  <!--[if mso]>
+  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
+    href="${href}" style="height:46px;v-text-anchor:middle;width:230px;" arcsize="20%" stroke="f" fillcolor="${colour}">
+    <w:anchorlock/>
+    <center style="color:#ffffff;font-family:${FONT};font-size:15px;font-weight:bold;">${label}</center>
+  </v:roundrect>
+  <![endif]-->
+  <!--[if !mso]><!-- -->
+  <a href="${href}"
+     style="background-color:${colour};border-radius:10px;color:#ffffff;display:inline-block;
+            font-family:${FONT};font-size:15px;font-weight:600;line-height:46px;text-align:center;
+            text-decoration:none;width:230px;-webkit-text-size-adjust:none;">${label}</a>
+  <!--<![endif]-->
+</td></tr></table>`.trim();
 
-        <tr><td style="height:4px;background-color:${accent};font-size:0;line-height:0;">&nbsp;</td></tr>
-
-        <tr><td style="padding:30px 34px 6px;">
-          <p style="margin:0 0 10px;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:${MUTED};">${eyebrow}</p>
-          <h1 style="margin:0;font-size:21px;line-height:1.32;color:${INK};font-weight:700;">${heading}</h1>
-        </td></tr>
-
-        ${inner}
-
-        <tr><td style="padding:22px 34px 30px;border-top:1px solid ${LINE};">
-          <p style="margin:0;font-size:12px;line-height:1.6;color:${MUTED};">
-            {{siteName}} · <a href="{{siteUrl}}" style="color:${MUTED};text-decoration:underline;">{{siteUrl}}</a>
-          </p>
-        </td></tr>
-
-      </table>
-    </td></tr>
-  </table>
-</div>`.trim();
-
-/** One label/value row. Rendered as a table so the label column cannot collapse in Outlook. */
+/** One label/value row, as a table so the label column cannot collapse in Outlook. */
 const field = (label, value) => `
 <tr>
-  <td style="padding:9px 0;border-bottom:1px solid ${LINE};width:132px;vertical-align:top;">
-    <span style="font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};">${label}</span>
+  <td style="padding:11px 0;border-bottom:1px solid ${LINE};width:130px;vertical-align:top;">
+    <span style="font-family:${FONT};font-size:11px;letter-spacing:.09em;text-transform:uppercase;color:${MUTED};font-weight:600;">${label}</span>
   </td>
-  <td style="padding:9px 0;border-bottom:1px solid ${LINE};vertical-align:top;">
-    <span style="font-size:14px;line-height:1.55;color:${INK};">${value}</span>
+  <td style="padding:11px 0;border-bottom:1px solid ${LINE};vertical-align:top;">
+    <span style="font-family:${FONT};font-size:15px;line-height:1.55;color:${INK};">${value}</span>
   </td>
 </tr>`.trim();
 
-/* ------------------------------------------------------------------ the two messages */
+/**
+ * The shell both messages share: a dark branded header, a white card, a quiet footer.
+ *
+ * The header is a solid colour rather than a gradient — Outlook drops CSS gradients entirely and
+ * would render the wordmark on white, invisible. A flat band looks the same everywhere.
+ */
+const shell = (accent, eyebrow, heading, intro, inner) => `
+<!DOCTYPE html>
+<html lang="en" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="x-apple-disable-message-reformatting">
+<title>{{siteName}}</title>
+<!--[if mso]><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml><![endif]-->
+</head>
+<body style="margin:0;padding:0;background-color:${PANEL};">
+<!-- Shown in the inbox list beside the subject, then hidden in the message itself. -->
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">${intro}</div>
+
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:${PANEL};">
+<tr><td align="center" style="padding:32px 12px;">
+
+  <table role="presentation" width="600" cellpadding="0" cellspacing="0" border="0"
+         style="width:600px;max-width:100%;background-color:#ffffff;border-radius:16px;overflow:hidden;
+                border:1px solid ${LINE};box-shadow:0 1px 2px rgba(20,19,56,.04);">
+
+    <tr><td style="background-color:${DEEP};padding:26px 36px;">
+      <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"><tr>
+        <td style="vertical-align:middle;">
+          <span style="font-family:${FONT};font-size:19px;font-weight:700;color:#ffffff;letter-spacing:-.01em;">{{siteName}}</span>
+        </td>
+        <td align="right" style="vertical-align:middle;">
+          <span style="font-family:${FONT};font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:${accent};font-weight:600;">${eyebrow}</span>
+        </td>
+      </tr></table>
+    </td></tr>
+
+    <tr><td style="height:3px;background-color:${accent};font-size:0;line-height:0;">&nbsp;</td></tr>
+
+    <tr><td style="padding:36px 36px 0;">
+      <h1 style="margin:0 0 14px;font-family:${FONT};font-size:25px;line-height:1.28;color:${INK};font-weight:700;letter-spacing:-.015em;">${heading}</h1>
+      <p style="margin:0;font-family:${FONT};font-size:15px;line-height:1.7;color:${BODY};">${intro}</p>
+    </td></tr>
+
+    ${inner}
+
+    <tr><td style="padding:24px 36px 32px;background-color:${PANEL};border-top:1px solid ${LINE};">
+      <p style="margin:0 0 4px;font-family:${FONT};font-size:13px;line-height:1.6;color:${INK};font-weight:600;">{{siteName}}</p>
+      <p style="margin:0;font-family:${FONT};font-size:12px;line-height:1.7;color:${MUTED};">
+        <a href="{{siteUrl}}" style="color:${MUTED};text-decoration:none;">{{siteUrl}}</a>
+      </p>
+    </td></tr>
+
+  </table>
+</td></tr>
+</table>
+</body>
+</html>`.trim();
+
+/* ------------------------------------------------------------------ client confirmation */
 
 const CLIENT_CONFIRMATION = shell(
   MINT,
   'Enquiry received',
   'Thank you, {{clientName}}',
+  'A senior engineer will read your enquiry personally and reply within one business day — usually the same day.',
   `
-<tr><td style="padding:14px 34px 0;">
-  <p style="margin:0 0 16px;font-size:15px;line-height:1.65;color:${BODY};">
-    Your enquiry has reached us and a senior engineer will read it personally — not a form filter.
-    You can expect a reply within one business day, usually the same day.
-  </p>
-
+<tr><td style="padding:28px 36px 0;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-         style="background-color:${PANEL};border-radius:10px;padding:0;margin:0 0 18px;">
-    <tr><td style="padding:16px 18px;">
-      <p style="margin:0 0 12px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:${MUTED};">What you sent us</p>
+         style="background-color:${PANEL};border-radius:12px;border:1px solid ${LINE};">
+    <tr><td style="padding:20px 22px;">
+      <p style="margin:0 0 6px;font-family:${FONT};font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};font-weight:600;">What you sent us</p>
       <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
         ${field('Service', '{{serviceName}}')}
         ${field('Budget', '{{budget}}')}
-        ${field('Your message', '{{message}}')}
       </table>
+      <p style="margin:14px 0 0;font-family:${FONT};font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};font-weight:600;">Your message</p>
+      <p style="margin:6px 0 0;font-family:${FONT};font-size:15px;line-height:1.65;color:${INK};white-space:pre-wrap;">{{message}}</p>
     </td></tr>
   </table>
-
-  <p style="margin:0 0 6px;font-size:13px;line-height:1.65;color:${BODY};">
-    Nothing you shared leaves our team. If you would like an NDA in place before the call, just reply and ask —
-    we will send one over.
-  </p>
 </td></tr>
 
-<tr><td style="padding:18px 34px 26px;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-    <tr><td style="background-color:${INDIGO};border-radius:9px;">
-      <a href="{{siteUrl}}" style="display:inline-block;padding:12px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;">
-        Visit {{siteName}}
-      </a>
+<tr><td style="padding:24px 36px 0;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
+         style="border-left:3px solid ${MINT};">
+    <tr><td style="padding:2px 0 2px 16px;">
+      <p style="margin:0;font-family:${FONT};font-size:14px;line-height:1.7;color:${BODY};">
+        Nothing you shared leaves our team. If you would like an NDA in place before we talk, reply and ask —
+        we will send one over.
+      </p>
     </td></tr>
   </table>
+</td></tr>
+
+<tr><td style="padding:28px 36px 34px;">
+  ${button('Visit {{siteName}}', '{{siteUrl}}', INDIGO)}
 </td></tr>`.trim(),
 );
 
 const CLIENT_CONFIRMATION_TEXT = `
 Thank you, {{clientName}}
 
-Your enquiry has reached us and a senior engineer will read it personally.
-You can expect a reply within one business day, usually the same day.
+A senior engineer will read your enquiry personally and reply within one
+business day — usually the same day.
 
-What you sent us
+WHAT YOU SENT US
   Service : {{serviceName}}
   Budget  : {{budget}}
-  Message : {{message}}
 
-Nothing you shared leaves our team. If you would like an NDA in place before
-the call, just reply and ask.
+  {{message}}
 
-{{siteName}} — {{siteUrl}}
+Nothing you shared leaves our team. If you would like an NDA in place before we
+talk, reply and ask — we will send one over.
+
+{{siteName}}
+{{siteUrl}}
 `.trim();
 
+/* ------------------------------------------------------------------ admin notification */
+
 const ADMIN_NEW_LEAD = shell(
-  INDIGO,
+  MINT,
   'New enquiry',
-  '{{clientName}} — {{serviceName}}',
+  '{{clientName}}',
+  'Wants to talk about {{serviceName}}. Full details below.',
   `
-<tr><td style="padding:14px 34px 0;">
+<tr><td style="padding:26px 36px 0;">
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
-    ${field('Name', '{{clientName}}')}
-    ${field('Email', '<a href="mailto:{{clientEmail}}" style="color:' + INDIGO + ';text-decoration:none;">{{clientEmail}}</a>')}
-    ${field('Phone', '<a href="tel:{{clientPhone}}" style="color:' + INDIGO + ';text-decoration:none;">{{clientPhone}}</a>')}
+    ${field('Email', '<a href="mailto:{{clientEmail}}" style="color:' + INDIGO + ';text-decoration:none;font-weight:600;">{{clientEmail}}</a>')}
+    ${field('Phone', '<a href="tel:{{clientPhone}}" style="color:' + INDIGO + ';text-decoration:none;font-weight:600;">{{clientPhone}}</a>')}
     ${field('Company', '{{clientCompany}}')}
     ${field('Service', '{{serviceName}}')}
     ${field('Budget', '{{budget}}')}
@@ -161,46 +216,44 @@ const ADMIN_NEW_LEAD = shell(
   </table>
 </td></tr>
 
-<tr><td style="padding:20px 34px 0;">
-  <p style="margin:0 0 8px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:${MUTED};">Their message</p>
+<tr><td style="padding:26px 36px 0;">
+  <p style="margin:0 0 8px;font-family:${FONT};font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:${MUTED};font-weight:600;">Their message</p>
   <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0"
-         style="background-color:${PANEL};border-radius:10px;">
-    <tr><td style="padding:16px 18px;">
-      <p style="margin:0;font-size:15px;line-height:1.65;color:${INK};white-space:pre-wrap;">{{message}}</p>
+         style="background-color:${PANEL};border-radius:12px;border:1px solid ${LINE};">
+    <tr><td style="padding:20px 22px;">
+      <p style="margin:0;font-family:${FONT};font-size:16px;line-height:1.7;color:${INK};white-space:pre-wrap;">{{message}}</p>
     </td></tr>
   </table>
 </td></tr>
 
-<tr><td style="padding:20px 34px 26px;">
-  <table role="presentation" cellpadding="0" cellspacing="0" border="0">
-    <tr><td style="background-color:${INDIGO};border-radius:9px;">
-      <a href="{{leadUrl}}" style="display:inline-block;padding:12px 24px;font-size:14px;font-weight:600;color:#ffffff;text-decoration:none;">
-        Open this lead
-      </a>
-    </td></tr>
-  </table>
-  <p style="margin:12px 0 0;font-size:12px;line-height:1.6;color:${MUTED};">
+<tr><td style="padding:28px 36px 34px;">
+  ${button('Open this lead', '{{leadUrl}}', INDIGO)}
+  <p style="margin:16px 0 0;font-family:${FONT};font-size:13px;line-height:1.7;color:${MUTED};">
     Replying to this email reaches {{clientName}} directly, and the reply is kept on the lead.
   </p>
 </td></tr>`.trim(),
 );
 
 const ADMIN_NEW_LEAD_TEXT = `
-New enquiry — {{clientName}} ({{serviceName}})
+NEW ENQUIRY — {{clientName}}
 
-Name      : {{clientName}}
-Email     : {{clientEmail}}
-Phone     : {{clientPhone}}
-Company   : {{clientCompany}}
-Service   : {{serviceName}}
-Budget    : {{budget}}
-Came from : {{sourcePage}}
-Submitted : {{submittedAt}}
+Wants to talk about {{serviceName}}.
 
-Their message
+  Email     : {{clientEmail}}
+  Phone     : {{clientPhone}}
+  Company   : {{clientCompany}}
+  Service   : {{serviceName}}
+  Budget    : {{budget}}
+  Came from : {{sourcePage}}
+  Submitted : {{submittedAt}}
+
+THEIR MESSAGE
 {{message}}
 
 Open this lead: {{leadUrl}}
+
+Replying to this email reaches {{clientName}} directly, and the reply is kept on
+the lead.
 `.trim();
 
 /* ------------------------------------------------------------------ apply */
