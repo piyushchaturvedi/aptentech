@@ -32,7 +32,8 @@
     "test": "npm run test --workspaces --if-present",
     "migrate-tech-stack": "node scripts/migrate-tech-stack.js",
     "migrate-home-growth": "node scripts/migrate-home-growth.js",
-    "build-home-growth": "node scripts/build-home-growth.js"
+    "build-home-growth": "node scripts/build-home-growth.js",
+    "find-duplicate-blocks": "node scripts/find-duplicate-blocks.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
