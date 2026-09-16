@@ -756,7 +756,15 @@ const SiteSettingsSchema = new Schema(
     footerColumns: { type: [new Schema({}, { _id: false, strict: false })], default: [] },
     footerCta: { type: CtaSchema, default: null },
     footerTagline: { type: String, default: '', maxlength: 6000 },
-    legalLinks: { type: [new Schema({ label: String, href: String }, { _id: false })], default: [] },
+    /*
+      Spelled out rather than left to `strict: false` like the menus above, so `visible` needs
+      declaring here too. Without it Mongoose silently drops the field on save and the schema's
+      default puts it back as true on the next read — the switch appears to turn itself on again.
+    */
+    legalLinks: {
+      type: [new Schema({ label: String, href: String, visible: { type: Boolean, default: true } }, { _id: false })],
+      default: [],
+    },
     defaultSeo: { type: SeoSchema, default: () => ({}) },
     /**
      * Who lead mail reaches, and how it signs itself.
