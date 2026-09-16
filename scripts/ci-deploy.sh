@@ -75,6 +75,12 @@ say "Now at $(git rev-parse --short HEAD) — $(git log -1 --pretty=%s)"
 # a document in the old shape fails to render. Each script is idempotent and reports "0" when
 # there is nothing to do, so listing them here costs nothing on a normal deploy.
 
+# Mail settings, so nobody edits .env by hand. The host, port and mailbox address are in the
+# script; the password arrives as an environment variable from a GitHub Actions secret and is
+# never written into the repository.
+say "Applying mail settings"
+node scripts/apply-mail-env.js || true
+
 say "Checking data migrations"
 node scripts/migrate-tech-stack.js --apply
 node scripts/migrate-home-growth.js --apply

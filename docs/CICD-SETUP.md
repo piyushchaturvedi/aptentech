@@ -100,6 +100,13 @@ one line from `authorized_keys` and your own access is unaffected.
 | `DEPLOY_SSH_KEY` | the entire private key from step 2, including the `BEGIN`/`END` lines |
 | `DEPLOY_PATH` | `/home/ec2-user/aptentech` |
 | `DEPLOY_SITE_URL` | `http://3.218.41.249` — or the domain once it is live |
+| `SMTP_PASSWORD` | the mailbox password for `sales@aptentech.com` |
+
+`SMTP_PASSWORD` is the only mail setting kept as a secret. The host, port, TLS mode and mailbox
+address are in `scripts/apply-mail-env.js`, which the deploy runs — none of those is a
+credential, and keeping them in the repository is what lets a deploy configure mail on its own.
+The password stays out because Git history is permanent: one committed and later deleted is
+still in every clone and every fork.
 
 `DEPLOY_SITE_URL` is only used by the final check that the site answers. Update it when you move
 to the domain, otherwise a perfectly good deploy reports failure.
