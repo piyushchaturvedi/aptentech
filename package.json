@@ -36,7 +36,8 @@
     "find-duplicate-blocks": "node scripts/find-duplicate-blocks.js",
     "apply-home-content": "node scripts/apply-home-content.js",
     "verify-admin-coverage": "node scripts/verify-admin-coverage.js",
-    "apply-mail-env": "node scripts/apply-mail-env.js"
+    "apply-mail-env": "node scripts/apply-mail-env.js",
+    "diagnose-mail": "node scripts/diagnose-mail.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
