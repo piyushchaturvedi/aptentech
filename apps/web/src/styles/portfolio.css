@@ -1013,3 +1013,30 @@ ul{margin:0; padding:0; list-style:none}
   .gm-row .out{grid-column:2; text-align:left; padding-left:0}
 }
 @media (max-width:560px){ .gm-row .tx span{display:none} }
+
+/* ---------------------------------------------------------------- mobile corrections */
+
+/*
+  The eyebrow pill is a flex row of three items: the dot, the phrase, and the accent phrase.
+  `flex-wrap` defaults to nowrap, so a narrow screen shrinks each item rather than wrapping
+  the line — the two phrases end up as two ragged columns with a gap down the middle, each
+  wrapping inside its own narrow box. Below this width the pill flows as ordinary text, which
+  is what it reads as everywhere else.
+*/
+@media (max-width:560px){
+  .pill{display:inline-block; text-align:center; line-height:1.75; padding:7px 15px}
+  .pill .dot{display:inline-block; vertical-align:middle; margin-right:5px}
+}
+
+/*
+  The breadcrumb separator was on `::before` of every item but the first, so a list that
+  wrapped moved the "/" onto the next line and began it — "HOME / SOLUTIONS" then a line
+  starting "/ MUSIC APP DEVELOPMENT".
+
+  Putting it on `::after` of every item but the last glues each separator to the crumb it
+  follows. A line may now end with one, which is what a separator is for, and can never
+  start with one. Spacing is unchanged: either form is a flex item inside the same `li`,
+  with the same gap on both sides.
+*/
+.crumb li+li::before{content:none}
+.crumb li:not(:last-child)::after{content:"/"; color:#6C77B8}
