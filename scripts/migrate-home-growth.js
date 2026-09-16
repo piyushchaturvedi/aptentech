@@ -3,9 +3,11 @@
  * Brings the home page up to the revised design: the AI card grid becomes the growth-and-
  * marketing band, one service card is swapped, and three headings change.
  *
- * Everything it writes is read out of the approved source HTML rather than typed here, so the
- * copy and the icons are the designer's, not a transcription. The source is
- * `aptentech-homepage.html` beside the repository — the same file the seed reads.
+ * Reads `scripts/data/home-growth.json`, which is extracted from the approved source HTML by
+ * `npm run build-home-growth` and committed. It deliberately does NOT read the HTML itself:
+ * the design files live beside the repository rather than inside it, so a server that only has
+ * a clone has no copy of them — the first version of this script read the HTML, found an older
+ * revision on the server, and would have failed the whole deploy rather than updating anything.
  *
  * Two targets:
  *
@@ -22,13 +24,10 @@
  */
 const fs = require('node:fs');
 const path = require('node:path');
-const crypto = require('node:crypto');
 
 const ROOT = path.resolve(__dirname, '..');
 const APPLY = process.argv.includes('--apply');
-const SOURCE = process.env.SOURCE_HTML_DIR
-  ? path.join(process.env.SOURCE_HTML_DIR, 'aptentech-homepage.html')
-  : path.resolve(ROOT, '..', 'aptentech-homepage.html');
+const PAYLOAD = path.join(ROOT, 'scripts/data/home-growth.json');
 const REGISTRY = path.join(ROOT, 'apps/web/src/components/shared/iconRegistry.generated.ts');
 
 function envValue(key) {
@@ -41,133 +40,26 @@ function envValue(key) {
   return null;
 }
 
-/*
-  Hex to accent token.
-
-  The design file sets colour by hex; the CMS stores a token from the closed palette instead,
-  so an editor can only pick a brand colour. This is the same table `accentFromHex` uses in the
-  shared package, repeated here because this script talks to MongoDB directly and does not load
-  the workspace build.
-*/
-const ACCENT_FOR_HEX = {
-  '#3A31DB': 'indigo',
-  '#00C9A7': 'mint',
-  '#7C4DFF': 'violet',
-  '#FF9D2E': 'amber',
-  '#14B8E4': 'cyan',
-  '#F0468A': 'pink',
-};
-
-/** The seed's own key derivation. Kept identical so both produce the same key for one body. */
-const iconKey = (body) => 'i' + crypto.createHash('sha1').update(body).digest('hex').slice(0, 10);
-
-const decode = (s) =>
-  String(s)
-    .replace(/&amp;/g, '&')
-    .replace(/&lt;/g, '<')
-    .replace(/&gt;/g, '>')
-    .replace(/&quot;/g, '"')
-    .replace(/&#39;/g, "'")
-    .replace(/\\u2019/g, '’')
-    .replace(/\\'/g, "'");
-
-/**
- * Pulls one `var NAME = [ ... ];` array out of the source and evaluates it.
- *
- * The arrays are plain literals written by hand in the design file, so a JSON parse will not
- * take them (single quotes, HTML entities). Evaluating in a Function with no scope is enough
- * here because the input is a file from the repository, not anything a user supplies.
- */
-function readArray(html, name) {
-  const start = html.indexOf(`var ${name} = [`);
-  if (start < 0) return null;
-  const open = html.indexOf('[', start);
-
-  let depth = 0;
-  for (let i = open; i < html.length; i += 1) {
-    if (html[i] === '[') depth += 1;
-    else if (html[i] === ']') {
-      depth -= 1;
-      if (depth === 0) {
-        // eslint-disable-next-line no-new-func
-        return Function(`"use strict"; return (${html.slice(open, i + 1)});`)();
-      }
-    }
-  }
-  return null;
-}
-
-/** The six-capability tab data, which is an array of objects rather than tuples. */
-function readServices(html) {
-  const start = html.indexOf('var SERVICES = [');
-  if (start < 0) return null;
-  const open = html.indexOf('[', start);
-  let depth = 0;
-  for (let i = open; i < html.length; i += 1) {
-    if (html[i] === '[') depth += 1;
-    else if (html[i] === ']') {
-      depth -= 1;
-      if (depth === 0) {
-        // eslint-disable-next-line no-new-func
-        return Function(`"use strict"; return (${html.slice(open, i + 1)});`)();
-      }
-    }
-  }
-  return null;
-}
-
-/**
- * Splits the hero H1 into the three parts the renderer stores.
- *
- * The design prints one word group in the brand gradient, marked up as `<span class="g">`. The
- * CMS keeps that as `{ lead, highlight, trail }` rather than as markup, so an editor can
- * rewrite any of the three without being able to introduce a tag. Flattening the H1 to a single
- * string here would silently drop the gradient.
- */
-function splitHeading(html) {
-  const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/);
-  if (!h1 || !h1[1]) return null;
-
-  const inner = h1[1];
-  const strip = (v) => decode(String(v ?? '').replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim());
-
-  const span = inner.match(/<span class="g">([\s\S]*?)<\/span>/);
-  if (!span || !span[1]) return { lead: strip(inner), highlight: '', trail: '' };
-
-  const [before, after] = inner.split(span[0]);
-  return { lead: strip(before), highlight: strip(span[1]), trail: strip(after) };
-}
-
-/** Text of the first element matching a very small subset of selectors. */
-function textOf(html, pattern) {
-  const m = html.match(pattern);
-  return m && m[1] ? decode(m[1].replace(/<[^>]*>/g, '').replace(/\s+/g, ' ').trim()) : null;
-}
+const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 (async () => {
-  if (!fs.existsSync(SOURCE)) {
-    console.error(`Source HTML not found: ${SOURCE}`);
-    console.error('Set SOURCE_HTML_DIR if the approved pages live elsewhere.');
+  if (!fs.existsSync(PAYLOAD)) {
+    console.error(`Content payload not found: ${PAYLOAD}`);
+    console.error('Regenerate it from the approved HTML with: npm run build-home-growth');
     process.exit(1);
   }
 
-  const html = fs.readFileSync(SOURCE, 'utf8');
-
-  const stages = readArray(html, 'GM_STAGES');
-  const channels = readArray(html, 'GM_CHANNELS');
-  const services = readServices(html);
-
-  if (!stages || !channels || !services) {
-    console.error('Could not read GM_STAGES, GM_CHANNELS and SERVICES from the source.');
-    console.error('The source may be an older revision of the home page.');
-    process.exit(1);
-  }
+  const data = JSON.parse(fs.readFileSync(PAYLOAD, 'utf8'));
 
   // ------------------------------------------------------------------ icons
+  //
+  // The payload carries each icon's SVG body alongside its key, so a checkout whose generated
+  // registry predates this section can still resolve every icon. Anything already present is
+  // left exactly as it is — the key is a hash of the body, so a match means identical artwork.
 
   const needed = new Map();
-  for (const c of channels) needed.set(iconKey(c[4]), c[4]);
-  for (const s of services) if (s.icon) needed.set(iconKey(s.icon), s.icon);
+  for (const c of data.growth.channels) if (c.iconBody) needed.set(c.icon, c.iconBody);
+  for (const s of data.services) if (s.iconBody) needed.set(s.icon, s.iconBody);
 
   let registry = fs.readFileSync(REGISTRY, 'utf8');
   const missing = [...needed].filter(([key]) => !registry.includes(`  ${key}:`));
@@ -201,15 +93,9 @@ function textOf(html, pattern) {
     process.exit(1);
   }
 
-  const growthSection = html.slice(html.indexOf('id="growth"'));
-  const newHeadings = {
-    hero: splitHeading(html),
-    growthEyebrow: textOf(growthSection, /<span class="eyebrow[^"]*">([\s\S]*?)<\/span>/),
-    growthTitle: textOf(growthSection, /<h2[^>]*id="ai-h2"[^>]*>([\s\S]*?)<\/h2>/),
-    growthLede: textOf(growthSection, /<p class="lede[^"]*"[^>]*>([\s\S]*?)<\/p>/),
-    funnelLabel: textOf(growthSection, /<p class="gm-k">([\s\S]*?)<\/p>/),
-    growthCta: textOf(growthSection, /class="btn btn-mint gm-cta">([\s\S]*?)<svg/),
-  };
+  // The stored blocks never carry `iconBody`; that field exists only so this script can repair
+  // the registry. Stripping it keeps the database holding a key, never artwork.
+  const strip = ({ iconBody, ...rest }) => rest;
 
   const changes = [];
   const blocks = home.blocks.map((block) => {
@@ -219,65 +105,32 @@ function textOf(html, pattern) {
         key: block.key,
         type: 'growthBand',
         enabled: block.enabled !== false,
-        eyebrow: newHeadings.growthEyebrow ?? '',
-        title: newHeadings.growthTitle ?? '',
-        lede: newHeadings.growthLede ?? '',
-        funnelLabel: newHeadings.funnelLabel ?? '',
-        ctaLabel: newHeadings.growthCta ?? '',
-        stages: stages.map((s) => ({ number: decode(s[0]), title: decode(s[1]), description: decode(s[2]) })),
-        channels: channels.map((c) => ({
-          // The source sets colour by hex; the CMS stores an accent token, so the hex is
-          // matched back to the token the design already defines for it.
-          accent: ACCENT_FOR_HEX[c[0]] ?? 'indigo',
-          icon: iconKey(c[4]),
-          title: decode(c[1]),
-          description: decode(c[2]),
-          outcome: decode(c[3]),
-        })),
+        eyebrow: data.growth.eyebrow,
+        title: data.growth.title,
+        lede: data.growth.lede,
+        funnelLabel: data.growth.funnelLabel,
+        ctaLabel: data.growth.ctaLabel,
+        stages: data.growth.stages,
+        channels: data.growth.channels.map(strip),
       };
     }
 
     if (block.type === 'serviceTabs') {
-      /*
-        The stored shape is the CMS's, not the design file's: the source calls the fields
-        `desc`, `links` and `c`, while the block holds `description`, `bullets` and an accent
-        token. Writing the source's names instead would leave a tab with no body text and an
-        empty link list, and nothing would report it — the renderer reads what it knows about
-        and ignores the rest.
-      */
-      const items = services.map((s) => ({
-        accent: ACCENT_FOR_HEX[s.c] ?? 'indigo',
-        title: decode(s.title),
-        description: decode(s.desc),
-        icon: iconKey(s.icon),
-        bullets: (s.links ?? []).map(decode),
-      }));
-      const before = (block.items ?? []).map((i) => i.title).join('|');
-      const after = items.map((i) => i.title).join('|');
-      if (before !== after) changes.push(`serviceTabs items: ${services.length} capabilities`);
-
-      const title = textOf(html, /<h2[^>]*id="svc-h2"[^>]*>([\s\S]*?)<\/h2>/);
-      if (title && title !== block.title) changes.push(`serviceTabs title → "${title}"`);
-      return { ...block, items, ...(title ? { title } : {}) };
+      const items = data.services.map(strip);
+      const next = { ...block, items, title: data.servicesTitle || block.title };
+      if (!same(block.items, items)) changes.push(`serviceTabs items: ${items.length} capabilities`);
+      if (next.title !== block.title) changes.push(`serviceTabs title → "${next.title}"`);
+      return next;
     }
 
-    if (block.type === 'homeHero' && newHeadings.hero) {
-      const current = block.splitHeading ?? {};
-      const next = newHeadings.hero;
-      const same =
-        current.lead === next.lead && current.highlight === next.highlight && current.trail === next.trail;
-      if (!same) {
-        changes.push(`homeHero heading → "${next.lead} [${next.highlight}]${next.trail ? ' ' + next.trail : ''}"`);
-        return { ...block, splitHeading: next };
-      }
+    if (block.type === 'homeHero' && !same(block.splitHeading, data.hero)) {
+      changes.push(`homeHero heading → "${data.hero.lead} [${data.hero.highlight}]"`);
+      return { ...block, splitHeading: data.hero };
     }
 
-    if (block.type === 'whyGrid') {
-      const title = textOf(html, /<h2[^>]*id="why-h2"[^>]*>([\s\S]*?)<\/h2>/);
-      if (title && title !== block.title) {
-        changes.push(`whyGrid title → "${title}"`);
-        return { ...block, title };
-      }
+    if (block.type === 'whyGrid' && data.whyTitle && block.title !== data.whyTitle) {
+      changes.push(`whyGrid title → "${data.whyTitle}"`);
+      return { ...block, title: data.whyTitle };
     }
 
     return block;

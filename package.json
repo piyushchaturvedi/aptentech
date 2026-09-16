@@ -31,7 +31,8 @@
     "lint": "npm run lint --workspaces --if-present",
     "test": "npm run test --workspaces --if-present",
     "migrate-tech-stack": "node scripts/migrate-tech-stack.js",
-    "migrate-home-growth": "node scripts/migrate-home-growth.js"
+    "migrate-home-growth": "node scripts/migrate-home-growth.js",
+    "build-home-growth": "node scripts/build-home-growth.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
