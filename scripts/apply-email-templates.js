@@ -42,29 +42,23 @@ const MINT = '#00C9A7';
 const FONT = "-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif";
 
 /**
- * A button that also renders in Outlook.
+ * A button that survives Outlook.
  *
- * Outlook desktop lays out with Word, which ignores padding on an anchor — so a styled link
- * collapses to plain blue text, which is what a "button" in an HTML email usually turns out to
- * be. The VML rectangle inside the mso conditional is what Outlook draws instead; every other
- * client skips it and uses the anchor below.
+ * Outlook lays out with Word and ignores padding on an anchor, so the usual styled link
+ * collapses to blue underlined text. The fix normally reached for is a VML rectangle inside an
+ * `<!--[if mso]>` conditional — but the template sanitiser strips HTML comments, and it should:
+ * anything inside a comment is never sanitised, and a client that honours conditional comments
+ * would render it. Allowing them back would defeat the reason the sanitiser exists.
+ *
+ * So the padding goes on the table cell instead, which Outlook does honour. Same result, no
+ * comment, nothing hidden from the sanitiser.
  */
 const button = (label, href, colour = INDIGO) => `
-<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr><td>
-  <!--[if mso]>
-  <v:roundrect xmlns:v="urn:schemas-microsoft-com:vml" xmlns:w="urn:schemas-microsoft-com:office:word"
-    href="${href}" style="height:46px;v-text-anchor:middle;width:230px;" arcsize="20%" stroke="f" fillcolor="${colour}">
-    <w:anchorlock/>
-    <center style="color:#ffffff;font-family:${FONT};font-size:15px;font-weight:bold;">${label}</center>
-  </v:roundrect>
-  <![endif]-->
-  <!--[if !mso]><!-- -->
-  <a href="${href}"
-     style="background-color:${colour};border-radius:10px;color:#ffffff;display:inline-block;
-            font-family:${FONT};font-size:15px;font-weight:600;line-height:46px;text-align:center;
-            text-decoration:none;width:230px;-webkit-text-size-adjust:none;">${label}</a>
-  <!--<![endif]-->
-</td></tr></table>`.trim();
+<table role="presentation" cellpadding="0" cellspacing="0" border="0"><tr>
+  <td style="background-color:${colour};border-radius:10px;padding:15px 30px;text-align:center;">
+    <a href="${href}" style="font-family:${FONT};font-size:15px;font-weight:600;color:#ffffff;text-decoration:none;display:inline-block;">${label}</a>
+  </td>
+</tr></table>`.trim();
 
 /** One label/value row, as a table so the label column cannot collapse in Outlook. */
 const field = (label, value) => `

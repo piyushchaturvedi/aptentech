@@ -68,26 +68,88 @@ const EMAIL_HTML_OPTIONS: sanitizeHtml.IOptions = {
     '*': ['style'],
   },
   allowedStyles: {
+    /*
+      What a layout in email is actually made of.
+
+      The point of an allowlist here is to exclude the handful of properties that can execute or
+      escape the message — `position`, `behavior`, `expression`, anything taking a `url()` — not
+      to keep the list short. An email has no stylesheet, so every rule that makes a message
+      look like anything at all has to survive as an inline style; a property missing from this
+      list is silently deleted, and the result is a design that renders as unstyled text with
+      the background colours still attached.
+
+      The shorthand patterns accept the multi-value forms CSS actually uses. `padding:26px 36px`
+      is the normal way to write a card's inset and was previously rejected, because the pattern
+      only allowed a unit at the very end of the value.
+    */
     '*': {
       color: [/^#[0-9a-f]{3,8}$/i, /^rgb\(/i, /^[a-z-]+$/i],
       'background-color': [/^#[0-9a-f]{3,8}$/i, /^rgb\(/i, /^[a-z-]+$/i],
+      background: [/^#[0-9a-f]{3,8}$/i, /^rgb\(/i, /^[a-z-]+$/i],
+
       'font-size': [/^\d{1,3}(px|pt|em|rem|%)$/],
       'font-weight': [/^(normal|bold|[1-9]00)$/],
       'font-family': [/^[\w\s,'"-]+$/],
+      'font-style': [/^(normal|italic)$/],
       'text-align': [/^(left|right|center|justify)$/],
       'text-decoration': [/^[a-z- ]+$/],
+      'text-transform': [/^(none|uppercase|lowercase|capitalize)$/],
       'line-height': [/^\d(\.\d+)?$/, /^\d{1,3}(px|%)$/],
-      padding: [/^[\d\s]{1,20}(px|em|%)?$/],
-      'padding-top': [/^\d{1,3}(px|em|%)$/],
-      'padding-bottom': [/^\d{1,3}(px|em|%)$/],
-      'padding-left': [/^\d{1,3}(px|em|%)$/],
-      'padding-right': [/^\d{1,3}(px|em|%)$/],
-      margin: [/^[\d\sa-z]{1,20}(px|em|%)?$/],
-      border: [/^[\w\s#]{1,40}$/],
-      'border-radius': [/^\d{1,3}(px|%)$/],
+      // `-.01em` and `.16em` are valid CSS — a digit before the point is not required.
+      'letter-spacing': [/^-?(\d+(\.\d+)?|\.\d+)(px|em)$/, /^normal$/],
+      'white-space': [/^(normal|nowrap|pre|pre-wrap|pre-line)$/],
+      'vertical-align': [/^(top|middle|bottom|baseline)$/],
+
+      // Shorthands take up to four space-separated lengths, each with its own unit.
+      padding: [/^(-?\d{1,4}(px|em|rem|%)?)(\s+-?\d{1,4}(px|em|rem|%)?){0,3}$/],
+      margin: [/^((-?\d{1,4}(px|em|rem|%)?|auto))(\s+(-?\d{1,4}(px|em|rem|%)?|auto)){0,3}$/],
+      'padding-top': [/^\d{1,4}(px|em|rem|%)$/],
+      'padding-bottom': [/^\d{1,4}(px|em|rem|%)$/],
+      'padding-left': [/^\d{1,4}(px|em|rem|%)$/],
+      'padding-right': [/^\d{1,4}(px|em|rem|%)$/],
+      'margin-top': [/^-?\d{1,4}(px|em|rem|%)$/],
+      'margin-bottom': [/^-?\d{1,4}(px|em|rem|%)$/],
+      'margin-left': [/^(-?\d{1,4}(px|em|rem|%)|auto)$/],
+      'margin-right': [/^(-?\d{1,4}(px|em|rem|%)|auto)$/],
+
+      // `1px solid #E9EBF6` — a width, a style and a colour.
+      border: [/^\d{1,3}px\s+(solid|dashed|dotted|none)(\s+(#[0-9a-f]{3,8}|[a-z]+))?$/i, /^none$/],
+      'border-top': [/^\d{1,3}px\s+(solid|dashed|dotted|none)(\s+(#[0-9a-f]{3,8}|[a-z]+))?$/i, /^none$/],
+      'border-bottom': [/^\d{1,3}px\s+(solid|dashed|dotted|none)(\s+(#[0-9a-f]{3,8}|[a-z]+))?$/i, /^none$/],
+      'border-left': [/^\d{1,3}px\s+(solid|dashed|dotted|none)(\s+(#[0-9a-f]{3,8}|[a-z]+))?$/i, /^none$/],
+      'border-right': [/^\d{1,3}px\s+(solid|dashed|dotted|none)(\s+(#[0-9a-f]{3,8}|[a-z]+))?$/i, /^none$/],
+      'border-radius': [/^\d{1,3}(px|%)(\s+\d{1,3}(px|%)){0,3}$/],
       'border-collapse': [/^(collapse|separate)$/],
-      width: [/^\d{1,4}(px|%)$/],
+      'border-spacing': [/^\d{1,3}px(\s+\d{1,3}px)?$/],
+
+      width: [/^\d{1,4}(px|%)$/, /^auto$/],
       'max-width': [/^\d{1,4}(px|%)$/],
+      'min-width': [/^\d{1,4}(px|%)$/],
+      height: [/^\d{1,4}(px|%)$/, /^auto$/],
+      // A bare `0` is valid and is what a hidden preheader uses.
+      'max-height': [/^\d{1,4}(px|%)$/, /^0$/],
+
+      /*
+        `display` is on the list for the preheader — the hidden line a client shows beside the
+        subject in the inbox list. Without it that text renders at the top of the message, which
+        is how a preheader becomes a visible duplicate of the heading.
+      */
+      display: [/^(block|inline|inline-block|none|table|table-cell|table-row)$/],
+      overflow: [/^(hidden|visible|auto)$/],
+      opacity: [/^(0|1|0?\.\d{1,3})$/],
+      /*
+        Offsets, a blur and a colour. No `url()`, so nothing can be fetched through it.
+
+        Each length may be a bare `0` — `0 1px 2px rgba(...)` is the ordinary way to write a
+        shadow with no horizontal offset, and requiring a unit on every value rejects it.
+      */
+      'box-shadow': [
+        /^(none|(-?(\d{1,3}(px|em)|0)\s+){2,3}(#[0-9a-f]{3,8}|rgba?\([\d\s.,%]+\)))$/i,
+      ],
+
+      // Safari and iOS Mail otherwise inflate small text on their own.
+      '-webkit-text-size-adjust': [/^(none|100%|auto)$/],
+      'mso-line-height-rule': [/^exactly$/],
     },
   },
   // Only schemes that cannot execute. `javascript:` and `data:` are absent deliberately:
