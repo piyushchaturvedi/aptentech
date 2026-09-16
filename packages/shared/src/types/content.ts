@@ -94,7 +94,7 @@ export interface TechStackGroup {
   items: TechStackItem[];
 }
 
-/** Source: `WHY` — the numbered "why Aptentech" list. */
+/** Source: `WHY` — the numbered "why AptenTech" list. */
 export interface WhyItem {
   title: string;
   description: string;
@@ -961,12 +961,16 @@ export type PageBlock =
 export interface NavLink {
   label: string;
   href: string;
+  /** Hidden from the menu when false. Absent means visible, so existing data is unaffected. */
+  visible?: boolean;
 }
 
 export interface NavColumn {
   heading: string;
   /** Colour of the swatch beside the column heading in the mega-menu. */
   accent: AccentToken;
+  /** Hidden from the menu when false. Absent means visible, so existing data is unaffected. */
+  visible?: boolean;
   links: NavLink[];
 }
 
@@ -975,6 +979,8 @@ export interface NavGroup {
   href: string;
   /** The source gives the last mega-panel a `right` modifier so it cannot overflow the viewport. */
   alignRight?: boolean;
+  /** Hidden from the menu when false. Absent means visible, so existing data is unaffected. */
+  visible?: boolean;
   columns: NavColumn[];
   promoTitle?: string;
   promoBody?: string;
@@ -984,6 +990,8 @@ export interface NavGroup {
 
 export interface FooterColumn {
   heading: string;
+  /** Hidden from the menu when false. Absent means visible, so existing data is unaffected. */
+  visible?: boolean;
   links: NavLink[];
   /** The source's Industries column carries a second labelled list ("Resources") in the same nav. */
   secondaryHeading?: string;
@@ -1007,6 +1015,8 @@ export interface MobileNavItem {
   label: string;
   href: string;
   links: NavLink[];
+  /** Hidden from the menu when false. Absent means visible, so existing data is unaffected. */
+  visible?: boolean;
 }
 
 export interface SiteSettings {

@@ -26,7 +26,7 @@ function generatePassword(): string {
 
 async function main(): Promise<void> {
   const email = (arg('email') ?? process.env.ADMIN_EMAIL ?? '').trim().toLowerCase();
-  const name = arg('name') ?? process.env.ADMIN_NAME ?? 'Aptentech Admin';
+  const name = arg('name') ?? process.env.ADMIN_NAME ?? 'AptenTech Admin';
   const roleInput = (arg('role') ?? process.env.ADMIN_ROLE ?? 'SUPER_ADMIN') as AdminRole;
 
   if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {

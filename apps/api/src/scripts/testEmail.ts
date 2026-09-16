@@ -62,13 +62,13 @@ async function main(): Promise<void> {
 
   try {
     const info = await transport.sendMail({
-      from: { name: 'Aptentech — test', address: env.EMAIL_FROM },
+      from: { name: 'AptenTech — test', address: env.EMAIL_FROM },
       to,
-      subject: 'Aptentech — SMTP test',
+      subject: 'AptenTech — SMTP test',
       text: 'If you are reading this in your inbox, SMTP delivery from the site is working.',
     });
     console.log(`✓ Test email sent to ${to}. Provider message id: ${info.messageId ?? '(none returned)'}`);
-    console.log('\nCheck that inbox (and its spam folder) for a message titled "Aptentech — SMTP test".');
+    console.log('\nCheck that inbox (and its spam folder) for a message titled "AptenTech — SMTP test".');
   } catch (err) {
     console.error('\n✗ Login worked, but sending the test message FAILED:', err instanceof Error ? err.message : err);
     console.error(

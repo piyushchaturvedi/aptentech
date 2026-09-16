@@ -737,7 +737,7 @@ AuditLogSchema.index({ createdAt: 1 }, { expireAfterSeconds: 365 * 24 * 60 * 60 
 const SiteSettingsSchema = new Schema(
   {
     singleton: { type: String, default: 'site', immutable: true },
-    companyName: { type: String, default: 'Aptentech', maxlength: 300 },
+    companyName: { type: String, default: 'AptenTech', maxlength: 300 },
     logo: { type: MediaRefSchema, default: () => ({}) },
     favicon: { type: MediaRefSchema, default: () => ({}) },
     email: { type: String, default: '', maxlength: 200 },

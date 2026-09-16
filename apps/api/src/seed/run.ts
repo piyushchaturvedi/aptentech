@@ -861,7 +861,7 @@ async function seedPageInsights(html: string): Promise<Types.ObjectId[]> {
           publishedAt: null,
           faqs: [],
           seo: {
-            title: `${card.title} | Aptentech`,
+            title: `${card.title} | AptenTech`,
             description: card.excerpt.slice(0, 300),
             canonical: `https://aptentech.com/blog/${card.slug}/`,
           },
@@ -1289,7 +1289,7 @@ async function seedBlog(): Promise<{ posts: number; categories: number }> {
           status: 'PUBLISHED',
           publishedAt,
           faqs: [],
-          seo: { title: `${p.title} | Aptentech`, description: p.excerpt.slice(0, 300), canonical: `https://aptentech.com/blog/${slug}/` },
+          seo: { title: `${p.title} | AptenTech`, description: p.excerpt.slice(0, 300), canonical: `https://aptentech.com/blog/${slug}/` },
         },
       },
       { upsert: true },
@@ -1353,7 +1353,7 @@ async function seedFeaturedPost(): Promise<number> {
         publishedAt: published ? new Date(published) : null,
         faqs: [],
         seo: {
-          title: `${title} | Aptentech`,
+          title: `${title} | AptenTech`,
           description: excerpt.slice(0, 300),
           canonical: `https://aptentech.com/blog/${slug}/`,
         },
@@ -1834,7 +1834,7 @@ async function seedSettings(): Promise<void> {
     { singleton: 'site' },
     {
       $set: {
-        companyName: 'Aptentech',
+        companyName: 'AptenTech',
         logo: { ...EMPTY_MEDIA },
         favicon: { ...EMPTY_MEDIA },
         // Placeholders preserved exactly as the source has them — no invented contact details.
@@ -1860,9 +1860,9 @@ async function seedSettings(): Promise<void> {
           { label: 'Sitemap', href: '/sitemap.xml' },
         ],
         defaultSeo: {
-          title: 'Aptentech — AI, Software & Cloud Engineering Company',
+          title: 'AptenTech — AI, Software & Cloud Engineering Company',
           description:
-            'Aptentech builds AI systems, software products and cloud platforms for startups, SMEs and enterprises — from first architecture call to production scale.',
+            'AptenTech builds AI systems, software products and cloud platforms for startups, SMEs and enterprises — from first architecture call to production scale.',
           canonical: 'https://aptentech.com/',
           ogTitle: '',
           ogDescription: '',
@@ -1945,7 +1945,7 @@ async function seedIndexPages(): Promise<number> {
           status: 'PUBLISHED',
           blocks: [{ key: 'index', type: 'pageIndex', enabled: true, ...page.block }],
           seo: {
-            title: `${page.title} | Aptentech`,
+            title: `${page.title} | AptenTech`,
             description: page.description.slice(0, 300),
             canonical: `https://aptentech.com${page.path}`,
             ogTitle: '',

@@ -213,6 +213,11 @@ export default function AdminSettingsPage() {
 
           <Panel title="Navigation">
             <p className="hint">
+              Use the <strong>↑ ↓</strong> buttons on any group, column or link to move it, and{' '}
+              <strong>Show in the menu</strong> to hide one without deleting it — a hidden entry keeps its links and
+              can be switched back on.
+            </p>
+            <p className="hint">
               The mega-menu. Several links in the original still point at placeholder paths such as{' '}
               <code>/services/</code> and <code>/technologies/</code> — repoint them here as those pages are built.
             </p>
@@ -221,7 +226,7 @@ export default function AdminSettingsPage() {
               items={settings.navigation}
               onChange={(navigation) => patch({ navigation })}
               itemLabel={(g) => g.label || 'Group'}
-              create={() => ({ label: '', href: '#', columns: [], promoTitle: '', promoBody: '', promoCta: null })}
+              create={() => ({ label: '', href: '#', columns: [], promoTitle: '', promoBody: '', promoCta: null, visible: true })}
               render={(group, updateGroup) => (
                 <>
                   <div className="adm-grid2">
@@ -234,27 +239,45 @@ export default function AdminSettingsPage() {
                     />
                   </div>
 
+                  <Toggle
+                    label="Show in the menu"
+                    value={group.visible !== false}
+                    onChange={(v) => updateGroup({ visible: v })}
+                  />
+
                   <Repeater
                     label="Columns"
                     items={group.columns}
                     onChange={(columns) => updateGroup({ columns })}
                     itemLabel={(c) => c.heading || 'Unlabelled column'}
-                    create={() => ({ heading: '', accent: 'indigo' as AccentToken, links: [] })}
+                    create={() => ({ heading: '', accent: 'indigo' as AccentToken, links: [], visible: true })}
                     render={(column, updateColumn) => (
                       <>
                         <Text label="Heading" value={column.heading} onChange={(v) => updateColumn({ heading: v })} />
                         <AccentPicker value={column.accent} onChange={(v) => updateColumn({ accent: v })} />
+                        <Toggle
+                          label="Show this column"
+                          value={column.visible !== false}
+                          onChange={(v) => updateColumn({ visible: v })}
+                        />
                         <Repeater
                           label="Links"
                           items={column.links}
                           onChange={(links) => updateColumn({ links })}
                           itemLabel={(l) => l.label || 'Link'}
-                          create={() => ({ label: '', href: '/' })}
+                          create={() => ({ label: '', href: '/', visible: true })}
                           render={(link, updateLink) => (
-                            <div className="adm-grid2">
-                              <Text label="Label" value={link.label} onChange={(v) => updateLink({ label: v })} />
-                              <Text label="URL" value={link.href} onChange={(v) => updateLink({ href: v })} />
-                            </div>
+                            <>
+                              <div className="adm-grid2">
+                                <Text label="Label" value={link.label} onChange={(v) => updateLink({ label: v })} />
+                                <Text label="URL" value={link.href} onChange={(v) => updateLink({ href: v })} />
+                              </div>
+                              <Toggle
+                                label="Show this link"
+                                value={link.visible !== false}
+                                onChange={(v) => updateLink({ visible: v })}
+                              />
+                            </>
                           )}
                         />
                       </>
@@ -291,21 +314,33 @@ export default function AdminSettingsPage() {
               items={settings.footerColumns}
               onChange={(footerColumns) => patch({ footerColumns })}
               itemLabel={(c) => c.heading || 'Column'}
-              create={() => ({ heading: '', links: [] })}
+              create={() => ({ heading: '', links: [], visible: true })}
               render={(column, updateColumn) => (
                 <>
                   <Text label="Heading" value={column.heading} onChange={(v) => updateColumn({ heading: v })} />
+                  <Toggle
+                    label="Show this column"
+                    value={column.visible !== false}
+                    onChange={(v) => updateColumn({ visible: v })}
+                  />
                   <Repeater
                     label="Links"
                     items={column.links}
                     onChange={(links) => updateColumn({ links })}
                     itemLabel={(l) => l.label || 'Link'}
-                    create={() => ({ label: '', href: '/' })}
+                    create={() => ({ label: '', href: '/', visible: true })}
                     render={(link, updateLink) => (
-                      <div className="adm-grid2">
-                        <Text label="Label" value={link.label} onChange={(v) => updateLink({ label: v })} />
-                        <Text label="URL" value={link.href} onChange={(v) => updateLink({ href: v })} />
-                      </div>
+                      <>
+                        <div className="adm-grid2">
+                          <Text label="Label" value={link.label} onChange={(v) => updateLink({ label: v })} />
+                          <Text label="URL" value={link.href} onChange={(v) => updateLink({ href: v })} />
+                        </div>
+                        <Toggle
+                          label="Show this link"
+                          value={link.visible !== false}
+                          onChange={(v) => updateLink({ visible: v })}
+                        />
+                      </>
                     )}
                   />
                 </>
@@ -317,12 +352,19 @@ export default function AdminSettingsPage() {
               items={settings.legalLinks}
               onChange={(legalLinks) => patch({ legalLinks })}
               itemLabel={(l) => l.label || 'Link'}
-              create={() => ({ label: '', href: '/' })}
+              create={() => ({ label: '', href: '/', visible: true })}
               render={(link, updateLink) => (
-                <div className="adm-grid2">
-                  <Text label="Label" value={link.label} onChange={(v) => updateLink({ label: v })} />
-                  <Text label="URL" value={link.href} onChange={(v) => updateLink({ href: v })} />
-                </div>
+                <>
+                  <div className="adm-grid2">
+                    <Text label="Label" value={link.label} onChange={(v) => updateLink({ label: v })} />
+                    <Text label="URL" value={link.href} onChange={(v) => updateLink({ href: v })} />
+                  </div>
+                  <Toggle
+                    label="Show this link"
+                    value={link.visible !== false}
+                    onChange={(v) => updateLink({ visible: v })}
+                  />
+                </>
               )}
             />
           </Panel>

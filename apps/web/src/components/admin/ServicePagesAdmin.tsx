@@ -703,7 +703,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
           />
         </Panel>
 
-        <Panel title="21 · Why Aptentech">
+        <Panel title="21 · Why AptenTech">
           <Text label="Section heading" value={editing.whyTitle} onChange={(v) => patch({ whyTitle: v })} />
           <Lede id="why" />
           <Repeater

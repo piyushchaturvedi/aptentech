@@ -17,43 +17,55 @@ import { OrganizationSchema, WebSiteSchema } from '@/lib/seo/structuredData';
  * The skip link is the first focusable element, matching the source markup.
  */
 /**
- * Removes navigation links pointing at a page that is not live.
+ * Removes menu entries an admin has switched off, and links pointing at a page that is not live.
  *
- * A page created in the CMS starts as a draft, and the admin can add it to a menu at the same
- * moment — so without this the header would carry a link to a 404 until someone published it.
- * The same guard covers a page later unpublished or deleted outside the admin flow.
+ * Two separate reasons an item should not render, resolved in one pass because they produce the
+ * same outcome and the alternative is walking the same three structures twice.
  *
- * Only hrefs that name a known CMS page are considered. Everything else — service pages, the
- * blog, an external URL — is left exactly as configured, because this cannot tell whether an
- * unknown path is broken or simply not a `SitePage`.
+ *  - **Switched off in the admin.** `visible: false` hides a group, a column, a footer column or
+ *    a single link without deleting it, so a section can be taken down and put back without
+ *    anyone retyping its links. Absent means visible, so nothing stored before this existed
+ *    disappears.
+ *
+ *  - **Pointing at a draft.** A page created in the CMS starts as a draft and can be added to a
+ *    menu in the same moment, so without this the header would carry a link to a 404 until
+ *    someone published it. Only hrefs that name a known `SitePage` are considered — a service
+ *    page, the blog or an external URL is left exactly as configured, because this cannot tell
+ *    whether an unknown path is broken or simply not a CMS page.
+ *
+ * A group that has been emptied by the filtering is dropped too: a mega-menu heading that opens
+ * an empty panel reads as broken, and an admin who hides every column in a group has, in effect,
+ * hidden the group.
  */
-function hideUnpublished(settings: SiteSettings, unavailable: Set<string>): SiteSettings {
-  if (unavailable.size === 0) return settings;
+function visibleNavigation(settings: SiteSettings, unavailable: Set<string>): SiteSettings {
+  const shown = (item: { visible?: boolean }) => item.visible !== false;
+  const live = (link: { href: string }) => !unavailable.has(link.href);
+  const keepLink = (link: { href: string; visible?: boolean }) => shown(link) && live(link);
 
-  const keep = (link: { href: string }) => !unavailable.has(link.href);
+  const navigation = settings.navigation
+    .filter(shown)
+    .map((group) => ({
+      ...group,
+      columns: group.columns.filter(shown).map((column) => ({ ...column, links: column.links.filter(keepLink) })),
+    }))
+    // A group with no columns is a direct link, and is kept only while its own target is live.
+    .filter((group) =>
+      group.columns.length ? group.columns.some((column) => column.links.length) : live(group),
+    );
 
   return {
     ...settings,
-    navigation: settings.navigation
-      .filter((group) => group.columns.length > 0 || keep(group))
-      .map((group) => ({ ...group, columns: group.columns.map((c) => ({ ...c, links: c.links.filter(keep) })) })),
-    footerColumns: settings.footerColumns.map((column) => ({ ...column, links: column.links.filter(keep) })),
-    mobileNavigation: settings.mobileNavigation?.map((item) => ({ ...item, links: item.links.filter(keep) })),
+    navigation,
+    footerColumns: settings.footerColumns
+      .filter(shown)
+      .map((column) => ({ ...column, links: column.links.filter(keepLink) })),
+    mobileNavigation: settings.mobileNavigation
+      ?.filter(shown)
+      .map((item) => ({ ...item, links: item.links.filter(keepLink) })),
+    legalLinks: settings.legalLinks.filter(keepLink),
   };
 }
 
-/**
- * The browser-tab icon, from the CMS.
- *
- * Settings has carried a `favicon` field that an admin could set since the migration, and
- * nothing ever rendered it — so every page asked for /favicon.ico, got a 404, and the tab
- * showed the browser's blank-page glyph. Declaring it here rather than shipping a file keeps
- * it editable: replacing the image in Settings changes the icon with no redeploy.
- *
- * Nested layout metadata merges with the root's, so this adds icons without disturbing the
- * title template or metadataBase. If no favicon is set the key is omitted entirely, which
- * leaves the previous behaviour rather than pointing at a broken URL.
- */
 export async function generateMetadata(): Promise<Metadata> {
   const settings = await content.settings();
   const url = (settings.favicon as ResolvedMedia | undefined)?.url;
@@ -75,7 +87,7 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
     pages.filter((page) => page.custom && page.status !== 'PUBLISHED').map((page) => `/${page.slug}/`),
   );
 
-  const settings = hideUnpublished(rawSettings, unavailable);
+  const settings = visibleNavigation(rawSettings, unavailable);
 
   return (
     <>

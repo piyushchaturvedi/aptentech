@@ -36,7 +36,7 @@ const mono = IBM_Plex_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://aptentech.com'),
-  title: { default: 'Aptentech', template: '%s' },
+  title: { default: 'AptenTech', template: '%s' },
 };
 
 export const viewport: Viewport = {

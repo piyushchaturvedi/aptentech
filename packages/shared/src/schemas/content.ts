@@ -623,6 +623,14 @@ export const servicePageSchema = z.object({
 export const navLinkSchema = z.object({
   label: z.string().trim().min(1).max(120),
   href: safeHref,
+  /*
+    Whether this appears in the menu.
+
+    Optional and defaulting to true, so every navigation item stored before this existed keeps
+    showing. Hiding is kept separate from deleting on purpose: a seasonal or not-yet-launched
+    section can be switched off and back on without anyone having to retype its links.
+  */
+  visible: z.boolean().optional().default(true),
 });
 
 export const siteSettingsSchema = z.object({
@@ -646,6 +654,7 @@ export const siteSettingsSchema = z.object({
         label: z.string().trim().min(1).max(120),
         href: safeHref,
         alignRight: z.boolean().optional().default(false),
+        visible: z.boolean().optional().default(true),
         columns: z
           .array(
             z.object({
@@ -653,6 +662,7 @@ export const siteSettingsSchema = z.object({
               // The swatch beside a mega-menu column heading. An accent token, not a hex,
               // so the menu cannot introduce a colour outside the approved palette.
               accent: accentSchema,
+              visible: z.boolean().optional().default(true),
               links: z.array(navLinkSchema).max(24).default([]),
             }),
           )
@@ -670,6 +680,7 @@ export const siteSettingsSchema = z.object({
       z.object({
         label: z.string().trim().min(1).max(120),
         href: safeHref,
+        visible: z.boolean().optional().default(true),
         links: z.array(navLinkSchema).max(24).default([]),
       }),
     )
@@ -681,6 +692,7 @@ export const siteSettingsSchema = z.object({
     .array(
       z.object({
         heading: z.string().trim().max(120).default(''),
+        visible: z.boolean().optional().default(true),
         links: z.array(navLinkSchema).max(24).default([]),
         secondaryHeading: z.string().trim().max(120).optional().default(''),
         secondaryLinks: z.array(navLinkSchema).max(24).optional().default([]),

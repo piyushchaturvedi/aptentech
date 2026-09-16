@@ -68,40 +68,83 @@ export function GrowthBand({
   const trackRef = useRef<HTMLDivElement>(null);
 
   const [page, setPage] = useState(0);
-  const [perPage, setPerPage] = useState(channels.length || 1);
-  const [rowHeight, setRowHeight] = useState(0);
+  /** The pixel offset each page scrolls to. One entry means the list fits and never scrolls. */
+  const [offsets, setOffsets] = useState<number[]>([0]);
   const [viewHeight, setViewHeight] = useState<number | null>(null);
 
   /*
-    How many rows fit beside the funnel.
+    Where each page of the channel list starts.
 
-    Measured rather than fixed: the funnel's height depends on how many stages there are and on
-    how the text wraps at the current width, so a hard-coded row count would leave the two
-    columns ending at different heights on some viewports.
+    Rows are not a uniform height — a two-line description and a three-line one differ by around
+    24px — so a page cannot be "n rows of height h". Treating them as uniform is what left the
+    last row sliced in half: the track was translated by a multiple of the *first* row's height,
+    which by the bottom of the list had drifted well away from any real row boundary.
+
+    Instead, walk the rows accumulating their real heights and start a new page whenever the next
+    row would not fit whole. Each page then begins at an actual row's offset, so a row is either
+    fully visible or not on that page at all.
   */
   const layout = useCallback(() => {
     const funnel = funnelRef.current;
     const track = trackRef.current;
     if (!funnel || !track) return;
 
+    // Below 900px the design drops the pager and shows every row, so none of this applies.
     if (window.innerWidth <= 900) {
       setViewHeight(null);
-      setPerPage(channels.length || 1);
+      setOffsets([0]);
       return;
     }
 
-    const rows = track.querySelectorAll<HTMLElement>('.gm-row');
-    const first = rows[0];
-    if (!first) return;
+    const rows = [...track.querySelectorAll<HTMLElement>('.gm-row')];
+    if (!rows.length) return;
 
-    const height = first.getBoundingClientRect().height;
-    const fits = Math.max(1, Math.floor(funnel.getBoundingClientRect().height / height));
+    const available = funnel.getBoundingClientRect().height;
+    const heights = rows.map((row) => row.getBoundingClientRect().height);
+    const total = heights.reduce((sum, h) => sum + h, 0);
 
-    setRowHeight(height);
-    setPerPage(fits);
-    setViewHeight((fits >= channels.length ? rows.length : fits) * height);
-    setPage((current) => Math.min(current, Math.max(0, Math.ceil(channels.length / fits) - 1)));
-  }, [channels.length]);
+    // The whole list already fits: no pager, no translation, and the column ends where the
+    // content ends rather than being padded out to the funnel's height.
+    if (total <= available) {
+      setViewHeight(total);
+      setOffsets([0]);
+      setPage(0);
+      return;
+    }
+
+    const starts: number[] = [];
+    let offset = 0;
+    let index = 0;
+
+    while (index < rows.length) {
+      starts.push(offset);
+
+      let used = 0;
+      // At least one row per page, even if a single row is taller than the funnel — otherwise
+      // an unusually long description would loop forever.
+      do {
+        used += heights[index] ?? 0;
+        index += 1;
+      } while (index < rows.length && used + (heights[index] ?? 0) <= available);
+
+      offset += used;
+    }
+
+    /*
+      The final page is pulled back so it ends flush with the bottom of the list.
+
+      Without this the last page starts at a row boundary and runs past the end, leaving blank
+      space below the last row — and because the view is clipped, whatever sits at the boundary
+      gets cut. Anchoring the last page to the end instead means the final rows are always whole.
+    */
+    if (starts.length > 1) {
+      starts[starts.length - 1] = Math.max(0, total - available);
+    }
+
+    setViewHeight(available);
+    setOffsets(starts);
+    setPage((current) => Math.min(current, starts.length - 1));
+  }, []);
 
   useEffect(() => {
     layout();
@@ -125,9 +168,8 @@ export function GrowthBand({
 
   if (!stages.length && !channels.length) return null;
 
-  const pageCount = Math.max(1, Math.ceil(channels.length / perPage));
-  const maxStart = Math.max(0, channels.length - perPage);
-  const start = Math.min(page * perPage, maxStart);
+  const pageCount = offsets.length;
+  const scrollTo = offsets[Math.min(page, pageCount - 1)] ?? 0;
 
   return (
     <section className="section ai-sec on-dark" id="growth" aria-labelledby="growth-h2">
@@ -184,7 +226,7 @@ export function GrowthBand({
                 className="gm-list"
                 ref={trackRef}
                 role="list"
-                style={{ transform: `translateY(-${start * rowHeight}px)` }}
+                style={{ transform: `translateY(-${scrollTo}px)` }}
               >
                 {channels.map((channel, index) => (
                   <div
