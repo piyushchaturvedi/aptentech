@@ -270,6 +270,13 @@ fi
 # lives in /etc/letsencrypt and is untouched; `certbot --nginx` re-attaches it later.
 NGINX_FORCE="${NGINX_FORCE:-0}"
 
+# Transfer settings go in their own file, always, even when the server block below is left
+# alone because certbot owns it. Compression is http-level and belongs to no server block, so
+# it can be refreshed on every deploy without touching the certificate wiring — which is the
+# whole reason it is not in aptentech.conf.
+sudo cp deploy/nginx-performance.conf /etc/nginx/conf.d/aptentech-performance.conf
+ok "compression and transfer settings installed"
+
 SSL_INSTALLED=0
 if [ -f "$CONF" ] && grep -q 'ssl_certificate' "$CONF" && [ "$NGINX_FORCE" != "1" ]; then
   # certbot edits this file in place, adding the TLS server block and the HTTP-to-HTTPS

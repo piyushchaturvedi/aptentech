@@ -1,0 +1,269 @@
+{
+  "note": "Home page copy from 'Copy of Home Page-AptenTech.pdf'. Text only — accents and icons stay as the design set them, and are merged in by apply-home-content.js.",
+
+  "hero": {
+    "splitHeading": { "lead": "From Ideas To", "highlight": "Intelligent Digital Products", "trail": "" },
+    "sub": "We turn bold ideas into powerful digital products through mobile, web, software, and AI solutions designed to simplify complexity, accelerate innovation, and help businesses stay ahead in an ever-evolving digital world.",
+    "ctaLabels": ["Talk to Experts", "Book a Discovery Call"]
+  },
+
+  "stats": {
+    "title": "Proven results, delivered at scale",
+    "note": "",
+    "lede": "Take a look at how we turn ambitious concepts into polished digital products that are built to perform, scale, and make an impact.",
+    "items": [
+      { "value": "250", "suffix": "+", "label": "Projects Delivered" },
+      { "value": "120", "suffix": "+", "label": "Global Clients" },
+      { "value": "5", "suffix": "+", "label": "Years of Experience" },
+      { "value": "98", "suffix": "%", "label": "Client Retention Rate" },
+      { "value": "60", "suffix": "+", "label": "Countries Served" },
+      { "value": "150", "suffix": "+", "label": "App Developers" }
+    ]
+  },
+
+  "why": {
+    "eyebrow": "Why AptenTech",
+    "title": "Good Ideas Need The Right Tech Behind Them",
+    "lede": "You bring the vision; we bring the experience, ideas, and execution to turn it into something people want, use, and come back to.",
+    "items": [
+      {
+        "title": "Technology That Works For Your Business",
+        "description": "AptenTech combines product thinking, technical expertise, and modern technology to build digital solutions that create lasting business value."
+      },
+      {
+        "title": "Built Around Your Goals",
+        "description": "We understand your business first, then shape the technology, features, and user experience around what you actually need to achieve."
+      },
+      {
+        "title": "From Idea To Impact",
+        "description": "From the first concept to launch and beyond, our team stays focused on building products that perform, adapt, and deliver."
+      }
+    ]
+  },
+
+  "services": {
+    "eyebrow": "What We Build",
+    "title": "Services That Move Ideas Forward",
+    "lede": "",
+    "items": [
+      {
+        "title": "Mobile App Development",
+        "description": "From intuitive interfaces to powerful features, our mobile apps are built to perform smoothly, engage users, and support your business goals across iOS and Android.",
+        "bullets": [
+          "iOS App Development",
+          "Android App Development",
+          "Cross-Platform App Development",
+          "Flutter App Development",
+          "React Native App Development",
+          "Mobile App UI/UX Design"
+        ]
+      },
+      {
+        "title": "Web Development",
+        "description": "Modern web experiences built around your business, connecting users, systems, and essential workflows through purposeful functionality and clean, responsive design.",
+        "bullets": [
+          "Web Application Development",
+          "E-commerce Development",
+          "SaaS Development",
+          "Progressive Web App Development",
+          "CMS Development",
+          "API & Backend Development"
+        ]
+      },
+      {
+        "title": "Custom Software Development",
+        "description": "Your workflows, your challenges, your way of working. Custom software brings them together in one solution designed around your business needs.",
+        "bullets": [
+          "Enterprise Software Development",
+          "Business Process Automation",
+          "CRM Development",
+          "ERP Development",
+          "Legacy Software Modernization",
+          "Software Integration"
+        ]
+      },
+      {
+        "title": "AI Development",
+        "description": "Put AI to work across your products and operations with intelligent features, automated workflows, and practical solutions built around real business opportunities.",
+        "bullets": [
+          "AI App Development",
+          "Generative AI Development",
+          "AI Chatbot Development",
+          "Machine Learning Solutions",
+          "AI Agent Development",
+          "AI Automation"
+        ]
+      },
+      {
+        "title": "UI/UX Design",
+        "description": "Thoughtful interfaces, clearer journeys, and better interactions come together to make digital products easier to understand, navigate, and enjoy.",
+        "bullets": [
+          "Product Design",
+          "Web UI/UX Design",
+          "Mobile App Design",
+          "UX Research",
+          "Wireframing & Prototyping",
+          "Design Systems"
+        ]
+      },
+      {
+        "title": "Product Development",
+        "description": "Turn an early concept into a market-ready product with the strategy, design, development, testing, and expertise needed at every stage.",
+        "bullets": [
+          "MVP Development",
+          "Product Strategy",
+          "Product Prototyping",
+          "Full-Cycle Product Development",
+          "Product Testing",
+          "Product Maintenance & Support"
+        ]
+      }
+    ]
+  },
+
+  "cases": {
+    "eyebrow": "Work We're Proud Of",
+    "title": "Ideas We've Turned Into Reality",
+    "lede": "Take a look at some of the projects we've worked on and see how we've helped turn different ideas into products that people can actually use.",
+    "ctaLabel": "Explore All Case Studies"
+  },
+
+  "testimonials": {
+    "eyebrow": "Client Testimonials",
+    "title": "What Our Clients Say",
+    "lede": "Our clients know the journey best. Here's what they have to say about working with our team and bringing their ideas to life."
+  },
+
+  "awards": {
+    "eyebrow": "Our Awards & Recognition",
+    "title": "Industry Accolades",
+    "lede": "The work we create has earned us recognition and awards from across the industry, giving us more reasons to keep raising the bar."
+  },
+
+  "tech": {
+    "eyebrow": "Tech Stack We Use",
+    "title": "Technologies Behind the Solutions We Build",
+    "lede": "We use the latest tools and technologies to turn ideas into functional, high-performing digital products built for real-world use.",
+    "groups": [
+      {
+        "category": "Frontend Development",
+        "items": ["React.js", "Next.js", "Angular", "Vue.js", "JavaScript", "TypeScript", "HTML5", "CSS3", "Tailwind CSS", "Bootstrap"]
+      },
+      {
+        "category": "Backend Development",
+        "items": ["Node.js", "Python", "PHP", "Java", ".NET", "Ruby on Rails", "Express.js", "NestJS", "Django", "Flask", "Laravel", "Spring Boot"]
+      },
+      {
+        "category": "Mobile App",
+        "items": ["Flutter", "React Native", "Swift", "SwiftUI", "Kotlin", "Java", "Android SDK", "iOS SDK"]
+      },
+      {
+        "category": "Databases",
+        "items": ["MySQL", "PostgreSQL", "MongoDB", "Microsoft SQL Server", "SQLite", "Redis", "Firebase", "DynamoDB", "Elasticsearch"]
+      },
+      {
+        "category": "Cloud",
+        "items": ["AWS", "Microsoft Azure", "Google Cloud Platform", "DigitalOcean", "Cloudflare", "Vercel", "Netlify"]
+      },
+      {
+        "category": "DevOps",
+        "items": ["Docker", "Kubernetes", "Jenkins", "GitHub Actions", "GitLab CI/CD", "Terraform", "Ansible", "Nginx"]
+      },
+      {
+        "category": "CMS",
+        "items": ["WordPress", "WooCommerce", "Shopify", "Magento", "Drupal", "Webflow", "Strapi", "Contentful"]
+      },
+      {
+        "category": "AI",
+        "items": ["OpenAI", "TensorFlow", "PyTorch", "LangChain", "Hugging Face", "Scikit-learn", "Pandas", "NumPy"]
+      },
+      {
+        "category": "APIs",
+        "items": ["REST API", "GraphQL", "WebSockets", "Stripe", "PayPal", "Twilio", "SendGrid", "Google APIs", "OAuth"]
+      },
+      {
+        "category": "Testing & Quality Assurance",
+        "items": ["Selenium", "Cypress", "Playwright", "Jest", "PyTest", "Postman", "JUnit", "Appium"]
+      },
+      {
+        "category": "Design & Prototyping",
+        "items": ["Figma", "Adobe XD", "Photoshop", "Illustrator", "Sketch"]
+      }
+    ]
+  },
+
+  "growth": {
+    "eyebrow": "Growth & Digital Marketing",
+    "title": "Our AI Marketing Services That Drive Real Growth",
+    "lede": "Turn your online presence into a consistent source of traffic, leads, and revenue. We build data-driven digital marketing strategies that connect your brand with the right audience and keep growth moving.",
+    "funnelLabel": "How We Work?",
+    "ctaLabel": "Let's Build Your Growth Strategy",
+    "stages": [
+      { "number": "01", "title": "Discover", "description": "We study your goals, audience, competitors, and market to build a focused growth strategy." },
+      { "number": "02", "title": "Create", "description": "Our team turns strategy into clear campaigns, content, designs, and development plans." },
+      { "number": "03", "title": "Launch", "description": "We launch with precision, monitor performance, and continuously refine every campaign for better results." },
+      { "number": "04", "title": "Grow", "description": "Detailed insights guide our next moves, helping your business improve performance and scale with confidence." }
+    ],
+    "channels": [
+      { "title": "AI SEO", "description": "We build AI-ready SEO strategies that strengthen search visibility, attract qualified traffic, and support sustainable business growth.", "outcome": "Sustainable growth" },
+      { "title": "GEO", "description": "Our GEO approach positions your brand across AI-generated answers, helping you reach relevant audiences beyond traditional search.", "outcome": "Visibility in AI answers" },
+      { "title": "Paid Advertising", "description": "We manage performance-focused campaigns that target high-intent users, optimize ad spend, and generate measurable business results.", "outcome": "Measurable results" },
+      { "title": "Content Marketing", "description": "Strategic content created around your audience builds authority, answers real questions, strengthens trust, and supports lead generation.", "outcome": "Authority and trust" },
+      { "title": "Social Media Marketing", "description": "We create and manage social strategies that expand brand reach, engage the right audience, and drive meaningful business opportunities.", "outcome": "Wider brand reach" },
+      { "title": "CRO", "description": "Our CRO expertise turns existing traffic into more leads through smarter landing pages, stronger messaging, and optimized user journeys.", "outcome": "More from the same traffic" }
+    ]
+  },
+
+  "cta": {
+    "eyebrow": "",
+    "title": "Build Digital Products That Move Your Business Forward",
+    "body": "From strategy to development, we create technology solutions that solve real business challenges.",
+    "ctaLabel": "Let's Build Together",
+    "points": [
+      "30 Minutes with a Senior Engineer",
+      "Architecture Direction, Written Up",
+      "NDA Before You Share Anything",
+      "No Obligation to Continue"
+    ]
+  },
+
+  "faq": {
+    "eyebrow": "FAQs",
+    "title": "Frequently asked questions",
+    "lede": "Got questions about our services or development process? Here are clear answers to help you understand what to expect before starting your project.",
+    "askTitle": "Still Have a Question?",
+    "askBody": "Let's discuss your requirements and explore the right digital solution for your business.",
+    "askCtaLabel": "Talk to Senior Experts",
+    "items": [
+      { "category": "About AptenTech", "question": "What services does AptenTech offer for digital product development?", "answer": "AptenTech provides web and mobile app development, custom software, AI solutions, UI/UX design, cloud development, and digital transformation services." },
+      { "category": "About AptenTech", "question": "What industries and business types does AptenTech work with?", "answer": "AptenTech works with startups, growing businesses, enterprises, and organizations across industries with solutions tailored to their specific operational and customer needs." },
+      { "category": "About AptenTech", "question": "Can AptenTech handle both new products and existing applications?", "answer": "Yes, AptenTech can build new digital products from scratch and improve existing applications through modernization, feature development, integrations, performance improvements, and ongoing support." },
+      { "category": "About AptenTech", "question": "What technologies and development frameworks does AptenTech work with?", "answer": "AptenTech works with modern web, mobile, backend, cloud, AI, and database technologies selected according to your product requirements and technical goals." },
+      { "category": "About AptenTech", "question": "How does AptenTech help businesses turn ideas into working digital products?", "answer": "AptenTech evaluates your idea, defines requirements, plans the product, designs user experiences, develops core functionality, integrates required technologies, and supports product launch." },
+
+      { "category": "Process & Pricing", "question": "What does the AptenTech development process look like from idea to launch?", "answer": "The process covers requirement discovery, planning, UI/UX design, development, testing, deployment, and post-launch support based on your product requirements." },
+      { "category": "Process & Pricing", "question": "How does AptenTech understand my requirements before starting development?", "answer": "Our team discusses your business goals, users, features, integrations, technical needs, and expected outcomes to create a clear development scope." },
+      { "category": "Process & Pricing", "question": "How is the development cost determined for a custom project?", "answer": "Project pricing depends on features, platforms, design requirements, integrations, technology choices, development complexity, and the level of customization involved." },
+      { "category": "Process & Pricing", "question": "Can I choose the features and technology based on my business requirements?", "answer": "Yes, you can prioritize features and choose suitable technologies with our team based on your business goals, users, scalability needs, and product requirements." },
+      { "category": "Process & Pricing", "question": "What factors can influence the overall cost of a development project?", "answer": "The overall cost can vary based on platform selection, feature complexity, UI/UX requirements, integrations, backend architecture, third-party services, and ongoing support." },
+
+      { "category": "AI Capabilities", "question": "What AI development services does AptenTech provide for businesses?", "answer": "AptenTech develops AI-powered applications, chatbots, recommendation systems, automation solutions, intelligent workflows, predictive tools, and custom AI integrations for businesses." },
+      { "category": "AI Capabilities", "question": "Can AptenTech integrate AI features into an existing website or application?", "answer": "Yes, AptenTech can integrate AI capabilities into existing products, including chatbots, content generation, recommendations, automation, intelligent search, and AI-powered workflows." },
+      { "category": "AI Capabilities", "question": "What types of AI solutions can AptenTech build for different business needs?", "answer": "AptenTech can build conversational AI, recommendation engines, predictive analytics, document intelligence, workflow automation, AI assistants, and other solutions based on business requirements." },
+      { "category": "AI Capabilities", "question": "Can AptenTech integrate AI models, APIs, and third-party AI tools into my product?", "answer": "Yes, AptenTech can integrate suitable AI models, APIs, and third-party tools into your application while aligning them with your functionality and technical architecture." },
+      { "category": "AI Capabilities", "question": "How can AI help improve operations, customer experiences, and business workflows?", "answer": "AI can automate repetitive tasks, personalize interactions, analyze business data, support decision-making, improve response times, and streamline everyday workflows." }
+    ]
+  },
+
+  "lead": {
+    "eyebrow": "",
+    "title": "Your Next Big Digital Move Starts Here",
+    "lede": "Got a product idea, market opportunity, or business challenge? Let's turn it into technology that creates measurable value and opens new growth opportunities.",
+    "ctaLabel": "Book a Quick Call!",
+    "reasons": [
+      { "title": "Reply within one business day", "description": "Usually the same day, from someone who can answer technical questions." },
+      { "title": "NDA on request", "description": "Signed before you share code, data, or commercial detail." },
+      { "title": "Startups and enterprises both welcome", "description": "An MVP and a multi-year platform get the same engineering standard." }
+    ]
+  }
+}

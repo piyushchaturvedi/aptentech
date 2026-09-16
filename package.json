@@ -33,7 +33,8 @@
     "migrate-tech-stack": "node scripts/migrate-tech-stack.js",
     "migrate-home-growth": "node scripts/migrate-home-growth.js",
     "build-home-growth": "node scripts/build-home-growth.js",
-    "find-duplicate-blocks": "node scripts/find-duplicate-blocks.js"
+    "find-duplicate-blocks": "node scripts/find-duplicate-blocks.js",
+    "apply-home-content": "node scripts/apply-home-content.js"
   },
   "devDependencies": {
     "concurrently": "^9.1.0",
