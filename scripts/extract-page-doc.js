@@ -104,30 +104,49 @@ function paragraphs(xml) {
  * Inside a section: bullets are bullets; a bold line opens a new item; anything else is prose,
  * belonging to the item above it when there is one and to the section itself when there is not.
  */
+/** Prose: a full sentence, as opposed to a heading or a list entry. */
+const isProseText = (text) => /[.?!]$/.test(text) && text.length > 70;
+
 function sections(paras) {
   const out = [];
   let current = null;
 
-  for (const p of paras) {
+  for (const [index, p] of paras.entries()) {
+    const nextPara = paras[index + 1];
+    /*
+      A list entry that is followed by a sentence is a heading, whichever list it belongs to.
+
+      The numbering ids below separate headings from their points wherever a section uses two
+      lists — but some sections use only one, putting every heading in it with a description
+      between them. There the ids say nothing, and this does: a point is followed by the next
+      point, while a heading is followed by the paragraph that explains it.
+    */
+    const explained = Boolean(nextPara && !nextPara.numId && isProseText(nextPara.text));
     const marker = p.text.match(/^Section:\s*(.*)$/i);
     if (marker) {
-      current = { name: (marker[1] ?? '').trim(), lede: [], items: [], headingList: null };
+      current = { name: (marker[1] ?? '').trim(), lede: [], items: [], paragraphs: [], headingList: null };
       out.push(current);
       continue;
     }
     if (!current) {
-      current = { name: '', lede: [], items: [], headingList: null };
+      current = { name: '', lede: [], items: [], paragraphs: [], headingList: null };
       out.push(current);
     }
+
+    current.paragraphs.push({ text: p.text, list: Boolean(p.numId), prose: isProseText(p.text) });
 
     const last = current.items[current.items.length - 1];
 
     if (p.numId) {
-      // The first list met in a section is that section's headings; every other list in it
-      // holds the points that sit under the heading above them.
-      current.headingList ??= p.numId;
+      /*
+        A list entry is a heading when a sentence explains it, and a point otherwise.
 
-      if (p.numId === current.headingList) {
+        Numbering ids were tried first and are not enough on their own: a section whose heading
+        is a plain paragraph and whose points are a list makes that list the first one seen, and
+        every point then reads as a heading — which is how a features section lost "User Panel"
+        and printed its twelve points as twelve headings instead.
+      */
+      if (explained) {
         current.items.push({ title: p.text, body: [], bullets: [] });
       } else if (last) {
         last.bullets.push(p.text);
@@ -145,9 +164,7 @@ function sections(paras) {
       drops whole sections without saying so. What does hold is that a sentence ends in terminal
       punctuation and runs long, while a heading is short and ends in neither.
     */
-    const isProse = /[.?!]$/.test(p.text) && p.text.length > 70;
-
-    if (!isProse) {
+    if (!isProseText(p.text)) {
       current.items.push({ title: p.text, body: [], bullets: [] });
       continue;
     }

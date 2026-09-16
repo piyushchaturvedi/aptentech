@@ -11,37 +11,56 @@
           "body": [
             "AptenTech is a custom fuel delivery app development company delivering top-notch oil & gas delivery solutions. We build high-performance, compliant fuel platforms featuring AI route optimization, IoT meter tracking, and automated dispatching. We engineer secure, scalable mobile ecosystems connecting customers, fleets, and admins for efficient, real-time fuel distribution."
           ],
-          "bullets": []
+          "bullets": [
+            "Custom Fuel Delivery App Development",
+            "On-Demand Fuel Delivery App Development",
+            "Fuel Delivery App UI/UX Design",
+            "AI-Powered Fuel Delivery Solutions",
+            "Multi-Platform App Development",
+            "Fuel Delivery API & Third-Party Integration"
+          ]
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Custom Fuel Delivery App Development Company",
+          "list": false,
+          "prose": false
         },
         {
-          "title": "Custom Fuel Delivery App Development",
-          "body": [],
-          "bullets": []
+          "text": "AptenTech is a custom fuel delivery app development company delivering top-notch oil & gas delivery solutions. We build high-performance, compliant fuel platforms featuring AI route optimization, IoT meter tracking, and automated dispatching. We engineer secure, scalable mobile ecosystems connecting customers, fleets, and admins for efficient, real-time fuel distribution.",
+          "list": false,
+          "prose": true
         },
         {
-          "title": "On-Demand Fuel Delivery App Development",
-          "body": [],
-          "bullets": []
+          "text": "Custom Fuel Delivery App Development",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "Fuel Delivery App UI/UX Design",
-          "body": [],
-          "bullets": []
+          "text": "On-Demand Fuel Delivery App Development",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "AI-Powered Fuel Delivery Solutions",
-          "body": [],
-          "bullets": []
+          "text": "Fuel Delivery App UI/UX Design",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "Multi-Platform App Development",
-          "body": [],
-          "bullets": []
+          "text": "AI-Powered Fuel Delivery Solutions",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "Fuel Delivery API & Third-Party Integration",
-          "body": [],
-          "bullets": []
+          "text": "Multi-Platform App Development",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Fuel Delivery API & Third-Party Integration",
+          "list": true,
+          "prose": false
         }
       ]
     },
@@ -54,14 +73,60 @@
         {
           "title": "End-to-End Data Protection",
           "body": [
-            "We protect sensitive customer, business, and payment information using encryption, secure APIs, authentication mechanisms, and protected data storage to reduce the risk of unauthorized access.",
-            "Our fuel delivery application development company integrates trusted payment gateways and secure transaction workflows to protect payment information while keeping the checkout experience simple.",
+            "We protect sensitive customer, business, and payment information using encryption, secure APIs, authentication mechanisms, and protected data storage to reduce the risk of unauthorized access."
+          ],
+          "bullets": []
+        },
+        {
+          "title": "Secure Payment & Transaction Processing",
+          "body": [
+            "Our fuel delivery application development company integrates trusted payment gateways and secure transaction workflows to protect payment information while keeping the checkout experience simple."
+          ],
+          "bullets": []
+        },
+        {
+          "title": "Compliance-Ready Architecture",
+          "body": [
             "We build the platform with privacy, access control, data protection, and audit requirements in mind, helping businesses create a dependable digital environment as they expand into new locations."
           ],
-          "bullets": [
-            "Secure Payment & Transaction Processing",
-            "Compliance-Ready Architecture"
-          ]
+          "bullets": []
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Fuel delivery platforms handle customer information, payment details, delivery addresses, fuel orders, and operational data. A secure architecture is therefore essential when building a mobile fuel delivery app. We implement security measures across the customer app, driver application, admin panel, APIs, and backend infrastructure.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "End-to-End Data Protection",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "We protect sensitive customer, business, and payment information using encryption, secure APIs, authentication mechanisms, and protected data storage to reduce the risk of unauthorized access.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Secure Payment & Transaction Processing",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Our fuel delivery application development company integrates trusted payment gateways and secure transaction workflows to protect payment information while keeping the checkout experience simple.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Compliance-Ready Architecture",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "We build the platform with privacy, access control, data protection, and audit requirements in mind, helping businesses create a dependable digital environment as they expand into new locations.",
+          "list": false,
+          "prose": true
         }
       ]
     },
@@ -75,32 +140,55 @@
         {
           "title": "Our core capabilities:",
           "body": [],
-          "bullets": []
+          "bullets": [
+            "Build white-label fuel delivery platforms on scalable architecture, allowing businesses to launch under their own brand and expand into multiple service areas.",
+            "Connect customers with nearby suppliers and delivery vehicles using location-aware ordering and real-time dispatch capabilities.",
+            "Support scheduled and on-demand orders so customers can request fuel according to their immediate requirements or planned delivery windows.",
+            "Create flexible business models covering direct fuel delivery, supplier marketplaces, fleet fueling, subscription-based services, and enterprise accounts.",
+            "Integrate inventory, payment, mapping, notification, analytics, and communication systems into one connected mobile fuel delivery software ecosystem."
+          ]
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Fuel delivery is moving from traditional fuel stations toward more convenient, scheduled, and on-demand fulfillment models. A well-built delivery platform can help fuel suppliers reach customers beyond their physical locations while giving businesses better visibility into orders, drivers, inventory, and revenue.",
+          "list": false,
+          "prose": true
         },
         {
-          "title": "Build white-label fuel delivery platforms on scalable architecture, allowing businesses to launch under their own brand and expand into multiple service areas.",
-          "body": [],
-          "bullets": []
+          "text": "As a fuel app development company, we build platforms that bring customers, fuel suppliers, drivers, and administrators together in one connected ecosystem. Our solutions can be customized for startups, independent suppliers, fleet operators, fuel stations, logistics companies, and large enterprises.",
+          "list": false,
+          "prose": true
         },
         {
-          "title": "Connect customers with nearby suppliers and delivery vehicles using location-aware ordering and real-time dispatch capabilities.",
-          "body": [],
-          "bullets": []
+          "text": "Our core capabilities:",
+          "list": false,
+          "prose": false
         },
         {
-          "title": "Support scheduled and on-demand orders so customers can request fuel according to their immediate requirements or planned delivery windows.",
-          "body": [],
-          "bullets": []
+          "text": "Build white-label fuel delivery platforms on scalable architecture, allowing businesses to launch under their own brand and expand into multiple service areas.",
+          "list": true,
+          "prose": true
         },
         {
-          "title": "Create flexible business models covering direct fuel delivery, supplier marketplaces, fleet fueling, subscription-based services, and enterprise accounts.",
-          "body": [],
-          "bullets": []
+          "text": "Connect customers with nearby suppliers and delivery vehicles using location-aware ordering and real-time dispatch capabilities.",
+          "list": true,
+          "prose": true
         },
         {
-          "title": "Integrate inventory, payment, mapping, notification, analytics, and communication systems into one connected mobile fuel delivery software ecosystem.",
-          "body": [],
-          "bullets": []
+          "text": "Support scheduled and on-demand orders so customers can request fuel according to their immediate requirements or planned delivery windows.",
+          "list": true,
+          "prose": true
+        },
+        {
+          "text": "Create flexible business models covering direct fuel delivery, supplier marketplaces, fleet fueling, subscription-based services, and enterprise accounts.",
+          "list": true,
+          "prose": true
+        },
+        {
+          "text": "Integrate inventory, payment, mapping, notification, analytics, and communication systems into one connected mobile fuel delivery software ecosystem.",
+          "list": true,
+          "prose": true
         }
       ]
     },
@@ -165,6 +253,68 @@
           "body": [],
           "bullets": []
         }
+      ],
+      "paragraphs": [
+        {
+          "text": "Thinking about investing in custom fuel delivery app development but still evaluating its business potential? A digital platform can help you move beyond conventional fuel distribution by creating a convenient ordering and fulfillment channel for individual customers and businesses.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "$6.2 Bn",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Mobile Fuel Delivery —-------------------------------------------",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "$10.1 Bn",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Market Value Forecast",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "—------------------------------------------",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "7.3%",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Projected Growth (2026 to 2033)",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "—----------------------------------------------",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "$26.6 Bn",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Market Opportunity",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "—------------------------------------------",
+          "list": false,
+          "prose": false
+        }
       ]
     },
     {
@@ -203,6 +353,43 @@
           "body": [],
           "bullets": []
         }
+      ],
+      "paragraphs": [
+        {
+          "text": "With years of experience developing digital platforms as a top on-demand fuel delivery app development company, we help startups and enterprises transform business concepts into scalable oil & fuel applications.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "250+ Projects Delivered",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "120+ Global Clients",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "5+ Years of Experience",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "98% Client Retention Rate",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "60+ Countries Served",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "150+ App Developers",
+          "list": false,
+          "prose": false
+        }
       ]
     },
     {
@@ -216,32 +403,13 @@
           "body": [
             "Have a fuel delivery business idea but aren't sure where to begin? Our consultants study your business model, target market, operational requirements, and competitors to create a practical roadmap for your application."
           ],
-          "bullets": []
-        },
-        {
-          "title": "Fuel Delivery Business Plan Analysis",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Market & Competitor Research",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Technology Stack Recommendations",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Monetization Strategy Planning",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Product Roadmap Development",
-          "body": [],
-          "bullets": []
+          "bullets": [
+            "Fuel Delivery Business Plan Analysis",
+            "Market & Competitor Research",
+            "Technology Stack Recommendations",
+            "Monetization Strategy Planning",
+            "Product Roadmap Development"
+          ]
         },
         {
           "title": "2. Custom Fuel Delivery App Development",
@@ -308,12 +476,230 @@
             "ERP & Business System Integration"
           ]
         }
+      ],
+      "paragraphs": [
+        {
+          "text": "Looking to build a fuel delivery app? Well, we offer end-to-end fuel app development services that help you turn on-demand fuel delivery into a smarter, faster, and more profitable business.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "1. Fuel Delivery App Consultation",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Have a fuel delivery business idea but aren't sure where to begin? Our consultants study your business model, target market, operational requirements, and competitors to create a practical roadmap for your application.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Fuel Delivery Business Plan Analysis",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Market & Competitor Research",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Technology Stack Recommendations",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Monetization Strategy Planning",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Product Roadmap Development",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "2. Custom Fuel Delivery App Development",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "We build custom fuel delivery applications for businesses that need more flexibility than an off-the-shelf platform can provide. Every module can be aligned with your delivery model, customer base, fuel categories, and growth plans.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Android & iOS App Development",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Scalable Backend Architecture",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Custom Feature Development",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Secure Payment Integration",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Third-Party API Integration",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "3. Fuel Delivery App UI/UX Design",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Fuel ordering should be simple from the first tap to the final delivery. Our designers create clear interfaces that help customers select fuel, enter delivery information, choose a time slot, make payments, and follow their orders without unnecessary steps.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Intuitive Order Flow",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Custom Branding & Visual Design",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Interactive Delivery Tracking",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Responsive Interface Design",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Accessibility-Focused Experiences",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "4. On-Demand Fuel Delivery App Development",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Our on-demand fueling app development solutions help businesses manage urgent fueling requests with location-based matching, automated dispatch, driver tracking, and real-time status updates.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Instant Fuel Ordering",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Location-Based Driver Assignment",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Real-Time Order Tracking",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Automated Dispatch Workflows",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Status Notifications",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "5. AI-Powered Fuel Delivery App Development",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "AI can help your fuel platform make smarter operational decisions. We integrate intelligent capabilities to analyze demand patterns, improve delivery planning, personalize customer experiences, and identify potential operational bottlenecks.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Demand Forecasting",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Intelligent Driver Matching",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Route Optimization",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Customer Behavior Analysis",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Predictive Business Insights",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "6. Enterprise Fuel Delivery App Development Solutions",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Large fuel businesses need more than a customer-facing application. We create enterprise-ready platforms with multi-location management, role-based access, centralized reporting, supplier management, and integrations with existing business systems.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Multi-Location Operations",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Enterprise Account Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Advanced Reporting & Analytics",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Role-Based Access Control",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "ERP & Business System Integration",
+          "list": true,
+          "prose": false
+        }
       ]
     },
     {
       "name": "",
       "lede": [],
-      "items": []
+      "items": [],
+      "paragraphs": []
     },
     {
       "name": "Get The Fuel App Development Solution For Your Industry",
@@ -324,27 +710,12 @@
         {
           "title": "Residential Fuel Delivery Apps",
           "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Scheduled Fuel Delivery",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Customer Address Management",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Order & Payment Tracking",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Delivery Status Notifications",
-          "body": [],
-          "bullets": []
+          "bullets": [
+            "Scheduled Fuel Delivery",
+            "Customer Address Management",
+            "Order & Payment Tracking",
+            "Delivery Status Notifications"
+          ]
         },
         {
           "title": "Commercial Fuel Delivery Platforms",
@@ -436,6 +807,263 @@
             "Commission Management"
           ]
         }
+      ],
+      "paragraphs": [
+        {
+          "text": "Fuel delivery businesses have different operational requirements. We offer custom fuel app development that can be adapted to the exact way you want to source, sell, dispatch, deliver, and manage fuel.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Residential Fuel Delivery Apps",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Scheduled Fuel Delivery",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Customer Address Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Order & Payment Tracking",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Status Notifications",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Commercial Fuel Delivery Platforms",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Business Account Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Bulk Fuel Ordering",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Recurring Delivery Scheduling",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Invoice & Payment Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Fleet Fueling Solutions",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Fleet Account Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Vehicle-Wise Fuel Records",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Driver & Vehicle Assignment",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Fuel Consumption Reports",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Emergency Fuel Delivery Apps",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Urgent Fuel Requests",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Nearby Delivery Matching",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Real-Time Driver Tracking",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Priority Dispatch Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Gas Delivery App Development",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Gas Order Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Slot Selection",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Location-Based Fulfillment",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Digital Payment Support",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Fuel & Gas Delivery Platforms",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Multiple Fuel Categories",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Supplier Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Unified Order Processing",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Partner Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Industrial Fuel Delivery Solutions",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Large-Volume Fuel Orders",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Scheduled Industrial Deliveries",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Site & Location Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Purchase History Tracking",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Generator & Equipment Fueling",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Equipment-Based Fuel Requests",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Recurring Fuel Scheduling",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Location Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Usage History & Reports",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "White-Label Fuel Delivery Platforms",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Fully Brandable App Interface",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Ready-to-Customize Core Modules",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Custom Domain & Branding",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Flexible Monetization Options",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Fuel Marketplace Apps",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Multiple Supplier Listings",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Supplier Order Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Customer-Supplier Matching",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Commission Management",
+          "list": true,
+          "prose": false
+        }
       ]
     },
     {
@@ -443,14 +1071,28 @@
       "lede": [
         "We develop mobile fuel delivery applications for different business models, from direct-to-customer ordering platforms to enterprise fueling ecosystems. Our portfolio covers custom applications, marketplace solutions, fleet management platforms, and on-demand delivery systems."
       ],
-      "items": []
+      "items": [],
+      "paragraphs": [
+        {
+          "text": "We develop mobile fuel delivery applications for different business models, from direct-to-customer ordering platforms to enterprise fueling ecosystems. Our portfolio covers custom applications, marketplace solutions, fleet management platforms, and on-demand delivery systems.",
+          "list": false,
+          "prose": true
+        }
+      ]
     },
     {
       "name": "What Our Clients Say",
       "lede": [
         "Hear from the founders and teams we've partnered with to build standout websites & apps."
       ],
-      "items": []
+      "items": [],
+      "paragraphs": [
+        {
+          "text": "Hear from the founders and teams we've partnered with to build standout websites & apps.",
+          "list": false,
+          "prose": true
+        }
+      ]
     },
     {
       "name": "",
@@ -463,67 +1105,20 @@
           "body": [
             "We integrate essential features into the customer-facing mobile fuel delivery app so users can order fuel, select delivery preferences, make payments, and stay updated throughout the fulfillment process."
           ],
-          "bullets": []
-        },
-        {
-          "title": "User Registration & Social Login",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Fuel Type Selection",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Instant & Scheduled Ordering",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Delivery Address Management",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Real-Time Order Tracking",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Smart Search & Filters",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Secure Online Payments",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Order History",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Saved Addresses",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Delivery Time Slot Selection",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Push Notifications",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Ratings & Reviews",
-          "body": [],
-          "bullets": []
+          "bullets": [
+            "User Registration & Social Login",
+            "Fuel Type Selection",
+            "Instant & Scheduled Ordering",
+            "Delivery Address Management",
+            "Real-Time Order Tracking",
+            "Smart Search & Filters",
+            "Secure Online Payments",
+            "Order History",
+            "Saved Addresses",
+            "Delivery Time Slot Selection",
+            "Push Notifications",
+            "Ratings & Reviews"
+          ]
         },
         {
           "title": "Driver Panel",
@@ -584,6 +1179,293 @@
             "Advanced Business Intelligence",
             "API & Enterprise System Integration"
           ]
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Behind every successful fuel delivery platform is a combination of simple customer experiences and powerful operational tools. Our custom fuel delivery app development services include features that help you manage orders, payments, drivers, suppliers, fuel inventory, and customer relationships from one connected system.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "User Panel",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "We integrate essential features into the customer-facing mobile fuel delivery app so users can order fuel, select delivery preferences, make payments, and stay updated throughout the fulfillment process.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "User Registration & Social Login",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Fuel Type Selection",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Instant & Scheduled Ordering",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Address Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Real-Time Order Tracking",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Smart Search & Filters",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Secure Online Payments",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Order History",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Saved Addresses",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Time Slot Selection",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Push Notifications",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Ratings & Reviews",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Driver Panel",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Drivers need a dedicated workspace to receive assignments, navigate to delivery locations, update order status, and maintain delivery records without depending on manual communication.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Driver Registration & Verification",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Request Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Route Navigation",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Order Acceptance & Rejection",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Real-Time Location Sharing",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Status Updates",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Customer Contact Options",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery History",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Earnings Dashboard",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Availability Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Proof of Delivery",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Push Notifications",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Admin Panel",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Your administration team needs complete visibility across customers, fuel orders, drivers, suppliers, payments, and delivery operations. Our admin solutions centralize these functions into one management dashboard.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Customer Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Driver Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Supplier Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Fuel & Inventory Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Order Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Delivery Zone Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Analytics & Reporting Dashboard",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Payment & Commission Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Promotional Campaign Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Push Notification Management",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Revenue Tracking",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Role-Based Access Control",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Advanced Panel",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "For businesses looking to build an advanced fuel delivery ecosystem, we integrate intelligent features that improve automation, operational visibility, and decision-making.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "AI-Based Demand Forecasting",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Smart Driver Assignment",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Route Optimization",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Dynamic Delivery Scheduling",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Real-Time Fleet Monitoring",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Predictive Analytics",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Automated Pricing Rules",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Supplier Performance Analytics",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Customer Segmentation",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Recurring Order Automation",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Advanced Business Intelligence",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "API & Enterprise System Integration",
+          "list": true,
+          "prose": false
         }
       ]
     },
@@ -656,6 +1538,103 @@
           ],
           "bullets": []
         }
+      ],
+      "paragraphs": [
+        {
+          "text": "We build on advanced, future-ready technologies that make gas and fuel delivery app development faster, smarter, and ready to scale with your business at every stage.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "AI-Powered Demand Forecasting",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "AI models can study historical orders, locations, seasons, and customer behavior to identify demand patterns and help businesses prepare resources ahead of expected demand.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Intelligent Route Optimization",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Route optimization technology evaluates delivery locations and available vehicles to help dispatch teams create efficient routes and reduce unnecessary travel.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Geolocation & Real-Time Tracking",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Location technology allows customers and administrators to monitor delivery progress while helping drivers navigate toward assigned delivery destinations.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Predictive Analytics",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Analytics models can identify ordering patterns, customer behavior, delivery performance, and operational trends to support better business decisions.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Cloud-Native Architecture",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Cloud infrastructure gives fuel businesses the flexibility to handle changing traffic, expand into new service areas, and manage growing volumes of orders and operational data.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Real-Time Communication",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Real-time technologies keep customers, drivers, suppliers, and administrators synchronized through instant order updates, delivery statuses, and operational notifications.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "API-Driven Integrations",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "API-first architecture makes it easier to connect payment gateways, maps, notifications, ERP systems, inventory tools, accounting platforms, and other business services.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "IoT & Connected Fuel Monitoring",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "IoT integrations can connect compatible tanks, equipment, vehicles, or monitoring systems with the platform to provide more visibility into fuel levels and consumption.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Advanced Data Analytics",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Centralized data from orders, deliveries, customers, vehicles, and suppliers can be transformed into dashboards that reveal operational performance and business opportunities.",
+          "list": false,
+          "prose": true
+        }
       ]
     },
     {
@@ -672,85 +1651,123 @@
         {
           "title": "Talk to a Fuel Delivery Expert",
           "body": [],
-          "bullets": []
+          "bullets": [
+            "Custom Fuel Delivery Solutions",
+            "AI-Powered Business Automation",
+            "Scalable Mobile & Web Platforms",
+            "Dedicated Fuel App Development Team"
+          ]
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Build a Smarter Fuel Delivery Business",
+          "list": false,
+          "prose": false
         },
         {
-          "title": "Custom Fuel Delivery Solutions",
-          "body": [],
-          "bullets": []
+          "text": "Build and own a smarter fueling platform with our on-demand fueling app development, powered by AI, real-time tracking, and automation.",
+          "list": false,
+          "prose": true
         },
         {
-          "title": "AI-Powered Business Automation",
-          "body": [],
-          "bullets": []
+          "text": "Talk to a Fuel Delivery Expert",
+          "list": false,
+          "prose": false
         },
         {
-          "title": "Scalable Mobile & Web Platforms",
-          "body": [],
-          "bullets": []
+          "text": "Custom Fuel Delivery Solutions",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "Dedicated Fuel App Development Team",
-          "body": [],
-          "bullets": []
+          "text": "AI-Powered Business Automation",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Scalable Mobile & Web Platforms",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Dedicated Fuel App Development Team",
+          "list": true,
+          "prose": false
         }
       ]
     },
     {
       "name": "Built on Trust: Compliance You Can Count On",
       "lede": [
-        "Fuel delivery platforms operate across customer, payment, location, business, and operational data. Our custom fuel delivery app development solutions for enterprises are designed with security, privacy, access control, and regulatory requirements in mind."
+        "Fuel delivery platforms operate across customer, payment, location, business, and operational data. Our custom fuel delivery app development solutions for enterprises are designed with security, privacy, access control, and regulatory requirements in mind.",
+        "GDPR",
+        "CCPA",
+        "PCI DSS",
+        "ISO 27001",
+        "SOC 2",
+        "OWASP Security Practices",
+        "Data Privacy Standards",
+        "Secure Payment Practices",
+        "Role-Based Access Control",
+        "API Security"
       ],
-      "items": [
+      "items": [],
+      "paragraphs": [
         {
-          "title": "GDPR",
-          "body": [],
-          "bullets": []
+          "text": "Fuel delivery platforms operate across customer, payment, location, business, and operational data. Our custom fuel delivery app development solutions for enterprises are designed with security, privacy, access control, and regulatory requirements in mind.",
+          "list": false,
+          "prose": true
         },
         {
-          "title": "CCPA",
-          "body": [],
-          "bullets": []
+          "text": "GDPR",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "PCI DSS",
-          "body": [],
-          "bullets": []
+          "text": "CCPA",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "ISO 27001",
-          "body": [],
-          "bullets": []
+          "text": "PCI DSS",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "SOC 2",
-          "body": [],
-          "bullets": []
+          "text": "ISO 27001",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "OWASP Security Practices",
-          "body": [],
-          "bullets": []
+          "text": "SOC 2",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "Data Privacy Standards",
-          "body": [],
-          "bullets": []
+          "text": "OWASP Security Practices",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "Secure Payment Practices",
-          "body": [],
-          "bullets": []
+          "text": "Data Privacy Standards",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "Role-Based Access Control",
-          "body": [],
-          "bullets": []
+          "text": "Secure Payment Practices",
+          "list": true,
+          "prose": false
         },
         {
-          "title": "API Security",
-          "body": [],
-          "bullets": []
+          "text": "Role-Based Access Control",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "API Security",
+          "list": true,
+          "prose": false
         }
       ]
     },
@@ -765,22 +1782,11 @@
           "body": [
             "We understand your target customers, delivery model, fuel categories, service locations, business goals, and operational workflows before defining the product scope."
           ],
-          "bullets": []
-        },
-        {
-          "title": "Business Model Assessment",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Target Audience Research",
-          "body": [],
-          "bullets": []
-        },
-        {
-          "title": "Feature Requirement Planning",
-          "body": [],
-          "bullets": []
+          "bullets": [
+            "Business Model Assessment",
+            "Target Audience Research",
+            "Feature Requirement Planning"
+          ]
         },
         {
           "title": "2. UI/UX Design & Prototyping",
@@ -836,6 +1842,163 @@
             "Post-Launch Monitoring",
             "Continuous Updates & Support"
           ]
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Turning a fuel delivery business plan into a reliable digital product requires a structured development process. We take your idea from initial discovery through deployment and continued improvement.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "1. Discovery & Requirement Analysis",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "We understand your target customers, delivery model, fuel categories, service locations, business goals, and operational workflows before defining the product scope.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Business Model Assessment",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Target Audience Research",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Feature Requirement Planning",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "2. UI/UX Design & Prototyping",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Our designers map customer, driver, supplier, and admin journeys before creating intuitive interfaces that make fuel ordering and delivery management easier.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Wireframe Creation",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Interactive Prototyping",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "User Flow Mapping",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "3. App Development & Architecture",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Our fuel delivery mobile app developers build the mobile applications, backend, APIs, databases, and cloud infrastructure required to run a scalable fuel delivery platform.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Backend & API Development",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Mobile App Development",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Database & Cloud Architecture",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "4. Smart Feature & Integration Development",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "We integrate maps, payments, notifications, tracking, analytics, AI capabilities, and other third-party services according to your business requirements.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "AI Feature Integration",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Mapping & Tracking Integration",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Third-Party API Integration",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "5. Quality Assurance & Testing",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "We test the platform across devices, operating systems, user roles, workflows, and traffic conditions to identify issues before launch.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Functional & Performance Testing",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Security & Compliance Testing",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Cross-Device Compatibility Testing",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "6. Deployment & Ongoing Support",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Once your application is ready, we assist with deployment and continue supporting the platform through monitoring, maintenance, updates, and future improvements.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "App Store Deployment",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Post-Launch Monitoring",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Continuous Updates & Support",
+          "list": true,
+          "prose": false
         }
       ]
     },
@@ -928,37 +2091,136 @@
         {
           "title": "What Moves the Number:",
           "body": [],
-          "bullets": []
+          "bullets": [
+            "App Complexity & Feature Requirements",
+            "Platform Choice",
+            "UI/UX Design Complexity",
+            "Third-Party Integrations",
+            "AI & Automation Requirements",
+            "Development Team Location"
+          ]
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "The cost of developing a fuel delivery app depends on the business model, number of applications, feature complexity, integrations, and technology requirements. Here's an estimated breakdown to help you understand the possible development scope.",
+          "list": false,
+          "prose": true
         },
         {
-          "title": "App Complexity & Feature Requirements",
-          "body": [],
-          "bullets": []
+          "text": "App Type",
+          "list": false,
+          "prose": false
         },
         {
-          "title": "Platform Choice",
-          "body": [],
-          "bullets": []
+          "text": "Key Features",
+          "list": false,
+          "prose": false
         },
         {
-          "title": "UI/UX Design Complexity",
-          "body": [],
-          "bullets": []
+          "text": "Estimated Timeline",
+          "list": false,
+          "prose": false
         },
         {
-          "title": "Third-Party Integrations",
-          "body": [],
-          "bullets": []
+          "text": "Estimated Cost",
+          "list": false,
+          "prose": false
         },
         {
-          "title": "AI & Automation Requirements",
-          "body": [],
-          "bullets": []
+          "text": "Basic Fuel Delivery MVP",
+          "list": false,
+          "prose": false
         },
         {
-          "title": "Development Team Location",
-          "body": [],
-          "bullets": []
+          "text": "User login, fuel ordering, payments, order tracking",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "8-12 weeks",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "$10,000 - $18,000",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Standard Fuel Delivery App",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "MVP features + driver app, notifications, maps, admin dashboard",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "14-20 weeks",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "$20,000 - $40,000",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Advanced Fuel Delivery Platform",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Standard features + AI, fleet management, supplier marketplace, advanced analytics",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "20-30 weeks",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "$45,000 - $80,000+",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "What Moves the Number:",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "App Complexity & Feature Requirements",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Platform Choice",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "UI/UX Design Complexity",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Third-Party Integrations",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "AI & Automation Requirements",
+          "list": true,
+          "prose": false
+        },
+        {
+          "text": "Development Team Location",
+          "list": true,
+          "prose": false
         }
       ]
     },
@@ -1052,6 +2314,98 @@
           "title": "Firebase Cloud Messaging OneSignal",
           "body": [],
           "bullets": []
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "Tech Stack We Use for Fuel Delivery App Development",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "We use modern technologies and frameworks to build secure, scalable, and high-performance fuel delivery applications that can support growing customers, delivery partners, suppliers, and business operations.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "Frontend Development",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "React Native Flutter Swift Kotlin",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Backend Development",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Node.js Python Django Java .NET",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Database",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "PostgreSQL MongoDB MySQL Redis",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Cloud & Storage",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Amazon Web Services Microsoft Azure Google Cloud Platform Amazon S3",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Maps & Location",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Google Maps API Mapbox Geolocation APIs Route Optimization APIs",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "AI & Machine Learning",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "TensorFlow PyTorch OpenAI APIs Scikit-learn",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Payment Gateway",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Stripe PayPal Razorpay Braintree",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Push Notifications",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Firebase Cloud Messaging OneSignal",
+          "list": false,
+          "prose": false
         }
       ]
     },
@@ -1163,6 +2517,158 @@
             "Yes. We can develop multi-location capabilities that allow administrators to manage service areas, delivery zones, suppliers, drivers, orders, and business performance from a centralized platform."
           ],
           "bullets": []
+        }
+      ],
+      "paragraphs": [
+        {
+          "text": "As a top on-demand fuel delivery app development company, AptenTech brings years of experience in building scalable digital solutions that handle these complexities with ease. From startups launching their first fuel delivery platform to enterprises managing large-scale operations, we combine modern technology, smart automation, and industry-focused expertise to turn your idea into a reliable platform built for growth.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "1. Industry Expertise",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Our development experience across mobile and enterprise applications gives us the technical foundation to handle different fuel delivery business models and complex application requirements.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "2. End-to-End Development Solutions",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "From business analysis and UI/UX design to development, testing, deployment, and maintenance, we manage the complete product lifecycle through one coordinated team.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "3. Advanced Technology Integration",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "We use AI, cloud infrastructure, real-time technologies, APIs, and modern development frameworks to create fuel delivery solutions that are ready to evolve with your business.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "4. Transparent Communication & Process",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "You receive clear project milestones, regular progress updates, and direct communication throughout development, ensuring our custom fuel delivery app development solutions stay aligned with your business goals at every stage.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "5. Timely Delivery",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "For fuel and gas delivery app development, we follow a structured development process that helps us maintain project timelines while ensuring that critical functionality, performance, and quality requirements are properly addressed.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "6. Dedicated Post-Launch Support",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Our relationship doesn't end when your app goes live. We provide maintenance, performance monitoring, updates, troubleshooting, and scalability support as your platform grows.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "FAQs",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "1. How long does it take to develop a fuel delivery app?",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "A basic MVP can take around 8-12 weeks, while a standard or advanced platform may require several months depending on features, integrations, number of applications, and overall complexity.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "2. How much does fuel delivery app development cost?",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "A basic fuel delivery MVP may start around $10,000, while advanced platforms with AI, fleet management, supplier marketplaces, and enterprise integrations can cost significantly more. The final cost depends on your exact requirements.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "3. Can you develop an AI-powered fuel delivery app?",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Yes. We can integrate AI-powered capabilities such as demand forecasting, intelligent driver assignment, route optimization, customer behavior analysis, predictive analytics, and automated business insights.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "4. Can you build both customer and driver apps?",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Yes. We can develop dedicated customer and driver applications along with an admin panel and, when required, supplier or enterprise dashboards.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "5. Can you develop an on-demand fueling app?",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Yes. Our on-demand fuel delivery app development solutions can include instant ordering, location-based driver assignment, real-time tracking, automated dispatch, digital payments, and delivery notifications.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "6. Can you build a fuel and gas delivery app?",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Yes. We can create platforms that support multiple fuel categories and gas delivery workflows, with customized ordering, inventory, supplier, payment, and delivery management features.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "7. Can I hire fuel delivery app developers for my existing business?",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Yes. You can hire fuel delivery app developers from AptenTech for a complete project or for specific requirements such as mobile development, backend engineering, UI/UX, AI integration, API development, or ongoing maintenance.",
+          "list": false,
+          "prose": true
+        },
+        {
+          "text": "8. Will my fuel delivery app support multiple locations?",
+          "list": false,
+          "prose": false
+        },
+        {
+          "text": "Yes. We can develop multi-location capabilities that allow administrators to manage service areas, delivery zones, suppliers, drivers, orders, and business performance from a centralized platform.",
+          "list": false,
+          "prose": true
         }
       ]
     }
