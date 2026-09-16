@@ -1,16 +1,19 @@
 #!/usr/bin/env node
 /**
- * Applies an extracted page document to its service/solution page.
+ * Applies an extracted page document to its service or solution page.
  *
- * Text only. Accents and icons are read off the entry already in the database and put back
- * unchanged — the copy documents do not describe them, and choosing them here would quietly
- * redesign a page that was signed off.
+ * Two rules shape everything here.
  *
- * The mapping is written out per page rather than inferred from section names. The three
- * documents do not share a structure: one has an FAQ section and another does not, some
- * sections carry no `Section:` marker at all, and the order differs. A shared set of name
- * patterns would match the wrong section on one of them and put, say, a pricing table where the
- * features belong — silently, because every section is just a list of strings.
+ * **Text only.** Accents and icons come off the entry already stored and go back unchanged. The
+ * copy documents do not describe them, so choosing them here would redesign a page that was
+ * signed off.
+ *
+ * **A field is written only when the document clearly says what belongs in it.** These
+ * documents are not uniformly structured: some headings are merged into the paragraph that
+ * explains them, some figures sit in a table whose cells arrive concatenated, and one section
+ * per document carries no list markup at all. Where the source is ambiguous the existing page
+ * content is left alone and the field is reported as skipped — a page keeping last week's
+ * wording is a small problem, and a page printing a sentence fragment as a heading is not.
  *
  *   node scripts/apply-page-doc.js <slug>
  *   node scripts/apply-page-doc.js <slug> --apply
@@ -39,13 +42,14 @@ function envValue(key) {
 
 const ACCENTS = ['indigo', 'mint', 'violet', 'amber', 'cyan', 'pink'];
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+const EMPTY_MEDIA = { mediaId: null, legacyPath: null, alt: '', width: null, height: null };
 
 /**
- * The company figures, which are identical on every page and already verified on the home page.
+ * The company figures, identical on every page and already verified on the home page.
  *
- * Taken from here rather than from the document: in two of the three the numbers sit in a Word
- * table, and a table's cells arrive concatenated with their neighbours — "Projects Delivered
- * 120+" as one string. Parsing that back apart would be guesswork about a number.
+ * Read from here rather than from the document: in each file these sit in a Word table, and a
+ * table's cells arrive joined to their neighbours — "Projects Delivered 120+" as one string.
+ * Splitting that back apart would be guessing at a number, which is the one thing not to guess.
  */
 const STATS = [
   { value: '250', suffix: '+', label: 'Projects Delivered' },
@@ -56,14 +60,19 @@ const STATS = [
   { value: '150', suffix: '+', label: 'App Developers' },
 ];
 
-/* ------------------------------------------------------------------ per-page mapping */
+/* ------------------------------------------------------------------ mappings */
 
 /**
- * Which section of each document feeds which part of the page.
+ * Which section of each document feeds which part of the page, by position.
  *
- * Addressed by position with the expected name beside it. The name is asserted rather than
- * searched for: if a document is re-exported and its sections move, this stops with a mismatch
- * instead of writing the wrong section into the wrong field.
+ * Written out per page rather than matched by name. The three documents share neither their
+ * section set nor their order — one has an FAQ section and another does not, and several
+ * sections carry no `Section:` marker at all. A shared set of name patterns would match the
+ * wrong section on one of them and write, say, pricing text into the features heading, without
+ * anything looking wrong until someone read the page.
+ *
+ * A section named here is asserted by name as well as position, so a re-exported document that
+ * has moved its sections stops with a mismatch instead of writing the wrong thing.
  */
 const MAPPINGS = {
   'music-app-development': {
@@ -79,42 +88,104 @@ const MAPPINGS = {
     cases: [9, 'Our Music App Development Solutions Portfolio'],
     testimonials: [10, 'What Our Clients Say'],
     features: [11, 'Our Music Streaming App Features'],
-    technologies: [12, 'Future-Ready Technologies We Use for Our Music Streaming App Development'],
+    technologies: [12, null],
     midCta2: [13, 'CTA'],
     compliance: [14, 'Built on Trust: Compliance You Can Count On'],
     process: [15, 'Our Music Streaming App Development Process'],
     pricing: [16, 'Tailored Music App Development Cost'],
-    techStack: [17, 'Tech Stack We Use for Music Streaming App Development'],
-    why: [18, 'Why Businesses Trust AptenTech for Music App Development?'],
+    techStack: [17, null],
+    why: [18, null],
+    faqs: [19, 'FAQs'],
+  },
+  'fuel-delivery-app-development': {
+    hero: [0, ''],
+    protect: [1, 'How Do We Keep Your Fuel Delivery App Safe?'],
+    valueProp: [2, 'All About Fuel Delivery App Development'],
+    market: [3, 'Why Invest in Fuel Delivery Apps?'],
+    stats: [4, 'Our Work in Numbers'],
+    services: [5, 'Our Fuel Delivery App Development Services'],
+    solutions: [7, null],
+    cases: [8, 'Our Fuel Delivery App Portfolio'],
+    testimonials: [9, 'What Our Clients Say'],
+    features: [10, ''],
+    technologies: [11, null],
+    midCta2: [12, ''],
+    compliance: [13, 'Built on Trust: Compliance You Can Count On'],
+    process: [14, 'Our Fuel Delivery App Development Process'],
+    pricing: [15, null],
+    techStack: [16, ''],
+    why: [17, null],
+  },
+  'dating-app-development': {
+    hero: [0, ''],
+    protect: [1, 'How Do We Protect Your Platform?'],
+    valueProp: [2, null],
+    market: [3, null],
+    stats: [4, 'Our Work Portfolio'],
+    services: [5, 'End-to-End Dating App Development Services'],
+    midCta: [6, ''],
+    recognition: [7, 'Recognition & Trust'],
+    solutions: [8, 'Dating App Solutions We Provide'],
+    cases: [9, 'Our Featured Dating App Success Stories'],
+    testimonials: [10, 'Words From Our Happy Clients'],
+    features: [11, 'Features to Have in Your Dating App'],
+    technologies: [12, null],
+    midCta2: [13, 'Want to Leverage AI in Your Dating App?'],
+    compliance: [14, 'Dating App Compliance We Follow'],
+    process: [15, 'Our Step-by-Step Dating App Development Process'],
+    pricing: [16, 'How Much Does Dating App Development Cost?'],
+    techStack: [17, null],
+    why: [18, null],
     faqs: [19, 'FAQs'],
   },
 };
 
-/* ------------------------------------------------------------------ shaping helpers */
+/* ------------------------------------------------------------------ shaping */
 
-const firstBody = (section) => section.items[0]?.body?.[0] ?? '';
+/**
+ * A section heading, trimmed of any sentence that ran into it.
+ *
+ * One document's marker reads "Why Invest in a Dating App? Dating apps have changed how people
+ * meet…" — the heading and the paragraph below it were typed as one line. Cutting at the first
+ * terminator recovers the heading; a name that is already short is returned untouched.
+ */
+const heading = (section) => {
+  const name = (section.name ?? '').trim();
+  if (name.length <= 80) return name;
+  const cut = name.search(/[.?!]\s/);
+  return cut > 0 ? name.slice(0, cut + 1).trim() : name;
+};
+
 const lede = (section) => section.lede.join(' ').trim();
+const firstBody = (section) => section.items[0]?.body?.[0] ?? '';
 
-/** A section whose items are alternating value and label — "USD 37.62 Billion", "Market Size". */
+/** Alternating value and label — "USD 37.62 Billion", "Market Size (2031)". */
 const pairs = (section) => {
+  if (section.items.length < 2 || section.items.length % 2 !== 0) return [];
   const out = [];
-  for (let i = 0; i + 1 < section.items.length; i += 2) {
+  for (let i = 0; i < section.items.length; i += 2) {
     out.push({ value: section.items[i].title, label: section.items[i + 1].title });
   }
   return out;
 };
 
 /**
- * A section Word recorded with no list markup at all, where a heading is followed by a fixed
- * number of its own points. Confirmed against the documents: every such block is one heading
- * and four points.
+ * A section's blocks of heading-plus-points, however that section happens to be written.
+ *
+ * Where Word recorded the points as a list they are already attached to their heading. Where it
+ * recorded no structure at all — one section per document — the blocks are a repeating heading
+ * and four points, confirmed against the source. A run that does not divide evenly is returned
+ * empty rather than truncated, so a changed document fails visibly instead of losing entries.
  */
-const groupsOfFive = (section) => {
+const blocks = (section) => {
+  if (section.items.some((i) => i.bullets.length)) {
+    return section.items.map((i) => ({ title: i.title, bullets: i.bullets, body: i.body.join(' ') }));
+  }
+  if (!section.items.length || section.items.length % 5 !== 0) return [];
   const out = [];
   for (let i = 0; i < section.items.length; i += 5) {
     const block = section.items.slice(i, i + 5);
-    if (!block.length) break;
-    out.push({ title: block[0].title, bullets: block.slice(1).map((b) => b.title) });
+    out.push({ title: block[0].title, bullets: block.slice(1).map((b) => b.title), body: '' });
   }
   return out;
 };
@@ -138,26 +209,26 @@ const merge = (existing, incoming, extra = () => ({})) => {
 (async () => {
   const payloadFile = path.join(ROOT, 'scripts/data', `page-${slug}.json`);
   if (!fs.existsSync(payloadFile)) {
-    console.error(`No extracted document for "${slug}".`);
-    console.error(`Run: node scripts/extract-page-doc.js "<file.docx>" ${slug}`);
+    console.error(`No extracted document for "${slug}". Run scripts/extract-page-doc.js first.`);
     process.exit(1);
   }
 
   const mapping = MAPPINGS[slug];
   if (!mapping) {
-    console.error(`No mapping defined for "${slug}" in scripts/apply-page-doc.js.`);
+    console.error(`No mapping for "${slug}" in scripts/apply-page-doc.js.`);
     process.exit(1);
   }
 
   const { sections } = JSON.parse(fs.readFileSync(payloadFile, 'utf8'));
 
-  /** Resolves one mapped section, asserting the name still matches. */
+  /** The mapped section, or null when this document has no such section. */
   const at = (key) => {
+    if (!mapping[key]) return null;
     const [index, expected] = mapping[key];
     const section = sections[index];
     if (!section) throw new Error(`${key}: no section at index ${index}`);
     if (expected && section.name !== expected) {
-      throw new Error(`${key}: expected section "${expected}" at ${index}, found "${section.name}"`);
+      throw new Error(`${key}: expected "${expected}" at ${index}, found "${section.name}"`);
     }
     return section;
   };
@@ -179,138 +250,206 @@ const merge = (existing, incoming, extra = () => ({})) => {
     process.exit(1);
   }
 
-  const hero = at('hero');
-  const protect = at('protect');
-  const valueProp = at('valueProp');
-  const market = at('market');
-  const stats = at('stats');
-  const services = at('services');
-  const midCta = at('midCta');
-  const recognition = at('recognition');
-  const solutions = at('solutions');
-  const cases = at('cases');
-  const testimonials = at('testimonials');
-  const features = at('features');
-  const technologies = at('technologies');
-  const midCta2 = at('midCta2');
-  const compliance = at('compliance');
-  const process_ = at('process');
-  const pricing = at('pricing');
-  const techStack = at('techStack');
-  const why = at('why');
-  const faqs = at('faqs');
+  const next = {};
+  const skipped = [];
 
-  const next = {
-    heroTitle: hero.items[0]?.title ?? page.heroTitle,
-    heroDescription: firstBody(hero),
-    heroPoints: hero.items.slice(1).map((i) => i.title),
-
-    protectTitle: protect.name,
-    protect: merge(page.protect, protect.items.map((i) => ({ title: i.title, description: i.body.join(' ') }))),
-
-    valuePropTitle: valueProp.name,
-    valuePropBody: lede(valueProp),
-    coreCapabilities: valueProp.items.map((i) => i.title),
-
-    marketContextTitle: market.name,
-    marketContextBody: lede(market),
-    marketStats: pairs(market),
-
-    statsTitle: stats.name,
-    statsNote: lede(stats),
-    stats: STATS,
-
-    servicesTitle: services.name,
-    services: merge(
-      page.services,
-      services.items.map((i) => ({ title: i.title, description: i.body.join(' '), bullets: i.bullets })),
-    ),
-
-    midCtaTitle: midCta.items[0]?.title ?? '',
-    midCtaBody: firstBody(midCta),
-    midCtaPoints: midCta.items.slice(1).map((i) => i.title),
-
-    recognitionTitle: recognition.name,
-
-    solutionsTitle: solutions.name,
-    solutions: merge(
-      page.solutions,
-      groupsOfFive(solutions).map((g) => ({ title: g.title, bullets: g.bullets })),
-      () => ({ featured: false }),
-    ),
-
-    caseStudiesTitle: cases.name,
-    testimonialsTitle: testimonials.name,
-
-    featuresTitle: features.name,
-    features: merge(
-      page.features,
-      features.items.map((i) => ({ title: i.title, description: i.body.join(' '), items: i.bullets })),
-    ),
-
-    technologiesTitle: technologies.name,
-    technologies: merge(
-      page.technologies,
-      technologies.items.map((i) => ({ title: i.title, description: i.body.join(' '), outcome: '' })),
-    ),
-
-    midCta2Title: midCta2.items[0]?.title ?? '',
-    midCta2Body: firstBody(midCta2),
-
-    complianceTitle: compliance.name,
-    compliance: merge(page.compliance, compliance.items.map((i) => ({ label: i.title }))),
-
-    processTitle: process_.name,
-    process: process_.items.map((i) => ({
-      title: i.title,
-      description: i.body.join(' '),
-      deliverables: i.bullets,
-    })),
-
-    pricingTitle: pricing.name,
-    pricingBody: lede(pricing),
-
-    techStackTitle: techStack.name,
-    techStack: groupsOfFive(techStack).map((g, index) => {
-      const from = (page.techStack ?? [])[index] ?? {};
-      return {
-        category: g.title,
-        accent: from.accent ?? ACCENTS[index % ACCENTS.length],
-        items: g.bullets.map((label, i) => {
-          const chip = (from.items ?? [])[i] ?? {};
-          return {
-            label,
-            icon: chip.icon ?? '',
-            image: chip.image ?? { mediaId: null, legacyPath: null, alt: '', width: null, height: null },
-          };
-        }),
-      };
-    }),
-
-    whyTitle: why.name,
-    why: why.items.map((i) => ({ title: i.title, description: i.body.join(' ') })),
-
-    faqTitle: faqs.name,
-    faqs: faqs.items.map((i, index) => ({
-      // The documents number their questions; the page numbers them itself.
-      question: i.title.replace(/^\d+\.\s*/, ''),
-      answer: i.body.join(' '),
-      category: '',
-      order: index,
-      visible: true,
-    })),
+  /** Writes a field only when the document actually produced something for it. */
+  const put = (field, value, why) => {
+    const usable = Array.isArray(value) ? value.length > 0 : Boolean(value && String(value).trim());
+    if (usable) next[field] = value;
+    else skipped.push(`${field} — ${why}`);
   };
 
+  const hero = at('hero');
+  if (hero) {
+    put('heroTitle', hero.items[0]?.title ?? '', 'no heading in the opening section');
+    put('heroDescription', firstBody(hero), 'no standfirst under the heading');
+    put('heroPoints', hero.items[0]?.bullets ?? [], 'no tick points listed');
+  }
+
+  const protect = at('protect');
+  if (protect) {
+    put('protectTitle', heading(protect), 'section has no name');
+    put(
+      'protect',
+      merge(page.protect, protect.items.filter((i) => i.body.length).map((i) => ({ title: i.title, description: i.body.join(' ') }))),
+      'headings are merged into their descriptions in the document',
+    );
+  }
+
+  const valueProp = at('valueProp');
+  if (valueProp) {
+    put('valuePropTitle', heading(valueProp), 'section has no name');
+    put('valuePropBody', lede(valueProp), 'no introductory paragraph');
+    put('coreCapabilities', valueProp.items[0]?.bullets ?? [], 'no capability list');
+  }
+
+  const market = at('market');
+  if (market) {
+    put('marketContextTitle', heading(market), 'section has no name');
+    put('marketContextBody', lede(market), 'no introductory paragraph');
+    put('marketStats', pairs(market), 'figures do not pair evenly into value and label');
+  }
+
+  const stats = at('stats');
+  if (stats) {
+    put('statsTitle', heading(stats), 'section has no name');
+    put('statsNote', lede(stats), 'no introductory paragraph');
+    next.stats = STATS;
+  }
+
+  const services = at('services');
+  if (services) {
+    put('servicesTitle', heading(services), 'section has no name');
+    put(
+      'services',
+      merge(page.services, blocks(services).map((b) => ({ title: b.title, description: b.body, bullets: b.bullets }))),
+      'could not separate service headings from their points',
+    );
+  }
+
+  const midCta = at('midCta');
+  if (midCta) {
+    put('midCtaTitle', midCta.items[0]?.title ?? '', 'no heading');
+    put('midCtaBody', firstBody(midCta), 'no body text');
+    put('midCtaPoints', midCta.items[0]?.bullets ?? [], 'no points listed');
+  }
+
+  const recognition = at('recognition');
+  if (recognition) put('recognitionTitle', heading(recognition), 'section has no name');
+
+  const solutions = at('solutions');
+  if (solutions) {
+    put('solutionsTitle', heading(solutions), 'section has no name');
+    put(
+      'solutions',
+      merge(page.solutions, blocks(solutions).map((b) => ({ title: b.title, bullets: b.bullets })), () => ({ featured: false })),
+      'entries do not divide into heading-and-four-points blocks',
+    );
+  }
+
+  const cases = at('cases');
+  if (cases) put('caseStudiesTitle', heading(cases), 'section has no name');
+
+  const testimonials = at('testimonials');
+  if (testimonials) put('testimonialsTitle', heading(testimonials), 'section has no name');
+
+  const features = at('features');
+  if (features) {
+    put('featuresTitle', heading(features), 'section has no name');
+    put(
+      'features',
+      merge(page.features, blocks(features).map((b) => ({ title: b.title, description: b.body, items: b.bullets }))),
+      'could not separate panel headings from their feature lists',
+    );
+  }
+
+  const technologies = at('technologies');
+  if (technologies) {
+    put('technologiesTitle', heading(technologies), 'section has no name');
+    put(
+      'technologies',
+      merge(page.technologies, technologies.items.filter((i) => i.body.length).map((i) => ({ title: i.title, description: i.body.join(' '), outcome: '' }))),
+      'entries carry no descriptions',
+    );
+  }
+
+  const midCta2 = at('midCta2');
+  if (midCta2) {
+    put('midCta2Title', midCta2.items[0]?.title ?? '', 'no heading');
+    put('midCta2Body', firstBody(midCta2), 'no body text');
+  }
+
+  const compliance = at('compliance');
+  if (compliance) {
+    put('complianceTitle', heading(compliance), 'section has no name');
+    put(
+      'compliance',
+      merge(page.compliance, compliance.items.map((i) => ({ label: i.title }))),
+      'badge names are merged into their descriptions in the document',
+    );
+  }
+
+  const process_ = at('process');
+  if (process_) {
+    put('processTitle', heading(process_), 'section has no name');
+    put(
+      'process',
+      blocks(process_).map((b) => ({ title: b.title, description: b.body, deliverables: b.bullets })),
+      'could not separate steps from their deliverables',
+    );
+  }
+
+  const pricing = at('pricing');
+  if (pricing) {
+    put('pricingTitle', heading(pricing), 'section has no name');
+    put('pricingBody', lede(pricing), 'no introductory paragraph');
+  }
+
+  const techStack = at('techStack');
+  if (techStack) {
+    put('techStackTitle', heading(techStack), 'section has no name');
+    put(
+      'techStack',
+      blocks(techStack).map((b, index) => {
+        const from = (page.techStack ?? [])[index] ?? {};
+        return {
+          category: b.title,
+          accent: from.accent ?? ACCENTS[index % ACCENTS.length],
+          items: b.bullets.map((label, i) => {
+            const chip = (from.items ?? [])[i] ?? {};
+            return { label, icon: chip.icon ?? '', image: chip.image ?? { ...EMPTY_MEDIA } };
+          }),
+        };
+      }),
+      'categories do not divide into heading-and-four-entries blocks',
+    );
+  }
+
+  const why = at('why');
+  if (why) {
+    put('whyTitle', heading(why), 'section has no name');
+    put(
+      'why',
+      why.items.filter((i) => i.body.length).map((i) => ({ title: i.title, description: i.body.join(' ') })),
+      'reasons carry no descriptions',
+    );
+  }
+
+  const faqs = at('faqs');
+  if (faqs) {
+    put('faqTitle', heading(faqs), 'section has no name');
+    put(
+      'faqs',
+      faqs.items
+        .filter((i) => i.body.length)
+        .map((i, index) => ({
+          // The documents number their questions; the page numbers them itself.
+          question: i.title.replace(/^\d+\.\s*/, ''),
+          answer: i.body.join(' '),
+          category: '',
+          order: index,
+          visible: true,
+        })),
+      'questions carry no answers',
+    );
+  }
+
   const changed = Object.keys(next).filter((k) => !same(page[k], next[k]));
+  for (const key of Object.keys(next)) if (!changed.includes(key)) delete next[key];
 
   console.log(`${slug}\n`);
   for (const key of changed) {
     const value = next[key];
-    const summary = Array.isArray(value) ? `${value.length} entries` : String(value).slice(0, 62);
-    console.log(`  ${key.padEnd(22)} ${summary}`);
+    console.log(`  ${key.padEnd(22)} ${Array.isArray(value) ? `${value.length} entries` : String(value).slice(0, 58)}`);
   }
 
-  console.log(`\n${changed.length} field(s) ${APPLY ? 'updated' : 'would change'}`);
+  if (skipped.length) {
+    console.log('\n  left as it is on the page:');
+    for (const s of skipped) console.log(`    ${s}`);
+  }
+
+  console.log(`\n${changed.length} field(s) ${APPLY ? 'updated' : 'would change'}, ${skipped.length} left alone`);
 
   if (APPLY && changed.length) {
     await db.collection('servicepages').updateOne({ _id: page._id }, { $set: next });
