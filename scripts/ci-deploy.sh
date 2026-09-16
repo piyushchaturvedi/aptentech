@@ -84,6 +84,14 @@ node scripts/apply-mail-env.js || true
 say "Checking data migrations"
 node scripts/migrate-tech-stack.js --apply
 node scripts/migrate-home-growth.js --apply
+node scripts/migrate-lead-attachments.js --apply
+
+# Deletes attachment files no enquiry claims. Not a migration — it runs every deploy because
+# abandoned uploads accumulate continuously, and a deploy is the one moment that reliably
+# happens without anyone having to remember it. It only ever removes files the database does
+# not know about, and refuses outright if the database looks empty.
+say "Sweeping unclaimed attachments"
+node scripts/sweep-lead-attachments.js --apply || true
 
 # ---------------------------------------------------------------- 3. deploy
 

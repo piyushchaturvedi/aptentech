@@ -61,6 +61,16 @@ export const TEMPLATE_VARIABLES = [
   'serviceName',
   'budget',
   'message',
+  /**
+   * The names and sizes of any files the sender attached, as one readable line.
+   *
+   * A line of text rather than a list of links, for two reasons. A template may not contain
+   * markup built from data — every variable is HTML-escaped on the way in, which is what
+   * makes an attacker-supplied filename harmless. And the files themselves are confidential,
+   * so there is no URL that could be linked to anyway: an admin opens the enquiry and
+   * downloads them through their own session.
+   */
+  'attachments',
   'leadId',
   'leadStatus',
   'siteName',

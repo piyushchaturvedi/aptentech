@@ -1001,12 +1001,46 @@ ul{margin:0; padding:0; list-style:none}
 .drop-txt b{font-family:var(--display); color:var(--primary)}
 .drop-hint{margin-left:auto; flex:none; font-family:var(--mono); font-size:9px; letter-spacing:.06em; color:var(--muted); white-space:nowrap}
 @media (max-width:620px){ .drop-hint{display:none} }
-.file-name{display:none; align-items:center; gap:9px; margin-top:10px; font-size:.85rem; color:var(--text-2)}
-.file-name.show{display:flex}
-.file-name b{font-family:var(--display); color:var(--ink); word-break:break-all}
-.file-name button{margin-left:auto; flex:none; background:none; border:0; cursor:pointer; padding:4px;
-  color:var(--muted); font-size:.8rem; text-decoration:underline}
-.file-name button:hover{color:var(--primary)}
+/* Once every slot is taken the zone stops inviting a drop, so it reads as finished rather
+   than as a control that quietly ignores you. */
+.drop.is-full{cursor:default; border-style:solid; background:var(--canvas)}
+.drop.is-full:hover{border-color:var(--line); background:var(--canvas)}
+.drop.is-full input[type=file]{cursor:default}
+
+/* ---------------------------------------------------------------- attached files
+   One row per file, carrying its own state. The row is the confirmation the sender gets
+   that a file actually arrived, so the state marker sits first, where the eye lands. */
+.file-list{list-style:none; margin:10px 0 0; padding:0; display:flex; flex-direction:column; gap:7px}
+.file-row{display:flex; align-items:center; gap:10px; padding:9px 12px; border-radius:var(--r-sm);
+  border:1px solid var(--line); background:var(--canvas)}
+/* The brand's own green and pink, not new semantic colours — a success and a failure here
+   are ordinary states of the form, not a second palette. */
+.file-row.is-done{border-color:color-mix(in srgb, var(--accent) 38%, var(--line))}
+.file-row.is-error{border-color:color-mix(in srgb, var(--pink) 40%, var(--line))}
+
+.file-state{width:20px; height:20px; flex:none; display:grid; place-items:center; border-radius:50%}
+.file-row.is-done .file-state{background:var(--accent-50); color:var(--accent-700)}
+.file-row.is-error .file-state{color:var(--pink)}
+
+/* Two lines that must not push the row wider than its column: the filename is the sender's
+   own and can be long, so it truncates rather than wrapping the layout around it. */
+.file-meta{min-width:0; display:flex; flex-direction:column; gap:1px}
+.file-meta b{font-family:var(--display); font-size:.85rem; color:var(--ink); font-weight:600;
+  white-space:nowrap; overflow:hidden; text-overflow:ellipsis}
+.file-meta small{font-size:.74rem; color:var(--text-2)}
+.file-row.is-done .file-meta small{color:var(--accent-700)}
+.file-row.is-error .file-meta small{color:var(--pink)}
+
+.file-row button{margin-left:auto; flex:none; display:grid; place-items:center; width:26px; height:26px;
+  background:none; border:0; border-radius:7px; cursor:pointer; color:var(--muted);
+  transition:color .2s var(--ease), background .2s var(--ease)}
+.file-row button:hover{color:var(--ink); background:var(--line)}
+
+.file-spin{width:13px; height:13px; border-radius:50%; border:2px solid var(--line);
+  border-top-color:var(--primary); animation:file-spin .7s linear infinite}
+@keyframes file-spin{to{transform:rotate(360deg)}}
+/* Motion here is decorative — the word "Uploading…" beside it already carries the meaning. */
+@media (prefers-reduced-motion:reduce){ .file-spin{animation-duration:2.4s} }
 #f-file.err .drop{border-color:var(--danger, #E5484D)}
 .hp{position:absolute; left:-9999px; width:1px; height:1px; overflow:hidden}
 .lead-banner .field textarea{min-height:66px}

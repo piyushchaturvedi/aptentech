@@ -40,6 +40,8 @@ interface LeadLike {
   status?: string;
   sourcePage?: string;
   createdAt?: Date | string;
+  /** Present on a lead that carried files; absent on the older documents that could not. */
+  attachments?: Array<{ filename?: string; bytes?: number }>;
 }
 
 /**
@@ -94,6 +96,29 @@ export async function emailSettings() {
   };
 }
 
+/**
+ * The attachment line for a notification.
+ *
+ * Sizes are formatted the same way the form and the admin format them, so the sender, the
+ * notification and the enquiry screen all quote the same number for the same file.
+ */
+function describeAttachments(attachments: LeadLike['attachments']): string {
+  if (!attachments?.length) return 'None';
+
+  return attachments
+    .map((file) => {
+      const bytes = file.bytes ?? 0;
+      const size =
+        bytes < 1024
+          ? `${bytes} B`
+          : bytes < 1024 * 1024
+            ? `${Math.round(bytes / 1024)} KB`
+            : `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
+      return `${file.filename || 'attachment'} (${size})`;
+    })
+    .join(', ');
+}
+
 /** Builds the variable set a template may draw on. Only these names ever resolve. */
 export function contextForLead(lead: LeadLike, siteName: string, extra: TemplateContext = {}): TemplateContext {
   return {
@@ -104,6 +129,14 @@ export function contextForLead(lead: LeadLike, siteName: string, extra: Template
     serviceName: lead.service ?? '',
     budget: lead.budget ?? '',
     message: lead.message ?? '',
+    /*
+      "brief.pdf (2.4 MB), wireframe.png (310 KB)", or "None".
+
+      Spelled out rather than left blank when there are none, because the admin notification
+      always shows this row: a blank reads as a template that failed, while "None" is an
+      answer. The count is capped in the schema, so this line cannot run away.
+    */
+    attachments: describeAttachments(lead.attachments),
     leadId: String(leadObjectId(lead)),
     leadStatus: lead.status ?? 'NEW',
     siteName,

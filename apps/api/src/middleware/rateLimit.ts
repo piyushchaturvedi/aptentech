@@ -105,6 +105,23 @@ export const uploadLimiter = rateLimit({
 });
 
 /**
+ * Attachments on the public enquiry form.
+ *
+ * Tighter than the admin limiter, because this one is reachable by anyone: each request
+ * buffers up to 10 MB and then writes it to disk, so the cost of a flood is measured in
+ * disk rather than in CPU. Twelve a minute is generous for a person attaching the five
+ * files a form allows, and narrow for anything filling the volume.
+ */
+export const attachmentLimiter = rateLimit({
+  windowMs: 60_000,
+  limit: 12,
+  standardHeaders: 'draft-7',
+  legacyHeaders: false,
+  keyGenerator: clientKey,
+  message: json('RATE_LIMITED', 'Too many files uploaded just now. Please wait a moment and try again.'),
+});
+
+/**
  * Inbound mail webhook.
  *
  * Generous, because a legitimate provider can deliver a burst after an outage and dropping

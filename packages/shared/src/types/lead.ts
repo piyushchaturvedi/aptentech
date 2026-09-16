@@ -9,7 +9,7 @@
  * Field provenance:
  *   leadForm    (21 pages) — name, email, phone, service, budget, details
  *   heroForm    (19 pages) — hName, hEmail, hPhone, hDetails, NDA checkbox
- *   contactForm  (1 page)  — the above plus dialCode, attachment, consent, honeypot
+ *   contactForm  (1 page)  — the above plus dialCode, attachments, consent, honeypot
  *
  * `company` is included because it was specified, but note no existing form collects it;
  * it stays null until a form is given the field. Nothing else is collected that the
@@ -37,8 +37,17 @@ export interface LeadNote {
   createdAt: string;
 }
 
+/**
+ * One file a visitor attached to an enquiry.
+ *
+ * `id` addresses it for download through the authenticated admin route. There is no public
+ * URL, and that is the point: an enquiry's attachment is a client's specification, contract
+ * or concept — the form promises "your project details remain confidential", and a file at a
+ * guessable public path would not keep that promise. Uploaded media, which *is* public, goes
+ * through a different pipeline entirely.
+ */
 export interface LeadAttachment {
-  mediaId: string;
+  id: string;
   filename: string;
   mimeType: string;
   bytes: number;
@@ -59,7 +68,7 @@ export interface Lead {
   budget: string | null;
   message: string;
   ndaRequested: boolean;
-  attachment: LeadAttachment | null;
+  attachments: LeadAttachment[];
 
   // Attribution. Captured server-side — never trusted from the client payload,
   // because a referrer or source page supplied by the browser can be forged.

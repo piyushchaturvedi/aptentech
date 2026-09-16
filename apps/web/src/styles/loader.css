@@ -1,0 +1,114 @@
+/**
+ * The loading state, shown while a route is still being fetched.
+ *
+ * Loaded from the root layout because both the site and the admin use it, and because it has
+ * to be styled the moment it renders — a loader that arrives after its own stylesheet is a
+ * flash of unstyled markup at exactly the moment the page is already blank.
+ *
+ * It is deliberately small. This appears in the gap between a click and a page, and a heavy
+ * animation makes that gap feel longer, not shorter.
+ */
+
+.brand-loader {
+  display: grid;
+  place-items: center;
+  gap: 18px;
+  /* Fills whatever region the route occupies rather than covering the window: the header and
+     footer are already painted and should stay, not be hidden behind a splash. */
+  min-height: 48vh;
+  padding: 64px 24px;
+}
+
+.brand-loader__mark {
+  width: 46px;
+  height: 46px;
+  /* Reserves the space before the SVG paints, so nothing below it moves when it does. */
+  flex: none;
+}
+
+/*
+  The mark draws itself.
+
+  `stroke-dasharray` set to the path's own length with the offset animating to zero traces
+  the stroke from one end to the other. The path length is hard-coded because the geometry is
+  fixed and measuring it at runtime would mean JavaScript for a decoration.
+*/
+.brand-loader__stroke {
+  stroke-dasharray: 34;
+  stroke-dashoffset: 34;
+  animation: brand-draw 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes brand-draw {
+  0% {
+    stroke-dashoffset: 34;
+  }
+  45%,
+  55% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -34;
+  }
+}
+
+/* The dot lands as the stroke completes, which is what makes the two read as one movement
+   rather than two things animating near each other. */
+.brand-loader__dot {
+  transform-origin: 16px 23px;
+  animation: brand-pulse 1.5s cubic-bezier(0.65, 0, 0.35, 1) infinite;
+}
+
+@keyframes brand-pulse {
+  0%,
+  30% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.2);
+    opacity: 0;
+  }
+}
+
+.brand-loader__label {
+  font-family: var(--mono, ui-monospace, monospace);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--muted, #6e7391);
+}
+
+/*
+  Reduced motion gets a still mark and a quiet fade.
+
+  The drawing animation is the kind of repeating movement the preference exists to switch
+  off. The loader still has to signal that something is happening, so the motion is replaced
+  rather than simply removed.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .brand-loader__stroke {
+    stroke-dasharray: none;
+    stroke-dashoffset: 0;
+    animation: none;
+  }
+  .brand-loader__dot {
+    animation: none;
+  }
+  .brand-loader__mark {
+    animation: brand-fade 1.8s ease-in-out infinite;
+  }
+  @keyframes brand-fade {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}

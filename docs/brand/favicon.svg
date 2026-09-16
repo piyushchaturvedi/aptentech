@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" width="32" height="32" role="img" aria-label="AptenTech">
+  <!--
+    The header's logo mark, unchanged.
+
+    Traced from SiteHeader rather than drawn again, so the tab and the page cannot drift
+    apart. The strokes are heavier than a scaled-down copy would be: at 16px a 2.6-unit
+    stroke disappears, and a favicon that reads as a plain indigo square is not a mark.
+
+    This is the fallback. An icon uploaded in Admin -> Settings overrides it, because
+    generateMetadata() sets `icons` explicitly and Next.js prefers that over the file
+    convention. So the brand is never missing, and an editor can still replace it.
+  -->
+  <rect width="32" height="32" rx="8" fill="#3A31DB"/>
+  <path d="M8.5 21.8 16 9.2l7.5 12.6" fill="none" stroke="#fff" stroke-width="3.4" stroke-linecap="round" stroke-linejoin="round"/>
+  <circle cx="16" cy="23.4" r="2.9" fill="#00C9A7"/>
+</svg>

@@ -597,17 +597,27 @@ const LeadSchema = new Schema(
     budget: { type: String, default: null, maxlength: 80 },
     message: { type: String, default: '', maxlength: 5000 },
     ndaRequested: { type: Boolean, default: false },
-    attachment: {
-      type: new Schema(
-        {
-          mediaId: { type: Schema.Types.ObjectId, ref: 'Media' },
-          filename: String,
-          mimeType: String,
-          bytes: Number,
-        },
-        { _id: false },
-      ),
-      default: null,
+    /**
+     * Files the visitor attached, in the order they chose them.
+     *
+     * Denormalised on purpose. The filename, type and size are what the admin list and the
+     * notification email need, and copying them here means showing an enquiry never has to
+     * fan out into a second collection. The bytes themselves stay in `LeadAttachment`, keyed
+     * by `attachmentId`.
+     */
+    attachments: {
+      type: [
+        new Schema(
+          {
+            attachmentId: { type: Schema.Types.ObjectId, ref: 'LeadAttachment', required: true },
+            filename: { type: String, default: '', maxlength: 255 },
+            mimeType: { type: String, default: '', maxlength: 160 },
+            bytes: { type: Number, default: 0 },
+          },
+          { _id: false },
+        ),
+      ],
+      default: [],
     },
 
     sourcePage: { type: String, default: '/', maxlength: 512 },
@@ -923,6 +933,70 @@ UnmatchedInboundSchema.index({ resolved: 1, createdAt: -1 });
 // Providers retry webhooks; the same message must not be recorded twice.
 UnmatchedInboundSchema.index({ messageId: 1 }, { unique: true, sparse: true });
 
+/* ------------------------------------------------------------------ Lead attachments */
+
+/**
+ * A file uploaded from an enquiry form.
+ *
+ * Its own collection rather than a sub-document, because it exists before the lead does.
+ * The visitor picks files and they upload immediately, one request each, so the form can
+ * say "uploaded" while they are still typing; the enquiry that owns them may be a minute
+ * away, or may never be submitted at all.
+ *
+ * `leadId` is what separates those two states. Null means uploaded but unclaimed; set means
+ * a lead owns it. An unclaimed record is an abandoned form, and the TTL index below is what
+ * keeps those from accumulating — see the comment on it.
+ */
+const LeadAttachmentSchema = new Schema(
+  {
+    /**
+     * The receipt handed to the browser, and the only way to claim this file.
+     *
+     * `select: false` so it cannot leave through a query written later that did not think
+     * about it — nothing after the upload response ever needs to read it back except the
+     * claim, which asks for it explicitly.
+     */
+    token: { type: String, required: true, maxlength: 64, select: false },
+
+    /** Where the bytes are, relative to LEAD_UPLOAD_DIR. Server-generated, never the visitor's name. */
+    storageKey: { type: String, required: true, maxlength: 300 },
+
+    /** The visitor's own filename, kept for display only. Never used to build a path. */
+    filename: { type: String, default: '', maxlength: 255 },
+    /** The type established by sniffing the bytes, not the one the browser declared. */
+    mimeType: { type: String, default: '', maxlength: 160 },
+    bytes: { type: Number, default: 0 },
+
+    /** Null until an enquiry claims it. */
+    leadId: { type: Schema.Types.ObjectId, ref: 'Lead', default: null },
+    claimedAt: { type: Date, default: null },
+
+    ipHash: { type: String, default: null, maxlength: 64, select: false },
+  },
+  opts,
+);
+
+// The claim looks a file up by its token alone, and a token is unique by construction.
+LeadAttachmentSchema.index({ token: 1 }, { unique: true });
+LeadAttachmentSchema.index({ leadId: 1, createdAt: 1 });
+
+/**
+ * Unclaimed uploads expire after a day.
+ *
+ * Someone who attaches a file and then closes the tab leaves bytes on disk that no enquiry
+ * will ever point at, and on a public endpoint that is not an occasional accident — it is
+ * the normal case for anyone who changes their mind. A partial index so it applies only to
+ * unclaimed records: an attachment that belongs to a real lead must never expire, because
+ * the lead would then list a file that is gone.
+ *
+ * This removes the database record. The file on disk is swept by
+ * `scripts/sweep-lead-attachments.js`, which deletes what no record claims.
+ */
+LeadAttachmentSchema.index(
+  { createdAt: 1 },
+  { expireAfterSeconds: 24 * 60 * 60, partialFilterExpression: { leadId: null } },
+);
+
 /* ------------------------------------------------------------------ exports */
 
 function build<T extends Schema>(name: string, schema: T): Model<InferSchemaType<T>> {
@@ -937,6 +1011,7 @@ export const BlogCategoryModel = build('BlogCategory', BlogCategorySchema);
 export const TestimonialModel = build('Testimonial', TestimonialSchema);
 export const FaqModel = build('Faq', FaqSchema);
 export const LeadModel = build('Lead', LeadSchema);
+export const LeadAttachmentModel = build('LeadAttachment', LeadAttachmentSchema);
 export const AdminUserModel = build('AdminUser', AdminUserSchema);
 export const SessionModel = build('Session', SessionSchema);
 export const MediaModel = build('Media', MediaSchema);
@@ -958,6 +1033,7 @@ export async function syncIndexes(): Promise<void> {
     TestimonialModel.syncIndexes(),
     FaqModel.syncIndexes(),
     LeadModel.syncIndexes(),
+    LeadAttachmentModel.syncIndexes(),
     AdminUserModel.syncIndexes(),
     SessionModel.syncIndexes(),
     MediaModel.syncIndexes(),

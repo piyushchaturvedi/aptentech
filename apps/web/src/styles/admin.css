@@ -655,3 +655,34 @@
   leaving normal wrapping intact.
 */
 .adm-alert { white-space: pre-line; }
+
+/* --------------------------------------------------------------------------
+   Enquiry attachments.
+
+   A list of links rather than a gallery: these are documents a client sent with
+   an enquiry, and the useful action on every one of them is "save it and open
+   it in the right application" — not "preview it here". The server sends them
+   as downloads for that reason, and the rows are shaped to match.
+   -------------------------------------------------------------------------- */
+.adm-attachments { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--a-line); }
+.adm-attachments .adm-count {
+  display: inline-grid; place-items: center; min-width: 20px; height: 20px; padding: 0 6px;
+  margin-left: 6px; border-radius: 999px; background: var(--a-primary-soft); color: var(--a-primary);
+  font-family: var(--mono, ui-monospace, monospace); font-size: 11px; font-weight: 600;
+}
+
+.adm-attachment-list { list-style: none; margin: 10px 0 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.adm-attachment-list a {
+  display: flex; align-items: center; gap: 10px; padding: 9px 12px;
+  border: 1px solid var(--a-line); border-radius: var(--a-radius); background: var(--a-sunk);
+  color: var(--a-text); text-decoration: none; transition: border-color .18s, background .18s;
+}
+.adm-attachment-list a:hover { border-color: var(--a-primary); background: var(--a-primary-soft); }
+.adm-attachment-list a:focus-visible { outline: 2px solid var(--a-primary); outline-offset: 2px; }
+.adm-attachment-list svg { flex: none; color: var(--a-primary); }
+/* A sender's filename can be long, and it must not stretch the panel it sits in. */
+.adm-attachment-list b {
+  min-width: 0; font-weight: 600; color: var(--a-ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.adm-attachment-list small { margin-left: auto; flex: none; color: var(--a-muted); font-size: 12px; }

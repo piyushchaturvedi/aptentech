@@ -127,6 +127,20 @@ function derivedSpec(siteUrl) {
     { key: 'ALLOW_LOCAL_MEDIA', derive: () => 'true', correctIf: (v) => v !== 'true' },
     { key: 'LOCAL_UPLOAD_DIR', derive: () => '/var/www/aptentech/media', correctIf: (v) => v === './uploads' },
 
+    /*
+      Enquiry attachments, beside the media directory rather than inside it.
+
+      `/var/www/aptentech/media` is published — nginx routes `/uploads/` at it — so anything
+      written under it is downloadable by anyone who can guess the path. A client's brief or
+      contract must not be, so it gets its own directory that nothing serves. The API refuses
+      to start if these two are ever configured to overlap.
+    */
+    {
+      key: 'LEAD_UPLOAD_DIR',
+      derive: () => '/var/www/aptentech/lead-attachments',
+      correctIf: (v) => v === './private-uploads' || v.startsWith('/var/www/aptentech/media'),
+    },
+
     { key: 'MONGODB_DB_NAME', derive: () => 'aptentech', correctIf: () => false },
     { key: 'SESSION_TTL_HOURS', derive: () => '8', correctIf: () => false },
     { key: 'SESSION_IDLE_MINUTES', derive: () => '30', correctIf: () => false },

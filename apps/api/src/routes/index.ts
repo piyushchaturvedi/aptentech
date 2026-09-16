@@ -13,6 +13,8 @@ import {
   inboundEmailSchema,
   idParamSchema,
   leadListQuerySchema,
+  leadAttachmentParamSchema,
+  leadMessageParamSchema,
   leadNoteSchema,
   leadStatusUpdateSchema,
   leadSubmissionRefined,
@@ -25,6 +27,7 @@ import {
   templatePreviewSchema,
   testimonialSchema,
   unmatchedResolveSchema,
+  MAX_ATTACHMENT_BYTES,
 } from '@aptentech/shared';
 
 import { publicController } from '../controllers/public.controller';
@@ -32,6 +35,7 @@ import { leadController } from '../controllers/lead.controller';
 import { authController } from '../controllers/auth.controller';
 import { adminController } from '../controllers/admin.controller';
 import { mediaController } from '../controllers/media.controller';
+import { attachmentController } from '../controllers/attachment.controller';
 import { emailController } from '../controllers/email.controller';
 
 import { validate } from '../middleware/validate';
@@ -42,7 +46,7 @@ import {
   requireRole,
   requireServiceToken,
 } from '../middleware/auth';
-import { inboundLimiter, leadLimiter, loginLimiter, replyLimiter, uploadLimiter } from '../middleware/rateLimit';
+import { attachmentLimiter, inboundLimiter, leadLimiter, loginLimiter, replyLimiter, uploadLimiter } from '../middleware/rateLimit';
 import { env } from '../config/env';
 
 export const api = Router();
@@ -93,6 +97,29 @@ api.post(
   leadController.submit,
 );
 
+/**
+ * Files attached to an enquiry, uploaded ahead of the enquiry itself.
+ *
+ * Behind the service token like every other public write, so the bytes arrive from the
+ * Next.js server rather than straight off the internet, and the API itself stays unexposed.
+ *
+ * `files: 1` is doing real work: a request carrying twenty parts would otherwise be parsed
+ * into memory before anything rejected it. The browser sends one file per request, so any
+ * request with more than one is not the form.
+ */
+const attachmentUpload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: MAX_ATTACHMENT_BYTES, files: 1, fields: 2, parts: 4 },
+});
+
+api.post(
+  '/leads/attachments',
+  requireServiceToken,
+  attachmentLimiter,
+  attachmentUpload.single('file'),
+  attachmentController.upload,
+);
+
 /* ================================================================== inbound mail */
 
 /**
@@ -137,6 +164,18 @@ admin.get('/leads', validate(leadListQuerySchema, 'query'), leadController.list)
 admin.get('/leads/export', validate(leadListQuerySchema, 'query'), leadController.exportCsv);
 admin.get('/leads/stats', leadController.stats);
 admin.get('/leads/:id', validate(idParamSchema, 'params'), leadController.detail);
+
+/*
+  Downloading an enquiry's attachment.
+
+  Nested under the lead rather than addressed on its own, so the lead id is part of the
+  lookup and an admin cannot reach a different enquiry's file by changing the last segment.
+*/
+admin.get(
+  '/leads/:id/attachments/:attachmentId',
+  validate(leadAttachmentParamSchema, 'params'),
+  attachmentController.download,
+);
 admin.patch(
   '/leads/:id/status',
   validate(idParamSchema, 'params'),
@@ -154,7 +193,11 @@ admin.post(
   validate(adminReplySchema),
   emailController.reply,
 );
-admin.post('/leads/:id/messages/:messageId/retry', validate(idParamSchema, 'params'), emailController.retryMessage);
+admin.post(
+  '/leads/:id/messages/:messageId/retry',
+  validate(leadMessageParamSchema, 'params'),
+  emailController.retryMessage,
+);
 
 // Email templates
 admin.get('/email-templates', emailController.listTemplates);

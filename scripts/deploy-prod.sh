@@ -30,6 +30,7 @@ SITE_URL="$SITE_URL" node scripts/prod-env.js || die "Production environment is 
 # Read back only what this script needs to address the services. No secret is read here.
 SITE_URL="$(grep -E '^PUBLIC_SITE_URL=' apps/api/.env | cut -d= -f2-)"
 UPLOAD_DIR="$(grep -E '^LOCAL_UPLOAD_DIR=' apps/api/.env | cut -d= -f2-)"
+ATTACHMENT_DIR="$(grep -E '^LEAD_UPLOAD_DIR=' apps/api/.env | cut -d= -f2-)"
 
 # ---------------------------------------------------------------- 2. dependencies
 
@@ -95,6 +96,15 @@ step "Preparing directories"
 sudo mkdir -p "$UPLOAD_DIR"
 sudo chown -R "$(id -u):$(id -g)" "$UPLOAD_DIR"
 ok "media: $UPLOAD_DIR"
+
+# Files attached to enquiries. Outside the code tree for the same reason as media, and
+# outside the media directory for a different one: that directory is served, and these are
+# clients' own documents. `chmod 700` so only the account running the API can read them —
+# nothing else on the box has any business in here.
+sudo mkdir -p "$ATTACHMENT_DIR"
+sudo chown -R "$(id -u):$(id -g)" "$ATTACHMENT_DIR"
+chmod 700 "$ATTACHMENT_DIR"
+ok "enquiry attachments: $ATTACHMENT_DIR"
 
 # ---------------------------------------------------------------- 4. build headroom
 

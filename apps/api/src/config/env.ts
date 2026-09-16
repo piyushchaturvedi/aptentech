@@ -1,4 +1,5 @@
 import 'dotenv/config';
+import path from 'node:path';
 import { z } from 'zod';
 
 /**
@@ -58,6 +59,20 @@ const envSchema = z
     AWS_SECRET_ACCESS_KEY: z.string().optional(),
     LOCAL_UPLOAD_DIR: z.string().default('./uploads'),
 
+    /**
+     * Where files attached to enquiries are written.
+     *
+     * Deliberately a separate setting from `LOCAL_UPLOAD_DIR` rather than a folder inside it.
+     * That directory is published wholesale — `express.static` in development, an nginx
+     * location in production — so anything placed under it is downloadable by anyone who can
+     * guess the path. An enquiry's attachment is a client's own document and must not be.
+     *
+     * The deploy points this at a sibling of the media directory, outside both the code tree
+     * and anything web-served. If the two are ever configured to the same path, startup
+     * refuses rather than quietly publishing every client's files.
+     */
+    LEAD_UPLOAD_DIR: z.string().default('./private-uploads'),
+
     /*
       Email delivery.
 
@@ -109,6 +124,27 @@ const envSchema = z
         message: 'S3_BUCKET is required when MEDIA_DRIVER=s3',
       });
     }
+    /*
+      Enquiry attachments must not land inside the directory that gets published.
+
+      Compared as resolved absolute paths, and the check covers nesting rather than only
+      equality: `./uploads` and `./uploads/attachments` are different strings that would
+      publish exactly the same files. Refusing at startup is the right moment — the
+      alternative is a server that runs perfectly while every client's document sits at a
+      guessable URL.
+    */
+    const publicDir = path.resolve(v.LOCAL_UPLOAD_DIR);
+    const privateDir = path.resolve(v.LEAD_UPLOAD_DIR);
+    if (privateDir === publicDir || privateDir.startsWith(publicDir + path.sep)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['LEAD_UPLOAD_DIR'],
+        message:
+          `LEAD_UPLOAD_DIR (${privateDir}) is inside LOCAL_UPLOAD_DIR (${publicDir}), which is served ` +
+          'publicly. Enquiry attachments are confidential — point it at a directory outside it.',
+      });
+    }
+
     if (v.EMAIL_DRIVER === 'smtp' && (!v.SMTP_HOST || !v.SMTP_USER || !v.SMTP_PASSWORD)) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from 'next';
 import { Plus_Jakarta_Sans, Inter, IBM_Plex_Mono } from 'next/font/google';
 import '@/styles/fonts.css';
+// Both the site and the admin show the loading state, so it belongs to the root rather than
+// to either one of them.
+import '@/styles/loader.css';
 
 /**
  * Fonts.

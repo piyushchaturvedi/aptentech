@@ -2,7 +2,10 @@
 
 import { useState } from 'react';
 import type { LeadFormConfig } from '@aptentech/shared';
+import { ATTACHMENT_ACCEPT, MAX_ATTACHMENTS } from '@aptentech/shared';
 import { useLeadSubmit } from './useLeadSubmit';
+import { useAttachments } from './useAttachments';
+import { formatBytes } from '@/lib/utils/format';
 import { ArrowIcon } from '@/components/shared/Icon';
 import { HoneypotField } from './HoneypotField';
 
@@ -52,7 +55,8 @@ export function LeadForm({
 
   const [dialCode, setDialCode] = useState(DIAL_CODES[0] ?? '');
   const [nda, setNda] = useState(true);
-  const [fileName, setFileName] = useState('');
+  const [dragging, setDragging] = useState(false);
+  const files = useAttachments();
 
   const err = (field: string): boolean => Boolean(state.fieldErrors[field]?.length);
   const busy = state.status === 'submitting';
@@ -70,10 +74,14 @@ export function LeadForm({
       budget: values.budget,
       message: values.details,
       website: values.website,
+      // Receipts for files already uploaded, not the files themselves. Only the ones that
+      // finished have a receipt, so a failed upload cannot hold up the enquiry.
+      attachmentTokens: files.tokens,
     });
 
     if (ok) {
       setValues({ name: '', email: '', phone: '', service: '', budget: '', details: '', website: '' });
+      files.clear();
     }
   }
 
@@ -194,15 +202,41 @@ export function LeadForm({
         {variant === 'contact' ? (
           <div className="field full" id="f-file">
             <label htmlFor="attachment">
-              Attach a file <span className="opt">optional</span>
+              Attach files <span className="opt">optional</span>
             </label>
-            <div className="drop" id="drop">
+            <div
+              className={`drop${dragging ? ' is-over' : ''}${files.full ? ' is-full' : ''}`}
+              id="drop"
+              /*
+                Dragging fires `dragover` continuously and `dragleave` on every child element
+                the pointer crosses, so the highlight is driven by `dragenter`/`dragleave` on
+                this element alone. `preventDefault` on `dragover` is what stops the browser
+                navigating to the file instead of letting the page have it.
+              */
+              onDragOver={(event) => event.preventDefault()}
+              onDragEnter={() => setDragging(true)}
+              onDragLeave={(event) => {
+                if (!event.currentTarget.contains(event.relatedTarget as Node | null)) setDragging(false);
+              }}
+              onDrop={(event) => {
+                event.preventDefault();
+                setDragging(false);
+                if (!files.full) files.add(event.dataTransfer.files);
+              }}
+            >
               <input
                 id="attachment"
                 name="attachment"
                 type="file"
-                accept=".pdf,.doc,.docx,.png,.jpg,.jpeg,.xls,.xlsx"
-                onChange={(event) => setFileName(event.target.files?.[0]?.name ?? '')}
+                multiple
+                accept={ATTACHMENT_ACCEPT}
+                disabled={files.full}
+                onChange={(event) => {
+                  if (event.target.files) files.add(event.target.files);
+                  // Cleared so choosing the same file twice still fires a change event —
+                  // otherwise re-adding a file removed by mistake silently does nothing.
+                  event.target.value = '';
+                }}
               />
               <span className="drop-ic" aria-hidden="true">
                 <svg width="20" height="20" viewBox="0 0 22 22" fill="none">
@@ -222,13 +256,72 @@ export function LeadForm({
                 </svg>
               </span>
               <span className="drop-txt">
-                <b>Choose a file</b> or drag it here
+                {files.full ? (
+                  <>All {MAX_ATTACHMENTS} files added</>
+                ) : (
+                  <>
+                    <b>Choose files</b> or drag them here
+                  </>
+                )}
               </span>
               <span className="drop-hint">PDF, DOC, XLS, PNG, JPG · 10&nbsp;MB</span>
             </div>
-            <p className="file-name" id="fileName" role="status">
-              {fileName}
-            </p>
+
+            {/*
+              The list of what has been attached.
+
+              `role="status"` with `aria-live="polite"` so each file's outcome is announced
+              rather than only drawn — the confirmation is the whole point of this list, and a
+              tick nobody can see is not a confirmation.
+            */}
+            {files.items.length > 0 ? (
+              <ul className="file-list" role="status" aria-live="polite">
+                {files.items.map((item) => (
+                  <li key={item.uid} className={`file-row is-${item.status}`}>
+                    <span className="file-state" aria-hidden="true">
+                      {item.status === 'uploading' ? <span className="file-spin" /> : null}
+                      {item.status === 'done' ? (
+                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                          <path
+                            d="M3.5 8.5 6.5 11.5 12.5 5"
+                            stroke="currentColor"
+                            strokeWidth="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                          />
+                        </svg>
+                      ) : null}
+                      {item.status === 'error' ? (
+                        <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
+                          <path d="M8 4.5v4.2M8 11.2v.1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                          <circle cx="8" cy="8" r="6.2" stroke="currentColor" strokeWidth="1.4" />
+                        </svg>
+                      ) : null}
+                    </span>
+
+                    <span className="file-meta">
+                      <b title={item.name}>{item.name}</b>
+                      <small>
+                        {item.status === 'uploading' ? 'Uploading…' : null}
+                        {item.status === 'done' ? `Uploaded · ${formatBytes(item.bytes)}` : null}
+                        {item.status === 'error' ? item.error : null}
+                      </small>
+                    </span>
+
+                    <button
+                      type="button"
+                      onClick={() => files.remove(item.uid)}
+                      aria-label={`Remove ${item.name}`}
+                    >
+                      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                        <path d="M4.5 4.5 11.5 11.5M11.5 4.5 4.5 11.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
+                      </svg>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            ) : null}
+
             <span className="msg">Please attach a supported file under 10&nbsp;MB.</span>
           </div>
         ) : null}
@@ -248,8 +341,16 @@ export function LeadForm({
         </label>
       ) : null}
 
-      <button type="submit" className="btn btn-primary" disabled={busy}>
-        {busy ? 'Sending…' : config.submitLabel}
+      {/*
+        Submitting is held while a file is still uploading.
+
+        Not to be strict about it, but because the receipts are collected at the moment of
+        submit: a file that lands a second later has no receipt yet, and the enquiry would
+        arrive without the attachment the sender watched themselves add. The button says why
+        it is waiting rather than simply being dead.
+      */}
+      <button type="submit" className="btn btn-primary" disabled={busy || files.busy}>
+        {files.busy ? 'Waiting for files…' : busy ? 'Sending…' : config.submitLabel}
         <ArrowIcon size={15} />
       </button>
 

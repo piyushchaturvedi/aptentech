@@ -207,6 +207,14 @@ const ADMIN_NEW_LEAD = shell(
     ${field('Budget', '{{budget}}')}
     ${field('Came from', '{{sourcePage}}')}
     ${field('Submitted', '{{submittedAt}}')}
+    ${/*
+        Names and sizes, not links.
+
+        The files are confidential and have no public URL by design — they are downloaded
+        from the enquiry screen, through the admin's own session. What this row is for is
+        telling whoever reads the notification that there is something to go and look at.
+      */ ''}
+    ${field('Attachments', '{{attachments}}')}
   </table>
 </td></tr>
 

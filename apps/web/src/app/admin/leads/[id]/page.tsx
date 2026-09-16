@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import type { Conversation, ConversationMessage, EmailTemplate, Lead, LeadStatus } from '@aptentech/shared';
 import { LEAD_STATUSES } from '@aptentech/shared';
 import { useAdmin } from '@/components/admin/AdminClient';
+import { formatBytes } from '@/lib/utils/format';
 
 /**
  * One lead, read as a conversation.
@@ -208,6 +209,49 @@ export default function LeadDetailPage() {
           />
           <Detail label="Received" value={new Date(lead.createdAt).toLocaleString('en-GB')} />
         </div>
+
+        {/*
+          Files the sender attached.
+
+          Each is a plain link to the authenticated download route rather than a button that
+          fetches: the browser's own download handling is better than anything reimplemented
+          here, and the session cookie is sent with the request either way.
+
+          `download` asks for a save rather than a preview. The server sends the same
+          instruction, because an attachment from an anonymous uploader must not be rendered
+          in our own origin — this attribute is the convenience, that header is the control.
+        */}
+        {lead.attachments?.length ? (
+          <div className="adm-attachments">
+            <h3 className="adm-section-title">
+              Attachments <span className="adm-count">{lead.attachments.length}</span>
+            </h3>
+            <ul className="adm-attachment-list">
+              {lead.attachments.map((file) => (
+                <li key={file.id}>
+                  <a
+                    href={`/api/admin/leads/${leadId}/attachments/${file.id}`}
+                    download={file.filename}
+                    rel="noopener"
+                  >
+                    <svg width="15" height="15" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+                      <path
+                        d="M8 2.5v8m0 0L5 7.5M8 10.5l3-3"
+                        stroke="currentColor"
+                        strokeWidth="1.5"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                      />
+                      <path d="M2.5 11v1.5A1.5 1.5 0 0 0 4 14h8a1.5 1.5 0 0 0 1.5-1.5V11" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+                    </svg>
+                    <b>{file.filename}</b>
+                    <small>{formatBytes(file.bytes)}</small>
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </div>
+        ) : null}
       </div>
 
       <div className="adm-card">

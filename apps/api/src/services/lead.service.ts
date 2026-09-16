@@ -1,6 +1,7 @@
 import crypto from 'node:crypto';
 import type { LeadSubmissionInput } from '@aptentech/shared';
 import { leadRepository } from '../repositories/lead.repository';
+import { attachmentRepository } from '../repositories/attachment.repository';
 import { env } from '../config/env';
 import { logger } from '../utils/logger';
 
@@ -47,8 +48,13 @@ export interface SpamAssessment {
   isSpam: boolean;
 }
 
-/** Salted so the stored value cannot be reversed to an IP by rainbow table. */
-function hashValue(value: string): string {
+/**
+ * Salted so the stored value cannot be reversed to an IP by rainbow table.
+ *
+ * Exported so attachment uploads hash addresses the same way leads do. Two salts would make
+ * the same visitor look like two, which is exactly what this value exists to rule out.
+ */
+export function hashValue(value: string): string {
   return crypto.createHmac('sha256', env.SESSION_SECRET).update(value).digest('hex');
 }
 
@@ -134,7 +140,7 @@ export const leadService = {
       budget: input.budget || null,
       message: input.message,
       ndaRequested: input.ndaRequested,
-      attachment: null,
+      attachments: [],
 
       sourcePage: input.sourcePath,
       sourceForm: input.sourceForm,
@@ -157,12 +163,47 @@ export const leadService = {
       fingerprint,
     });
 
+    /*
+      Attachments are bound after the lead exists, and failing to bind them does not fail it.
+
+      The order is forced: a claim writes the lead's id onto each file, so there has to be a
+      lead first. The `try` is the deliberate part — an enquiry that arrives with an expired
+      token, or while the database is refusing writes, is still an enquiry, and the standing
+      rule on this project is that nothing in the notification path may cost us the lead.
+      The same reasoning as email, for the same reason.
+    */
+    let attachments: Awaited<ReturnType<typeof attachmentRepository.claim>> = [];
+    if (input.attachmentTokens.length) {
+      try {
+        attachments = await attachmentRepository.claim(input.attachmentTokens, lead.id);
+        if (attachments.length) {
+          await leadRepository.setAttachments(lead.id, attachments);
+        }
+        if (attachments.length < input.attachmentTokens.length) {
+          // Not an error the sender should see, but the admin needs to know a file is absent
+          // from an enquiry that says it has one.
+          logger.warn(
+            { leadId: lead.id, presented: input.attachmentTokens.length, claimed: attachments.length },
+            'Some enquiry attachments could not be claimed — expired, unknown, or already used',
+          );
+        }
+      } catch (error) {
+        logger.error({ leadId: lead.id, err: error }, 'Could not attach files to a lead; the lead itself is saved');
+      }
+    }
+
     logger.info(
-      { leadId: lead.id, form: input.sourceForm, spam: assessment.isSpam, score: assessment.score },
+      {
+        leadId: lead.id,
+        form: input.sourceForm,
+        spam: assessment.isSpam,
+        score: assessment.score,
+        attachments: attachments.length,
+      },
       'Lead captured',
     );
 
-    return { duplicate: false, lead, assessment };
+    return { duplicate: false, lead: { ...lead, attachments }, assessment };
   },
 
   /** CSV for the admin export. Quotes every field so commas and newlines cannot break rows. */
