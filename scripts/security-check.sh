@@ -81,6 +81,21 @@ fi
 
 bold "Transport"
 
+# Asked first and asked plainly, because the checks below cannot distinguish a well-configured
+# server from an absent one.
+#
+# "TLS 1.0 refused" is what this script printed on the morning port 443 had stopped listening
+# altogether: the handshake fails either way. A missing HTTPS listener has to be its own
+# question, or it reads as three passes.
+if [ "${SITE#https://}" != "$SITE" ]; then
+  HTTPS_HOST="${SITE#https://}"; HTTPS_HOST="${HTTPS_HOST%%/*}"
+  if timeout 10 bash -c "exec 3<>/dev/tcp/$HTTPS_HOST/443" 2>/dev/null; then
+    pass "443 is listening"
+  else
+    fail "443 is NOT listening — the site has no HTTPS at all"
+  fi
+fi
+
 REDIRECT="$(curl -sS -o /dev/null -w '%{http_code} %{redirect_url}' --max-time 20 "http://${SITE#https://}/" 2>/dev/null || true)"
 case "$REDIRECT" in
   30*https://*) pass "http redirects to https (${REDIRECT})" ;;

@@ -292,18 +292,34 @@ NGINX_FORCE="${NGINX_FORCE:-0}"
 # win was a couple of kilobytes, which is not worth a file that can stop a deploy — or worse,
 # stop nginx from starting after a reboot.
 
-SSL_INSTALLED=0
-if [ -f "$CONF" ] && grep -q 'ssl_certificate' "$CONF" && [ "$NGINX_FORCE" != "1" ]; then
-  # certbot edits this file in place, adding the TLS server block and the HTTP-to-HTTPS
-  # redirect. Copying the repository's copy over it would remove the certificate wiring and
-  # drop the site back to plain HTTP — with a valid certificate still on disk, so nothing
-  # would look broken until a browser complained. Leave it alone.
-  SSL_INSTALLED=1
-  warn "this config carries a certificate — left as it is, not overwritten"
-  warn "to rewrite it anyway: NGINX_FORCE=1 npm run deploy:prod"
-else
-  HOST="${SITE_URL#*://}"; HOST="${HOST%%/*}"; HOST="${HOST%%:*}"
+# The bare hostname, needed by both branches below: one to print a certbot command, the other
+# to build the server_name list. Computed once, before the branch, so neither can reference a
+# variable the other defines.
+HOST="${SITE_URL#*://}"; HOST="${HOST%%/*}"; HOST="${HOST%%:*}"
 
+SSL_INSTALLED=0
+if [ -f "$CONF" ] && [ "$NGINX_FORCE" != "1" ]; then
+  # An existing config is never overwritten. Not "unless it looks like it has a certificate" —
+  # never.
+  #
+  # This used to test `grep -q ssl_certificate "$CONF"` and rewrite the file when that found
+  # nothing. On 17 September it found nothing on a file that certbot had in fact edited, the
+  # config was replaced with the repository's plain-HTTP copy, and the site lost HTTPS: port
+  # 443 stopped listening entirely while port 80 went on serving pages, so nothing looked
+  # wrong from the inside.
+  #
+  # Why the grep came back empty on that run is still unestablished. That is the point. The
+  # condition asked a question it did not need to ask, and answering it wrongly cost the
+  # certificate; presence of the file is the fact that matters and cannot be got wrong.
+  #
+  # The cost of this is that a genuine change to deploy/nginx.conf does not reach a server
+  # that already has a config. That was already true in practice — certbot owns this file —
+  # and NGINX_FORCE=1 is the deliberate way to apply one.
+  SSL_INSTALLED=1
+  warn "a config is already installed — left as it is, not overwritten"
+  warn "to rewrite it anyway: NGINX_FORCE=1 npm run deploy:prod"
+  warn "after forcing, re-attach the certificate: sudo certbot --nginx -d $HOST"
+else
   # The loopback names are not optional: the config's default server refuses every host it does
   # not recognise, and the verification at the end of this script calls 127.0.0.1. Without them
   # a perfectly healthy deployment reports every route as broken.
@@ -322,8 +338,46 @@ fi
 
 sudo nginx -t >/dev/null 2>&1 || die "nginx rejected the configuration: sudo nginx -t"
 sudo systemctl enable nginx >/dev/null 2>&1 || true
-sudo systemctl reload nginx 2>/dev/null || sudo systemctl start nginx
+
+# A reload that fails must stop the deploy, not be swallowed.
+#
+# This used to be `reload 2>/dev/null || start`, which hid two different lies. A reload failing
+# on a running nginx printed nothing and fell through to `start`, which does nothing to a unit
+# that is already active — so the deploy reported success while nginx went on serving the
+# previous configuration. The new config then took effect at some later, unrelated restart,
+# with nothing to connect the outage back to the release that caused it.
+if sudo systemctl is-active --quiet nginx; then
+  sudo systemctl reload nginx || die "nginx would not reload: sudo journalctl -u nginx -n 40"
+else
+  sudo systemctl start nginx || die "nginx would not start: sudo journalctl -u nginx -n 40"
+fi
 ok "nginx reloaded"
+
+# What nginx is actually listening on, read back from the running process rather than from the
+# file it was supposed to load.
+#
+# On 17 September the config was replaced with one that has no TLS block. `nginx -t` passed,
+# the reload reported nothing, and port 443 stopped existing — while port 80 served pages, so
+# every check that asked "is the site answering" said yes. Checking the listeners is what
+# separates "nginx is up" from "nginx is serving what we meant".
+if printf '%s' "$SITE_URL" | grep -q '^https://'; then
+  # `ss` without sudo and without -p: a listening socket is visible to any user, and only the
+  # owning process name needs root. Asking for less is one less way for this check to fail on
+  # a server where nothing is actually wrong.
+  LISTENERS="$(ss -lnt 2>/dev/null || netstat -lnt 2>/dev/null || true)"
+
+  if [ -z "$LISTENERS" ]; then
+    # Neither tool is here. Say so and carry on: a check that cannot run must not be the
+    # reason a healthy deploy fails, which would be inventing the problem it exists to catch.
+    warn "could not list listening sockets (no ss or netstat) — skipped the 443 check"
+  elif printf '%s' "$LISTENERS" | grep -q ':443 '; then
+    ok "listening on 443"
+  else
+    die "the site URL is https but nginx is not listening on 443.
+     The TLS block is missing from $CONF. Re-attach the certificate with:
+       sudo certbot --nginx -d $HOST"
+  fi
+fi
 
 # ---------------------------------------------------------------- 12. verify
 
