@@ -52,3 +52,30 @@ jobs:
           code="$(curl -s -o /dev/null -w '%{http_code}' --max-time 30 "${{ secrets.DEPLOY_SITE_URL }}/")"
           echo "site responded $code"
           [ "$code" = "200" ] || [ "$code" = "301" ] || [ "$code" = "308" ]
+
+  # ------------------------------------------------------------------ security
+  #
+  # Checks what the internet can actually reach, after every release.
+  #
+  # Its own job rather than another step, so the result is a separate line in the run: a
+  # deploy that succeeded while a control regressed should read as exactly that, not as one
+  # long green step with a surprise at the bottom.
+  #
+  # `if: always()` because a failed deploy leaves the previous version serving, and the
+  # previous version's posture is still the posture of the live site.
+  #
+  # This verifies from outside rather than reconciling from inside, which is what lets it run
+  # with no AWS credentials at all: the workflow holds nothing that could change a security
+  # group, so the check itself cannot become the way in. It also tests the property that
+  # matters — what answers the internet — rather than the configuration meant to produce it.
+  security:
+    needs: deploy
+    if: always()
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check the live security posture
+        run: bash scripts/security-check.sh "${{ secrets.DEPLOY_SITE_URL }}" "${{ secrets.DEPLOY_HOST }}"
