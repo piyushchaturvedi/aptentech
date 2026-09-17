@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useRef, useState } from 'react';
-import { ATTACHMENT_TYPES, MAX_ATTACHMENTS, MAX_ATTACHMENT_BYTES } from '@aptentech/shared';
+import { ATTACHMENT_TYPES, MAX_ATTACHMENTS, MAX_ATTACHMENT_BYTES, MAX_ATTACHMENT_MB } from '@aptentech/shared';
 
 /**
  * Uploading files from an enquiry form.
@@ -88,7 +88,7 @@ export function useAttachments() {
               name: file.name,
               bytes: file.size,
               status: 'error',
-              error: `Too large — the limit is ${Math.floor(MAX_ATTACHMENT_BYTES / 1024 / 1024)} MB.`,
+              error: `Too large — the limit is ${MAX_ATTACHMENT_MB} MB.`,
             });
             continue;
           }

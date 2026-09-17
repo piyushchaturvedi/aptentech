@@ -1,5 +1,5 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { MAX_ATTACHMENT_BYTES } from '@aptentech/shared';
+import { MAX_ATTACHMENT_BYTES, MAX_ATTACHMENT_MB } from '@aptentech/shared';
 import { serviceAuthHeaders } from '@/lib/api/serviceToken';
 
 /**
@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
   */
   const declared = Number(request.headers.get('content-length') ?? '0');
   if (declared > MAX_ATTACHMENT_BYTES + 64 * 1024) {
-    return fail(413, 'FILE_TOO_LARGE', `Files must be under ${Math.floor(MAX_ATTACHMENT_BYTES / 1024 / 1024)} MB.`);
+    return fail(413, 'FILE_TOO_LARGE', `Files must be under ${MAX_ATTACHMENT_MB} MB.`);
   }
 
   let form: FormData;

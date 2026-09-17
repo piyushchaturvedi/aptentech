@@ -11,7 +11,10 @@ import { leadStatusSchema, objectIdSchema, paginationSchema, queryString } from 
  * A browser-side limit is a courtesy; the API's copy is the one that counts.
  */
 export const MAX_ATTACHMENTS = 5;
-export const MAX_ATTACHMENT_BYTES = 10 * 1024 * 1024;
+export const MAX_ATTACHMENT_BYTES = 5 * 1024 * 1024;
+
+/** The limit as the form and the error messages say it, so the two cannot disagree. */
+export const MAX_ATTACHMENT_MB = Math.floor(MAX_ATTACHMENT_BYTES / 1024 / 1024);
 
 /** 32 random bytes as hex. Long enough that a token cannot be found by guessing. */
 export const ATTACHMENT_TOKEN_LENGTH = 64;

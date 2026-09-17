@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import type { LeadFormConfig } from '@aptentech/shared';
-import { ATTACHMENT_ACCEPT, MAX_ATTACHMENTS } from '@aptentech/shared';
+import { ATTACHMENT_ACCEPT, MAX_ATTACHMENTS, MAX_ATTACHMENT_MB } from '@aptentech/shared';
 import { useLeadSubmit } from './useLeadSubmit';
 import { useAttachments } from './useAttachments';
 import { formatBytes } from '@/lib/utils/format';
@@ -264,7 +264,7 @@ export function LeadForm({
                   </>
                 )}
               </span>
-              <span className="drop-hint">PDF, DOC, XLS, PNG, JPG · 10&nbsp;MB</span>
+              <span className="drop-hint">PDF, DOC, XLS, PNG, JPG · {MAX_ATTACHMENT_MB}&nbsp;MB</span>
             </div>
 
             {/*
@@ -322,7 +322,7 @@ export function LeadForm({
               </ul>
             ) : null}
 
-            <span className="msg">Please attach a supported file under 10&nbsp;MB.</span>
+            <span className="msg">Please attach a supported file under {MAX_ATTACHMENT_MB}&nbsp;MB.</span>
           </div>
         ) : null}
       </div>

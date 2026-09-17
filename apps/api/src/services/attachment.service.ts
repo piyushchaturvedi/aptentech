@@ -13,7 +13,7 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs/promises';
 import path from 'node:path';
-import { MAX_ATTACHMENT_BYTES } from '@aptentech/shared';
+import { MAX_ATTACHMENT_BYTES, MAX_ATTACHMENT_MB } from '@aptentech/shared';
 import { env } from '../config/env';
 import { badRequest, payloadTooLarge } from '../utils/errors';
 import { logger } from '../utils/logger';
@@ -97,6 +97,70 @@ const SIGNATURES: Signature[] = [
 ];
 
 /**
+ * Refuses documents that carry something able to run.
+ *
+ * Returns the message to show, or null when the file is inert.
+ *
+ * The attachment is never opened by this server — it is stored as bytes and sent back as
+ * `application/octet-stream`, so nothing here protects the server. It protects the person
+ * who receives the enquiry and double-clicks the brief a stranger sent them. That is the
+ * realistic attack on a contact form: not the website, the salesperson.
+ *
+ * Be clear about what this is worth. It matches plain markers in the file, and a PDF can
+ * compress its object streams, so a determined attacker gets past it. It stops the sample
+ * that arrives already packaged, which is what actually turns up. It is one layer, not a
+ * scanner — a real one (ClamAV) wants about a gigabyte of resident memory and this instance
+ * needed a swapfile to compile the site.
+ *
+ * Every rejection tells the sender how to succeed, because the cost of a false positive here
+ * is a client who could not reach us and does not know why.
+ */
+function activeContent(buffer: Buffer, ext: string): string | null {
+  const has = (needle: string) => buffer.includes(Buffer.from(needle, 'latin1'));
+
+  if (ext === 'pdf') {
+    /*
+      A PDF is a program container as much as a document: it can run JavaScript on open,
+      launch an external application, and carry other files inside itself. A client's brief
+      needs none of that.
+    */
+    for (const marker of ['/JavaScript', '/JS ', '/Launch', '/OpenAction', '/EmbeddedFile']) {
+      if (has(marker)) {
+        return (
+          'That PDF contains active content — a script, a launch action or an embedded file — ' +
+          'so it was not accepted. Please print or re-save it as a plain PDF and try again.'
+        );
+      }
+    }
+    return null;
+  }
+
+  if (ext === 'docx' || ext === 'xlsx') {
+    // Macros in an Office 2007+ file live in this entry. A file that has one should have been
+    // saved as .docm/.xlsm, neither of which is on the accepted list — so finding it here
+    // means the extension was changed.
+    if (has('vbaProject.bin')) {
+      return 'That file contains macros, so it was not accepted. Please save it without macros and try again.';
+    }
+    return null;
+  }
+
+  if (ext === 'doc' || ext === 'xls') {
+    // The legacy formats store macros in a VBA stream inside the compound file. The name is
+    // written in UTF-16 in the directory, which is why the spaced form is searched too.
+    if (has('_VBA_PROJECT') || has('V\0B\0A\0')) {
+      return (
+        'That file contains macros, so it was not accepted. ' +
+        'Please save it as .docx or .xlsx and try again.'
+      );
+    }
+    return null;
+  }
+
+  return null;
+}
+
+/**
  * The visitor's filename, made safe to display and to log.
  *
  * It is never used to build a path — the stored name is generated — so this is not a
@@ -124,7 +188,7 @@ export const attachmentService = {
   async store(file: { buffer: Buffer; originalname: string }): Promise<StoredAttachment> {
     if (file.buffer.length === 0) throw badRequest('That file is empty.');
     if (file.buffer.length > MAX_ATTACHMENT_BYTES) {
-      throw payloadTooLarge(`Files must be under ${Math.floor(MAX_ATTACHMENT_BYTES / 1024 / 1024)} MB.`);
+      throw payloadTooLarge(`Files must be under ${MAX_ATTACHMENT_MB} MB.`);
     }
     // Every signature reads within the first twelve bytes; anything shorter cannot be checked.
     if (file.buffer.length < 12) throw badRequest('That file is too small to be read.');
@@ -135,6 +199,29 @@ export const attachmentService = {
     if (!detected) {
       throw badRequest('That file type is not supported. Attach a PDF, Word, Excel or image file.');
     }
+
+    /*
+      The name has to agree with the bytes.
+
+      Sniffing already establishes what a file is, so this changes nothing about how it is
+      stored — it is about what disagreement means. A PDF named `.png` is not a filing
+      mistake anyone makes; it is either an attempt to get a type past a filter that reads
+      names, or a sender who is confused about what they are sending. Both are worth stopping
+      at the door rather than storing under a name that describes something else.
+
+      `jpeg`/`jpg` are the same format under two spellings, so they are not a disagreement.
+    */
+    const claimed = extension === 'jpeg' ? 'jpg' : extension;
+    if (claimed && claimed !== detected.ext) {
+      throw badRequest(
+        `That file is named .${extension} but its contents are a ${detected.ext.toUpperCase()} file. ` +
+          'Please rename it to match, or send the original.',
+      );
+    }
+
+    // Documents that can act on their own are refused. See `activeContent`.
+    const active = activeContent(file.buffer, detected.ext);
+    if (active) throw badRequest(active);
 
     /*
       The path is built entirely from values this server chose.
