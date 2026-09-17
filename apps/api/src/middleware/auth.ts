@@ -2,6 +2,8 @@ import type { NextFunction, Request, Response } from 'express';
 import crypto from 'node:crypto';
 import { env } from '../config/env';
 import { forbidden, unauthorized } from '../utils/errors';
+import { logger } from '../utils/logger';
+import { verifyServiceToken } from '../auth/serviceJwt';
 import { CSRF_HEADER, SESSION_COOKIE, resolveSession, safeEqual, type SessionContext } from '../auth/session';
 import type { AdminRole } from '@aptentech/shared';
 
@@ -20,6 +22,34 @@ declare module 'express-serve-static-core' {
  * ultimately public.
  */
 export function requireServiceToken(req: Request, _res: Response, next: NextFunction): void {
+  /*
+    A signed token valid for one minute, or the static key it replaces.
+
+    Both are accepted on purpose, and only for as long as it takes to retire the second. The
+    two applications reload seconds apart rather than together, so an API that took only the
+    new form would reject every request from a site process that had not restarted yet —
+    which does not fail visibly, it renders every page empty.
+
+    The static key is the reason this exists. It was sent on every call, never rotated, and
+    gated the content API and the lead intake; one copy of it in a log, a backup or a
+    screenshot was permanent access with no way to revoke it short of redeploying both
+    applications. A signed token found in the same places is worthless within the minute.
+  */
+  const bearer = (req.header('authorization') ?? '').replace(/^Bearer\s+/i, '');
+
+  if (bearer) {
+    const result = verifyServiceToken(bearer);
+    if (result.ok) {
+      next();
+      return;
+    }
+    // The reason is logged and not returned: "expired" and "signature does not match" are
+    // very different events for whoever reads this, and neither is the caller's business.
+    logger.warn({ reason: result.reason, path: req.path }, 'Service token rejected');
+    next(unauthorized('Invalid service credentials'));
+    return;
+  }
+
   const provided = req.header('x-api-key') ?? '';
   const expected = env.API_SERVICE_TOKEN;
 
@@ -30,6 +60,15 @@ export function requireServiceToken(req: Request, _res: Response, next: NextFunc
     next(unauthorized('Invalid service credentials'));
     return;
   }
+
+  /*
+    Logged every time, so retiring the static key is a decision made from evidence.
+
+    When this line stops appearing, nothing is presenting it any more and the branch above
+    can be deleted. Until then it is the only thing that distinguishes "the changeover is
+    complete" from "the changeover looks complete".
+  */
+  logger.warn({ path: req.path }, 'Service call authenticated with the legacy static key');
   next();
 }
 

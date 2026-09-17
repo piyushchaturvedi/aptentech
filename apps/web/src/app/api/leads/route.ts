@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { leadSubmissionRefined } from '@aptentech/shared';
+import { serviceAuthHeaders } from '@/lib/api/serviceToken';
 
 /**
  * Lead submission proxy.
@@ -17,7 +18,6 @@ import { leadSubmissionRefined } from '@aptentech/shared';
  */
 
 const API_BASE = process.env.API_BASE_URL ?? 'http://localhost:4000/api/v1';
-const SERVICE_TOKEN = process.env.API_SERVICE_TOKEN ?? '';
 
 /** Header allowlist forwarded to the API. Anything else a client sends is ignored. */
 const ATTRIBUTION_HEADERS = [
@@ -66,7 +66,7 @@ export async function POST(request: NextRequest) {
 
   const forwarded: Record<string, string> = {
     'content-type': 'application/json',
-    'x-api-key': SERVICE_TOKEN,
+    ...serviceAuthHeaders(),
   };
 
   for (const header of ATTRIBUTION_HEADERS) {

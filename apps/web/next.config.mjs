@@ -1,4 +1,40 @@
 /** @type {import('next').NextConfig} */
+import crypto from 'node:crypto';
+
+/**
+ * The service token, minted here rather than imported.
+ *
+ * This file is loaded by Next.js itself, before any of the app's own module resolution
+ * exists — there is no `@/` alias and no TypeScript, so `lib/api/serviceToken.ts` next door
+ * cannot be reached from here. Fifteen duplicated lines is the price of that, and the
+ * constants both copies depend on live in @aptentech/shared so the two cannot disagree about
+ * the parts that matter.
+ *
+ * This call was the one the changeover missed. It kept presenting the static key, the API
+ * logged it as a legacy call, and that log is how it was found — which is the whole reason
+ * the legacy path logs rather than simply working.
+ */
+function serviceHeaders(secret) {
+  const b64 = (v) =>
+    Buffer.from(v).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+
+  const now = Math.floor(Date.now() / 1000);
+  const input =
+    `${b64(JSON.stringify({ alg: 'HS256', typ: 'JWT' }))}.` +
+    `${b64(
+      JSON.stringify({
+        iss: 'aptentech-web',
+        aud: 'aptentech-api',
+        iat: now,
+        exp: now + 60,
+        jti: crypto.randomUUID(),
+      }),
+    )}`;
+  const signature = b64(crypto.createHmac('sha256', secret).update(input).digest());
+
+  // The static key travels alongside only until it is retired; see the middleware comment.
+  return { authorization: `Bearer ${input}.${signature}`, 'x-api-key': secret };
+}
 
 /**
  * Content Security Policy.
@@ -159,7 +195,7 @@ const nextConfig = {
       for (let attempt = 0; attempt < 6; attempt += 1) {
         try {
           const res = await fetch(`${base}/redirects`, {
-            headers: { 'x-api-key': token },
+            headers: serviceHeaders(token),
             signal: AbortSignal.timeout(5000),
           });
           if (res.ok) return res;

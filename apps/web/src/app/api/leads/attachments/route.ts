@@ -1,5 +1,6 @@
 import { NextResponse, type NextRequest } from 'next/server';
 import { MAX_ATTACHMENT_BYTES } from '@aptentech/shared';
+import { serviceAuthHeaders } from '@/lib/api/serviceToken';
 
 /**
  * Attachment upload proxy.
@@ -18,7 +19,6 @@ import { MAX_ATTACHMENT_BYTES } from '@aptentech/shared';
  */
 
 const API_BASE = process.env.API_BASE_URL ?? 'http://localhost:4000/api/v1';
-const SERVICE_TOKEN = process.env.API_SERVICE_TOKEN ?? '';
 
 /** Enough for a 10 MB file plus multipart framing on a small instance. */
 export const maxDuration = 60;
@@ -58,7 +58,7 @@ export async function POST(request: NextRequest) {
   const outgoing = new FormData();
   outgoing.append('file', file, file.name);
 
-  const headers: Record<string, string> = { 'x-api-key': SERVICE_TOKEN };
+  const headers: Record<string, string> = { ...serviceAuthHeaders() };
   const clientIp =
     request.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? request.headers.get('x-real-ip') ?? '';
   if (clientIp) headers['x-forwarded-for'] = clientIp;

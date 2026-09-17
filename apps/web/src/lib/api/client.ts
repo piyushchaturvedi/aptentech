@@ -1,4 +1,5 @@
 import 'server-only';
+import { serviceAuthHeaders } from './serviceToken';
 
 /**
  * Server-side API client.
@@ -14,7 +15,6 @@ import 'server-only';
  */
 
 const API_BASE = process.env.API_BASE_URL ?? 'http://localhost:4000/api/v1';
-const SERVICE_TOKEN = process.env.API_SERVICE_TOKEN ?? '';
 
 export class ApiError extends Error {
   constructor(
@@ -49,7 +49,7 @@ async function request<T>(path: string, options: FetchOptions = {}): Promise<T> 
   const init: RequestInit & { next?: { tags?: string[]; revalidate?: number } } = {
     method,
     headers: {
-      'x-api-key': SERVICE_TOKEN,
+      ...serviceAuthHeaders(),
       ...(body ? { 'content-type': 'application/json' } : {}),
       ...headers,
     },

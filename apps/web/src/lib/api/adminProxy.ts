@@ -1,5 +1,6 @@
 import 'server-only';
 import { NextResponse, type NextRequest } from 'next/server';
+import { serviceAuthHeaders } from './serviceToken';
 
 /**
  * Shared forwarding logic for admin API calls.
@@ -11,7 +12,6 @@ import { NextResponse, type NextRequest } from 'next/server';
  */
 
 const API_BASE = process.env.API_BASE_URL ?? 'http://localhost:4000/api/v1';
-const SERVICE_TOKEN = process.env.API_SERVICE_TOKEN ?? '';
 
 const SKIP_REQUEST_HEADERS = new Set([
   'connection',
@@ -42,7 +42,7 @@ export function buildForwardHeaders(request: NextRequest, extra: Record<string, 
     if (!SKIP_REQUEST_HEADERS.has(key.toLowerCase())) headers.set(key, value);
   });
 
-  headers.set('x-api-key', SERVICE_TOKEN);
+  for (const [k, v] of Object.entries(serviceAuthHeaders())) headers.set(k, v);
   for (const [k, v] of Object.entries(extra)) headers.set(k, v);
 
   return headers;
