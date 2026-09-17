@@ -1008,8 +1008,12 @@ export interface SocialLink {
 /**
  * One entry in the mobile menu.
  *
- * The source ships a mobile list that is deliberately not the desktop menu: it exposes two
- * expandable groups and five direct links, so it is stored separately rather than derived.
+ * Built at render time by flattening `navigation`, not stored. It was stored once, and the
+ * two lists drifted until the phone menu was missing an entire top-level section — so the
+ * shape survives as the header's input while the data behind it does not.
+ *
+ * The stored `mobileNavigation` field is left in place but no longer read. Removing it would
+ * be a destructive migration for no gain, and keeping it costs a few unused documents.
  */
 export interface MobileNavItem {
   label: string;

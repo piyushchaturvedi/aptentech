@@ -162,9 +162,12 @@ export function SiteHeader({ settings }: { settings: SiteSettings }) {
       </div>
 
       {/*
-        The mobile menu is its own list in the source — two expandable groups and five
-        direct links — rather than a projection of the desktop mega-menu, so it renders
-        from its own settings entry and matches the original element for element.
+        The same entries as the desktop menu, as accordions.
+
+        The site layout builds this by flattening the desktop navigation, so the two cannot
+        offer different things — which they did for as long as they were two separate lists.
+        The markup is unchanged from the original: `button.top` opens a `.sub` panel, `a.top`
+        is a direct link.
       */}
       <nav className="mnav" id="mnav" aria-label="Mobile">
         <ul>

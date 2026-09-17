@@ -59,9 +59,31 @@ function visibleNavigation(settings: SiteSettings, unavailable: Set<string>): Si
     footerColumns: settings.footerColumns
       .filter(shown)
       .map((column) => ({ ...column, links: column.links.filter(keepLink) })),
-    mobileNavigation: settings.mobileNavigation
-      ?.filter(shown)
-      .map((item) => ({ ...item, links: item.links.filter(keepLink) })),
+    /*
+      The mobile menu is the desktop menu, flattened — not a second list.
+
+      It used to be stored separately, because the original static site shipped a hand-written
+      mobile menu and carrying it across kept the markup identical. The cost of two lists is
+      that they drift, and they had: the desktop menu offered Solutions with nine pages, ten
+      more Services links and eight Technologies links that the mobile menu simply did not
+      have. A visitor on a phone could not reach the Solutions section at all, and nothing
+      anywhere reported it — each list was internally valid.
+
+      Deriving it removes the whole class of problem rather than correcting today's instance
+      of it. It also means the filtering above reaches mobile for free: hide a group, reorder
+      it, or leave a page unpublished, and the phone menu follows the desktop one because it
+      is the same data.
+
+      A mega-menu group spreads its links over columns for width, which a phone has none of,
+      so the columns collapse into one list. `mobileNavCta` stays its own setting — that
+      button exists only on mobile and has no desktop counterpart to derive from.
+    */
+    mobileNavigation: navigation.map((group) => ({
+      label: group.label,
+      href: group.href,
+      visible: true,
+      links: group.columns.flatMap((column) => column.links),
+    })),
     legalLinks: settings.legalLinks.filter(keepLink),
   };
 }
