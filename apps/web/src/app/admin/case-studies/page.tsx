@@ -24,6 +24,17 @@ export default function AdminCaseStudiesPage() {
       itemName="case study"
       paginated
       note="Placeholder metrics preserved from the source — replace with verified figures."
+      /*
+        A case study has no page of its own — it appears as a card. So View goes to where the
+        card actually is: the study's own detail link when one is set, otherwise the case studies
+        page if the study is listed there. One hidden from the index and with no detail link is
+        not shown anywhere on the site, and gets no View button rather than one that opens a
+        page it is missing from.
+      */
+      viewLink={(c) => ({
+        href: c.detailHref || (c.showInIndex ? '/case-studies/' : null),
+        status: c.status,
+      })}
       columns={[
         { header: 'Title', render: (c) => c.title },
         { header: 'Industry', render: (c) => c.industry || '—' },

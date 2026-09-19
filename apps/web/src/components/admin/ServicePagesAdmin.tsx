@@ -5,6 +5,7 @@ import type { AccentToken, CtaLink, ServiceKind, ServicePage } from '@aptentech/
 import { EMPTY_MEDIA } from '@aptentech/shared';
 import { useAdmin } from './AdminClient';
 import { AccentPicker, IconPicker, MediaPicker, Repeater, Select, StringList, Text, TextArea, Toggle } from './Fields';
+import { ViewLink } from './ViewLink';
 
 /**
  * Service and solution page editor.
@@ -970,9 +971,15 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
                       <span className={`adm-chip ${item.status.toLowerCase()}`}>{item.status}</span>
                     </td>
                     <td>
-                      <button className="adm-btn ghost sm" onClick={() => void open(item.id)}>
-                        Edit
-                      </button>
+                      <div className="adm-actions">
+                        <button className="adm-btn ghost sm" onClick={() => void open(item.id)}>
+                          Edit
+                        </button>
+                        <ViewLink
+                          href={`${kind === 'service' ? '/services/' : '/solutions/'}${item.slug}/`}
+                          status={item.status}
+                        />
+                      </div>
                     </td>
                   </tr>
                 ))}

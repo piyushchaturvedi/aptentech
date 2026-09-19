@@ -1,7 +1,9 @@
 'use client';
 
 import { useCallback, useEffect, useState } from 'react';
+import type { PublishStatus } from '@aptentech/shared';
 import { describeError, useAdmin } from './AdminClient';
+import { ViewLink } from './ViewLink';
 
 /**
  * Generic list-and-edit screen for the simpler CMS collections.
@@ -28,6 +30,7 @@ export function CollectionAdmin<T extends { id: string }>({
   itemName = 'item',
   canDelete = true,
   note,
+  viewLink,
 }: {
   title: string;
   /** API path under `/admin`, e.g. `/testimonials`. */
@@ -39,6 +42,14 @@ export function CollectionAdmin<T extends { id: string }>({
   itemName?: string;
   canDelete?: boolean;
   note?: string;
+  /**
+   * Where an item can be seen on the live site, if anywhere.
+   *
+   * Optional because only some collections have a public location: a case study appears on the
+   * case studies page, while a testimonial or an FAQ is shown wherever it has been attached and
+   * has no single page to open. Collections that omit this get no View button.
+   */
+  viewLink?: (item: T) => { href: string | null; status: PublishStatus };
 }) {
   const { request, session } = useAdmin();
 
@@ -191,15 +202,18 @@ export function CollectionAdmin<T extends { id: string }>({
                         </td>
                       ))}
                       <td>
-                        <button
-                          className="adm-btn ghost sm"
-                          onClick={() => {
-                            setEditing(item);
-                            setIsNew(false);
-                          }}
-                        >
-                          Edit
-                        </button>
+                        <div className="adm-actions">
+                          <button
+                            className="adm-btn ghost sm"
+                            onClick={() => {
+                              setEditing(item);
+                              setIsNew(false);
+                            }}
+                          >
+                            Edit
+                          </button>
+                          {viewLink ? <ViewLink {...viewLink(item)} /> : null}
+                        </div>
                       </td>
                     </tr>
                   ))}

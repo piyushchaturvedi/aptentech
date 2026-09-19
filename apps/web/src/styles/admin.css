@@ -686,3 +686,6 @@
   white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
 }
 .adm-attachment-list small { margin-left: auto; flex: none; color: var(--a-muted); font-size: 12px; }
+
+/* Several buttons in one table cell — Edit beside View — kept on one line with a small gap. */
+.adm-actions { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
