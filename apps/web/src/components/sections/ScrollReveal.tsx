@@ -10,8 +10,14 @@ import { useEffect } from 'react';
  * it, and a shared `'use client'` module is bundled as a unit, so co-locating it would pull
  * the carousel and tab code into pages that have neither.
  *
- * Elements are visible by default in CSS terms, so a JavaScript failure cannot leave the
- * page blank — the animation simply does not run.
+ * This is the second pass, not the first. `EarlyReveal` has already revealed whatever was on
+ * screen at load, from inline script that does not wait for hydration; the selector below
+ * skips those (`:not(.in)`) and this takes over for everything reached by scrolling. It is
+ * also the only pass on client-side navigation, where the inline script does not run again.
+ *
+ * This comment used to say that elements are visible by default, so a JavaScript failure
+ * could not leave the page blank. The stylesheet has `.rv{opacity:0}` unconditionally, so that
+ * was never true. `RevealFallback` is what makes it true now.
  */
 export function ScrollReveal() {
   useEffect(() => {

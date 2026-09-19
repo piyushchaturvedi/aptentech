@@ -5,6 +5,7 @@ import type { ResolvedMedia } from '@/lib/api/content';
 import { SiteHeader } from '@/components/layout/SiteHeader';
 import { SiteFooter } from '@/components/layout/SiteFooter';
 import { Analytics } from '@/components/layout/Analytics';
+import { EarlyReveal, RevealFallback } from '@/components/sections/EarlyReveal';
 import { OrganizationSchema, WebSiteSchema } from '@/lib/seo/structuredData';
 
 /**
@@ -124,11 +125,15 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
       <OrganizationSchema settings={settings} />
       <WebSiteSchema settings={settings} />
 
+      <RevealFallback />
       <a className="skip" href="#main">
         Skip to main content
       </a>
       <SiteHeader settings={settings} />
       <main id="main">{children}</main>
+      {/* Straight after the content it acts on, so the hero starts appearing before the footer
+          has even been parsed. See EarlyReveal for why this cannot wait for hydration. */}
+      <EarlyReveal />
       <SiteFooter settings={settings} />
       <Analytics config={settings.analytics} />
     </>
