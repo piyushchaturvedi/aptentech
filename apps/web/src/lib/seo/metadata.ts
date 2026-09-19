@@ -60,10 +60,28 @@ export function buildMetadata({
   const rawImage = ogImage?.url ?? defaults?.ogImage?.url ?? null;
   const image = rawImage ? (/^https?:\/\//i.test(rawImage) ? rawImage : absoluteUrl(rawImage)) : null;
 
-  // Site-wide noindex/nofollow: forced off regardless of the CMS per-page flags.
+  /*
+    Whether search engines may index this page.
+
+    The site-wide switch decides first. While it is off, every page is noindex, nofollow
+    whatever its own settings say — which is what a hardcoded `false` here used to do, on every
+    page, with no way to turn it back on short of a code change. The switch lives in Admin →
+    SEO so that going live in search is a decision the site's owner makes, not a deploy.
+
+    Once it is on, a page's own flags win, then the site defaults, then true. The per-page and
+    default toggles in the admin were rendering and saving the whole time the hardcode was in
+    place, and doing nothing; this is what makes them work again.
+
+    Note that robots.txt is deliberately not tied to this switch. Blocking crawling there would
+    stop Google fetching the page at all — and a page Google cannot fetch is a page whose
+    noindex it never reads, so an already-indexed URL would stay in the index indefinitely. The
+    meta tag is the lever that removes a page; robots.txt must keep allowing the crawl for it
+    to be seen.
+  */
+  const indexingOn = settings.searchIndexingEnabled === true;
   const robots = {
-    index: false,
-    follow: false,
+    index: indexingOn && (seo?.robotsIndex ?? defaults?.robotsIndex ?? true),
+    follow: indexingOn && (seo?.robotsFollow ?? defaults?.robotsFollow ?? true),
   };
 
   return {

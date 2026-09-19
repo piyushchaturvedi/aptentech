@@ -704,6 +704,8 @@ export const siteSettingsSchema = z.object({
   footerTagline: longText.default(''),
   legalLinks: z.array(navLinkSchema).max(8).default([]),
   defaultSeo: seoSchema,
+  /** Master switch for search engines. See the model for why it is separate from defaultSeo. */
+  searchIndexingEnabled: z.boolean().default(false),
   analytics: z
     .object({
       gaMeasurementId: z.string().trim().max(40).default(''),

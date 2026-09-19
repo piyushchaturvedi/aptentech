@@ -1042,6 +1042,11 @@ export interface SiteSettings {
   footerTagline: string;
   legalLinks: NavLink[];
   defaultSeo: SeoFields;
+  /**
+   * Whether search engines may index the site at all. When false every page is noindex,
+   * nofollow regardless of its own SEO settings; when true each page's settings apply.
+   */
+  searchIndexingEnabled: boolean;
   analytics: {
     gaMeasurementId: string;
     gtmContainerId: string;

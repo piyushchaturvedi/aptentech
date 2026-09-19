@@ -100,6 +100,44 @@ export default function AdminSeoPage() {
     }
   }
 
+  /**
+   * Flips the site-wide search switch and saves it straight away.
+   *
+   * Confirmed first, with the consequence in words, because both directions matter: turning it
+   * off removes the site from Google over the following days, and turning it on exposes every
+   * published page — including any still carrying placeholder content.
+   *
+   * Saved on its own rather than waiting for "Save defaults", so the state shown on screen is
+   * always the state the site is actually in.
+   */
+  async function setIndexing(next: boolean) {
+    if (!settings) return;
+
+    const question = next
+      ? 'Show the whole website in Google and other search engines?\n\nEvery published page becomes indexable, following its own SEO settings. Check that no placeholder content is live first.'
+      : 'Hide the whole website from Google and other search engines?\n\nEvery page will ask not to be indexed. Pages already in search results drop out over the following days.';
+    if (!window.confirm(question)) return;
+
+    setBusy(true);
+    setError('');
+    setNotice('');
+    try {
+      const nextSettings = { ...settings, searchIndexingEnabled: next };
+      const { id, updatedAt, ...payload } = nextSettings as SiteSettings & Record<string, unknown>;
+      await request('/settings', { method: 'PUT', json: payload });
+      setSettings(nextSettings);
+      setNotice(
+        next
+          ? 'The website is now visible to search engines. It takes effect on the next page load.'
+          : 'The website is now hidden from search engines. It takes effect on the next page load.',
+      );
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Could not change the search setting.');
+    } finally {
+      setBusy(false);
+    }
+  }
+
   const missingOg = rows?.filter((r) => !r.hasOgImage).length ?? 0;
   const missingDescription = rows?.filter((r) => !r.description).length ?? 0;
 
@@ -113,6 +151,41 @@ export default function AdminSeoPage() {
           {missingOg ? `${missingOg} pages have no social share image. ` : ''}
           {missingDescription ? `${missingDescription} pages have no meta description. ` : ''}
           Pages without their own value fall back to the sitewide defaults below.
+        </div>
+      ) : null}
+
+      {/*
+        The master switch, in its own panel above everything else.
+
+        Not a toggle among the defaults below, because it is not a default — it overrides every
+        page on the site — and because flipping it by accident while editing a meta description
+        would take the whole site out of Google. It saves on its own, after a confirmation that
+        names the consequence, so it is only ever changed on purpose.
+      */}
+      {settings ? (
+        <div className="adm-panel">
+          <div className="adm-panel-head">
+            <h2>Search engines</h2>
+            <span className="spacer" />
+            {/* Amber rather than red for "hidden": it is a deliberate state, like a draft, not a failure. */}
+            <span className={`adm-chip ${settings.searchIndexingEnabled ? 'published' : 'draft'}`}>
+              {settings.searchIndexingEnabled ? 'Visible in search' : 'Hidden from search'}
+            </span>
+          </div>
+          <div className="adm-panel-body">
+            <p className="hint" style={{ marginTop: 0 }}>
+              {settings.searchIndexingEnabled
+                ? 'Google and other search engines may index this website. Each page follows its own SEO settings — a page can still be hidden individually.'
+                : 'Every page tells search engines not to index it, whatever its own settings say. Use this while the site is being tested. Pages already in Google drop out over the following days.'}
+            </p>
+            <button
+              className={`adm-btn${settings.searchIndexingEnabled ? ' ghost' : ''}`}
+              disabled={busy}
+              onClick={() => void setIndexing(!settings.searchIndexingEnabled)}
+            >
+              {busy ? 'Saving…' : settings.searchIndexingEnabled ? 'Hide the whole site from search' : 'Show the website in search'}
+            </button>
+          </div>
         </div>
       ) : null}
 

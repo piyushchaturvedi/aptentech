@@ -777,6 +777,18 @@ const SiteSettingsSchema = new Schema(
     },
     defaultSeo: { type: SeoSchema, default: () => ({}) },
     /**
+     * The master switch for search engines: off keeps the whole site out of the index.
+     *
+     * Separate from `defaultSeo.robotsIndex`, because the two answer different questions. That
+     * one is the default for a page that does not set its own; this one overrides every page,
+     * which is what you want while a site is being tested and must not appear in Google at all.
+     *
+     * Defaults to false so that shipping it changes nothing: the live site has been noindex
+     * since a hardcoded override on 14 September, and turning indexing on is a decision for
+     * whoever runs the site, made in the admin, not a side effect of a deploy.
+     */
+    searchIndexingEnabled: { type: Boolean, default: false },
+    /**
      * Who lead mail reaches, and how it signs itself.
      *
      * Recipients and wording are content, so they belong to the administrator. The provider
