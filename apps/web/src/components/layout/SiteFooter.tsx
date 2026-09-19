@@ -143,7 +143,18 @@ export function SiteFooter({ settings }: { settings: SiteSettings }) {
                     <Icon name={social.icon} size={16} viewBox={"0 0 16 16"} fill="currentColor" />
                   </a>
                 ) : (
-                  <a key={social.label} aria-label={social.label}>
+                  /*
+                    No URL set yet, so this is a picture of a link rather than a link.
+
+                    It stays an `<a>` because the row is styled as `.socials a` and a different
+                    element would change how it looks. But an `<a>` without an href has no role,
+                    and naming an element that has no role is what accessibility checkers flag as
+                    a prohibited attribute — the label announced something a keyboard or screen
+                    reader user could not then use. Hidden from assistive technology instead,
+                    which is the truth: until a profile URL is entered in the admin, there is
+                    nothing here to activate.
+                  */
+                  <a key={social.label} aria-hidden="true">
                     <Icon name={social.icon} size={16} viewBox={"0 0 16 16"} fill="currentColor" />
                   </a>
                 ),
