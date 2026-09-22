@@ -39,6 +39,7 @@ import { attachmentController } from '../controllers/attachment.controller';
 import { emailController } from '../controllers/email.controller';
 
 import { validate } from '../middleware/validate';
+import { requireCaptcha } from '../middleware/captcha';
 import {
   blockIfPasswordChangeRequired,
   requireAdmin,
@@ -81,6 +82,9 @@ pub.get('/faqs', publicController.listFaqs);
 pub.get('/sitemap', publicController.sitemap);
 pub.get('/redirects', publicController.redirects);
 
+/** Issues the verification question the enquiry forms ask before they will submit. */
+pub.get('/captcha', publicController.captcha);
+
 api.use('/', pub);
 
 /* ================================================================== lead intake */
@@ -94,6 +98,7 @@ api.post(
   requireServiceToken,
   leadLimiter,
   validate(leadSubmissionRefined),
+  requireCaptcha,
   leadController.submit,
 );
 

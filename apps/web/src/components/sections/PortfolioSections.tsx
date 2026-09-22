@@ -3,6 +3,7 @@ import type { CaseStudy } from '@aptentech/shared';
 import { ACCENT_HEX } from '@aptentech/shared';
 import { ArrowIcon } from '@/components/shared/Icon';
 import { CaseShot } from './Interactive';
+import { inlineLinks } from '@/components/shared/InlineLinks';
 
 /**
  * The case-study page's own bands.
@@ -98,15 +99,15 @@ export function CaseStudyList({ block, items }: { block: Block; items: CaseStudy
                 <dl className="cs-dl">
                   <div>
                     <dt>Problem</dt>
-                    <dd>{cs.problem}</dd>
+                    <dd>{inlineLinks(cs.problem)}</dd>
                   </div>
                   <div>
                     <dt>Solution</dt>
-                    <dd>{cs.solution}</dd>
+                    <dd>{inlineLinks(cs.solution)}</dd>
                   </div>
                   <div>
                     <dt>Result</dt>
-                    <dd>{cs.result}</dd>
+                    <dd>{inlineLinks(cs.result)}</dd>
                   </div>
                 </dl>
                 <div className="cs-res">

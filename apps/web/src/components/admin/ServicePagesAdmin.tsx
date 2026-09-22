@@ -113,7 +113,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
       patch({ sectionLedes: { ...editing.sectionLedes, [id]: value } });
 
     const Lede = ({ id }: { id: string }) => (
-      <TextArea
+      <TextArea links
         label="Text under the heading"
         value={editing.sectionLedes?.[id] ?? ''}
         onChange={(v) => setLede(id, v)}
@@ -193,7 +193,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             onChange={(v) => patch({ heroTitleHighlight: v })}
           />
           <p className="hint">The highlighted words print in the gradient at the end of the H1.</p>
-          <TextArea label="Standfirst" value={editing.heroDescription} onChange={(v) => patch({ heroDescription: v })} />
+          <TextArea links label="Standfirst" value={editing.heroDescription} onChange={(v) => patch({ heroDescription: v })} />
           <StringList label="Tick points" items={editing.heroPoints} onChange={(v) => patch({ heroPoints: v })} />
           <div className="adm-grid2">
             <Text label="Button label" value={editing.heroCtaLabel} onChange={(v) => patch({ heroCtaLabel: v })} />
@@ -231,7 +231,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             render={(item, update) => (
               <>
                 <Text label="Title" value={item.title} onChange={(v) => update({ title: v })} />
-                <TextArea label="Body" value={item.description} onChange={(v) => update({ description: v })} />
+                <TextArea links label="Body" value={item.description} onChange={(v) => update({ description: v })} />
                 <div className="adm-grid2">
                   <AccentPicker value={item.accent} onChange={(v) => update({ accent: v })} />
                   <IconPicker value={item.icon} onChange={(v) => update({ icon: v })} />
@@ -271,7 +271,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
 
         <Panel title="5 · Positioning">
           <Text label="Heading" value={editing.positioningTitle} onChange={(v) => patch({ positioningTitle: v })} />
-          <TextArea
+          <TextArea links
             label="Body"
             value={editing.positioningBody}
             onChange={(v) => patch({ positioningBody: v })}
@@ -346,7 +346,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             render={(item, update) => (
               <>
                 <Text label="Title" value={item.title} onChange={(v) => update({ title: v })} />
-                <TextArea label="Description" value={item.description} onChange={(v) => update({ description: v })} />
+                <TextArea links label="Description" value={item.description} onChange={(v) => update({ description: v })} />
                 <div className="adm-grid2">
                   <AccentPicker value={item.accent} onChange={(v) => update({ accent: v })} />
                   <IconPicker value={item.icon} onChange={(v) => update({ icon: v })} />
@@ -364,7 +364,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
 
         <Panel title="9 · Mid-page call to action">
           <Text label="Heading" value={editing.midCtaTitle} onChange={(v) => patch({ midCtaTitle: v })} />
-          <TextArea label="Body" value={editing.midCtaBody} onChange={(v) => patch({ midCtaBody: v })} />
+          <TextArea links label="Body" value={editing.midCtaBody} onChange={(v) => patch({ midCtaBody: v })} />
           <StringList label="Points" items={editing.midCtaPoints} onChange={(v) => patch({ midCtaPoints: v })} />
           <CtaFields value={editing.midCtaButton} onChange={(midCtaButton) => patch({ midCtaButton })} />
         </Panel>
@@ -377,7 +377,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             value={editing.awardLead.title}
             onChange={(v) => patch({ awardLead: { ...editing.awardLead, title: v } })}
           />
-          <TextArea
+          <TextArea links
             label="Lead card body"
             value={editing.awardLead.body}
             onChange={(v) => patch({ awardLead: { ...editing.awardLead, body: v } })}
@@ -490,7 +490,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
                 <Text label="Title" value={item.title} onChange={(v) => update({ title: v })} />
                 {editing.featuresLayout === 'groups' ? (
                   <>
-                    <TextArea label="Description" value={item.description} onChange={(v) => update({ description: v })} />
+                    <TextArea links label="Description" value={item.description} onChange={(v) => update({ description: v })} />
                     <div className="adm-grid2">
                       <AccentPicker value={item.accent} onChange={(v) => update({ accent: v })} />
                       <IconPicker value={item.icon} onChange={(v) => update({ icon: v })} />
@@ -521,7 +521,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             render={(item, update) => (
               <>
                 <Text label="Title" value={item.title} onChange={(v) => update({ title: v })} />
-                <TextArea label="Description" value={item.description} onChange={(v) => update({ description: v })} />
+                <TextArea links label="Description" value={item.description} onChange={(v) => update({ description: v })} />
                 <Text label="Outcome" value={item.outcome ?? ''} onChange={(v) => update({ outcome: v })} />
                 <div className="adm-grid2">
                   <AccentPicker value={item.accent} onChange={(v) => update({ accent: v })} />
@@ -534,7 +534,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
 
         <Panel title="16 · Second call to action">
           <Text label="Heading" value={editing.midCta2Title} onChange={(v) => patch({ midCta2Title: v })} />
-          <TextArea label="Body" value={editing.midCta2Body} onChange={(v) => patch({ midCta2Body: v })} />
+          <TextArea links label="Body" value={editing.midCta2Body} onChange={(v) => patch({ midCta2Body: v })} />
           <StringList label="Points" items={editing.midCta2Points} onChange={(v) => patch({ midCta2Points: v })} />
           <CtaFields value={editing.midCta2Button} onChange={(midCta2Button) => patch({ midCta2Button })} />
           <MediaPicker
@@ -593,7 +593,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             render={(item, update) => (
               <>
                 <Text label="Title" value={item.title} onChange={(v) => update({ title: v })} />
-                <TextArea label="Description" value={item.description} onChange={(v) => update({ description: v })} />
+                <TextArea links label="Description" value={item.description} onChange={(v) => update({ description: v })} />
                 <StringList
                   label="Deliverables"
                   items={item.deliverables}
@@ -716,7 +716,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             render={(item, update) => (
               <>
                 <Text label="Title" value={item.title} onChange={(v) => update({ title: v })} />
-                <TextArea label="Description" value={item.description} onChange={(v) => update({ description: v })} />
+                <TextArea links label="Description" value={item.description} onChange={(v) => update({ description: v })} />
               </>
             )}
           />
@@ -750,12 +750,12 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             render={(item, update) => (
               <>
                 <Text label="Question" value={item.question} onChange={(v) => update({ question: v })} />
-                <TextArea label="Answer" value={item.answer} onChange={(v) => update({ answer: v })} rows={4} />
+                <TextArea links label="Answer" value={item.answer} onChange={(v) => update({ answer: v })} rows={4} />
                 <Toggle label="Visible" value={item.visible !== false} onChange={(v) => update({ visible: v })} />
               </>
             )}
           />
-          <TextArea label="Text after the list" value={editing.faqAfter} onChange={(v) => patch({ faqAfter: v })} />
+          <TextArea links label="Text after the list" value={editing.faqAfter} onChange={(v) => patch({ faqAfter: v })} />
           <Text
             label="Link label after the list"
             value={editing.faqAfterCtaLabel}
@@ -769,7 +769,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             value={editing.latestInsightsTitle}
             onChange={(v) => patch({ latestInsightsTitle: v })}
           />
-          <TextArea
+          <TextArea links
             label="Body"
             value={editing.latestInsightsBody}
             onChange={(v) => patch({ latestInsightsBody: v })}
@@ -790,7 +790,7 @@ export function ServicePagesAdmin({ kind }: { kind: ServiceKind }) {
             render={(item, update) => (
               <>
                 <Text label="Title" value={item.title} onChange={(v) => update({ title: v })} />
-                <TextArea label="Description" value={item.description} onChange={(v) => update({ description: v })} />
+                <TextArea links label="Description" value={item.description} onChange={(v) => update({ description: v })} />
                 <div className="adm-grid2">
                   <AccentPicker value={item.accent} onChange={(v) => update({ accent: v })} />
                   <IconPicker value={item.icon} onChange={(v) => update({ icon: v })} />

@@ -471,7 +471,7 @@ export default function AdminPagesPage() {
                     <Text label="Heading" value={String(block.title ?? '')} onChange={(v) => update({ title: v } as Partial<Block>)} />
                   </div>
 
-                  <TextArea
+                  <TextArea links
                     label="Body"
                     value={String(block.body ?? '')}
                     onChange={(v) => update({ body: v } as Partial<Block>)}
@@ -512,7 +512,7 @@ export default function AdminPagesPage() {
                       render={(faq, updateFaq) => (
                         <>
                           <Text label="Question" value={faq.question} onChange={(v) => updateFaq({ question: v })} />
-                          <TextArea label="Answer" value={faq.answer} onChange={(v) => updateFaq({ answer: v })} rows={3} />
+                          <TextArea links label="Answer" value={faq.answer} onChange={(v) => updateFaq({ answer: v })} rows={3} />
                           <Text label="Category" value={faq.category ?? ''} onChange={(v) => updateFaq({ category: v })} />
                         </>
                       )}
@@ -580,7 +580,7 @@ export default function AdminPagesPage() {
                     admin showing headings and nothing else.
                   */}
                   {has('lede') ? (
-                    <TextArea
+                    <TextArea links
                       label="Text under the heading"
                       value={String(block.lede ?? '')}
                       onChange={(v) => update({ lede: v } as Partial<Block>)}
@@ -684,7 +684,7 @@ export default function AdminPagesPage() {
                       render={(card, updateCard) => (
                         <>
                           <Text label="Title" value={card.title} onChange={(v) => updateCard({ title: v })} />
-                          <TextArea
+                          <TextArea links
                             label="Description"
                             value={card.description}
                             onChange={(v) => updateCard({ description: v })}
@@ -717,7 +717,7 @@ export default function AdminPagesPage() {
                               <Text label="Number" value={stage.number} onChange={(v) => updateStage({ number: v })} />
                               <Text label="Title" value={stage.title} onChange={(v) => updateStage({ title: v })} />
                             </div>
-                            <TextArea
+                            <TextArea links
                               label="Description"
                               value={stage.description}
                               onChange={(v) => updateStage({ description: v })}
@@ -750,7 +750,7 @@ export default function AdminPagesPage() {
                       render={(channel, updateChannel) => (
                         <>
                           <Text label="Title" value={channel.title} onChange={(v) => updateChannel({ title: v })} />
-                          <TextArea
+                          <TextArea links
                             label="Description"
                             value={channel.description}
                             onChange={(v) => updateChannel({ description: v })}
@@ -876,7 +876,7 @@ export default function AdminPagesPage() {
                         value={String(block.askTitle ?? '')}
                         onChange={(v) => update({ askTitle: v } as Partial<Block>)}
                       />
-                      <TextArea
+                      <TextArea links
                         label="Side panel body"
                         value={String(block.askBody ?? '')}
                         onChange={(v) => update({ askBody: v } as Partial<Block>)}
@@ -901,7 +901,7 @@ export default function AdminPagesPage() {
                           } as unknown as Partial<Block>)
                         }
                       />
-                      <TextArea
+                      <TextArea links
                         label="Lead card body"
                         value={String((block.awardLead as Record<string, string>)?.body ?? '')}
                         onChange={(v) =>
@@ -1191,7 +1191,7 @@ export default function AdminPagesPage() {
                             <Text label="Number" value={step.number} onChange={(v) => updateStep({ number: v })} />
                             <Text label="Title" value={step.title} onChange={(v) => updateStep({ title: v })} />
                           </div>
-                          <TextArea
+                          <TextArea links
                             label="Description"
                             value={step.description}
                             onChange={(v) => updateStep({ description: v })}
@@ -1213,7 +1213,7 @@ export default function AdminPagesPage() {
                       render={(route, updateRoute) => (
                         <>
                           <Text label="Title" value={route.title} onChange={(v) => updateRoute({ title: v })} />
-                          <TextArea
+                          <TextArea links
                             label="Description"
                             value={route.description}
                             onChange={(v) => updateRoute({ description: v })}
@@ -1264,7 +1264,7 @@ export default function AdminPagesPage() {
                             <Text label="Number" value={item.number} onChange={(v) => updateItem({ number: v })} />
                             <Text label="Title" value={item.title} onChange={(v) => updateItem({ title: v })} />
                           </div>
-                          <TextArea
+                          <TextArea links
                             label="Description"
                             value={item.description}
                             onChange={(v) => updateItem({ description: v })}
@@ -1285,7 +1285,7 @@ export default function AdminPagesPage() {
                       render={(step, updateStep) => (
                         <>
                           <Text label="Title" value={step.title} onChange={(v) => updateStep({ title: v })} />
-                          <TextArea
+                          <TextArea links
                             label="Description"
                             value={step.description}
                             onChange={(v) => updateStep({ description: v })}

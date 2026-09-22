@@ -54,7 +54,19 @@ export async function CmsPage({
         />
       ) : null}
       {faqBlock?.faqs?.length && faqBlock.emitSchema !== false ? <FaqSchema faqs={faqBlock.faqs} /> : null}
-      <PageBlocks page={page} settings={settings} />
+      {/*
+        A per-page scope hook.
+
+        `.pg` is `display:contents`, so the element itself produces no box and the sections
+        lay out exactly as they did before — it exists only so a stylesheet can say
+        `.pg-home .sect-head` and reach one page's section headings without touching the
+        other seven templates. Scoping this way rather than writing an unqualified rule in
+        home.css matters because route stylesheets are not reliably detached on client-side
+        navigation, so an unscoped rule can follow the visitor to the next page.
+      */}
+      <div className={`pg pg-${slug}`}>
+        <PageBlocks page={page} settings={settings} />
+      </div>
     </>
   );
 }

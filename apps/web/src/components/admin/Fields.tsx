@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import type { AccentToken, MediaAsset, MediaRef } from '@aptentech/shared';
 import { ACCENT_TOKENS, ACCENT_HEX } from '@aptentech/shared';
 import { useAdmin } from './AdminClient';
@@ -48,23 +48,139 @@ export function Text({
   );
 }
 
+/**
+ * Where a link may point. The same rule the site applies when it renders one, so a link the
+ * editor is allowed to insert is always a link the page will actually draw — anything else
+ * would be rendered as its words only, which would look like the link silently vanished.
+ */
+function isAllowedHref(href: string): boolean {
+  // Kept in step with isSafeHref in InlineLinks.tsx, which is the one that decides. A
+  // protocol-relative address such as //example.com/ starts with a slash but leaves the site,
+  // and the renderer drops it — so it is refused here too, where the editor can see why,
+  // rather than being accepted into the field and silently rendering as plain text later.
+  if (/^\/[/\\]/.test(href)) return false;
+
+  if (href.startsWith('/') || href.startsWith('#')) return true;
+  return /^(https?:|mailto:|tel:)/i.test(href);
+}
+
 export function TextArea({
   label,
   value,
   onChange,
   hint,
   rows = 4,
+  links = false,
 }: {
   label: string;
   value: string;
   onChange: (v: string) => void;
   hint?: string;
   rows?: number;
+  /**
+   * Offer an "Add link" button that turns the selected words into a link.
+   *
+   * Off by default, and switched on only for fields the site renders through inlineLinks().
+   * A field that is printed as plain text would show the notation itself — "[text](/url/)" —
+   * so offering the button there would let an editor break the page with one click.
+   */
+  links?: boolean;
 }) {
+  const ref = useRef<HTMLTextAreaElement>(null);
+
+  /**
+   * Wraps the selection as `[words](address)`.
+   *
+   * The field stays plain text; the site turns this one piece of notation into an anchor when
+   * it renders. That is deliberate — accepting HTML here would let any editor put arbitrary
+   * markup on the public site. See components/shared/InlineLinks.tsx.
+   */
+  function addLink() {
+    const el = ref.current;
+    if (!el) return;
+
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const selected = value.slice(start, end);
+
+    if (!selected.trim()) {
+      window.alert('Select the words you want to turn into a link, then click "Add link".');
+      el.focus();
+      return;
+    }
+
+    // The notation's own delimiters cannot appear inside it, or the link would end early.
+    if (/[\]\n]/.test(selected)) {
+      window.alert('A link can only cover words on one line, without a "]" in them. Select a shorter piece of text.');
+      el.focus();
+      return;
+    }
+
+    const input = window.prompt(
+      `Link "${selected.trim()}" to which address?\n\n` +
+        'A page on this site:  /services/ai-development/\n' +
+        'Another website:      https://example.com',
+      '/',
+    );
+    if (input === null) {
+      el.focus();
+      return;
+    }
+
+    const href = input.trim();
+    if (!href || href === '/') {
+      window.alert('Enter the address the link should go to.');
+      el.focus();
+      return;
+    }
+    if (/[\s)]/.test(href) || !isAllowedHref(href)) {
+      window.alert(
+        'That address cannot be used. Use a page on this site starting with "/", or a full address starting with "https://". Spaces and ")" are not allowed.',
+      );
+      el.focus();
+      return;
+    }
+
+    const inserted = `[${selected}](${href})`;
+    onChange(value.slice(0, start) + inserted + value.slice(end));
+
+    // Put the cursor just after the new link, so typing carries on where the editor expects.
+    requestAnimationFrame(() => {
+      el.focus();
+      const caret = start + inserted.length;
+      el.setSelectionRange(caret, caret);
+    });
+  }
+
   return (
     <div className="adm-field">
-      <label>{label}</label>
-      <textarea className="adm-textarea" rows={rows} value={value} onChange={(e) => onChange(e.target.value)} />
+      {/*
+        The label stays a direct child of .adm-field unless there is a button to sit beside it.
+        The stylesheet targets `.adm-field > label`, so wrapping it unconditionally would strip
+        the label styling from every text area in the admin, not just the ones with links.
+      */}
+      {links ? (
+        <div className="adm-field-head">
+          <label>{label}</label>
+          <button type="button" className="adm-btn ghost xs" onClick={addLink}>
+            Add link
+          </button>
+        </div>
+      ) : (
+        <label>{label}</label>
+      )}
+      <textarea
+        ref={ref}
+        className="adm-textarea"
+        rows={rows}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      {links ? (
+        <span className="hint">
+          Select words and click Add link. They show here as [words](/address/) and as a link on the site.
+        </span>
+      ) : null}
       {hint ? <span className="hint">{hint}</span> : null}
     </div>
   );

@@ -319,7 +319,7 @@ export function PageBlocks({ page, settings }: { page: ResolvedSitePage; setting
                           <h3 className="h3-card">
                             <Link href={`/blog/${post.slug}/`}>{post.title}</Link>
                           </h3>
-                          <p>{post.excerpt}</p>
+                          <p>{inlineLinks(post.excerpt)}</p>
                           <Link href={`/blog/${post.slug}/`} className="blog-more">
                             Explore more
                             <ArrowIcon size={15} />
@@ -568,7 +568,7 @@ export function PageBlocks({ page, settings }: { page: ResolvedSitePage; setting
                               </div>
                               <div>
                                 <b>{reason.title}</b>
-                                <span>{reason.description}</span>
+                                <span>{inlineLinks(reason.description)}</span>
                               </div>
                             </div>
                           ))}

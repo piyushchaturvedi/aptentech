@@ -56,7 +56,7 @@ export function BandHead({
           {title}
         </h2>
       </div>
-      {lede ? <p className={`lede rv d${eyebrow ? 2 : 1}`}>{lede}</p> : null}
+      {lede ? <p className={`lede rv d${eyebrow ? 2 : 1}`}>{inlineLinks(lede)}</p> : null}
     </div>
   );
 }
@@ -165,7 +165,7 @@ export function AboutHero({ block }: { block: Block }) {
             <h1 className="rv d1" id="page-h1" style={{ marginTop: 14 }}>
               <Split heading={block.splitHeading as never} />
             </h1>
-            {block.lede ? <p className="ha-lede rv d2">{String(block.lede)}</p> : null}
+            {block.lede ? <p className="ha-lede rv d2">{inlineLinks(String(block.lede))}</p> : null}
             <Buttons ctas={ctas} className="ha-cta rv d3" />
           </div>
 
@@ -177,7 +177,7 @@ export function AboutHero({ block }: { block: Block }) {
                 </span>
                 <div>
                   <b>{card.title}</b>
-                  <span>{card.description}</span>
+                  <span>{inlineLinks(card.description)}</span>
                 </div>
               </div>
             ))}
@@ -252,7 +252,7 @@ export function StoryBand({ block }: { block: Block }) {
             </h2>
             {block.lede ? (
               <p className="lede rv d1" style={{ marginTop: 16 }}>
-                {String(block.lede)}
+                {inlineLinks(String(block.lede))}
               </p>
             ) : null}
             {capabilities.length ? (
@@ -307,7 +307,7 @@ export function ValueGrid({ block }: { block: Block }) {
                 <Icon name={value.icon ?? ''} size={20} />
               </div>
               <h3 className="h3-card">{value.title}</h3>
-              <p>{value.description}</p>
+              <p>{inlineLinks(value.description)}</p>
             </article>
           ))}
         </div>
@@ -335,7 +335,7 @@ export function PrincipleList({ block }: { block: Block }) {
               <span className="n">{item.number}</span>
               <div>
                 <h3 className="h3-card">{item.title}</h3>
-                <p>{item.description}</p>
+                <p>{inlineLinks(item.description)}</p>
               </div>
             </article>
           ))}
@@ -477,7 +477,7 @@ export function WhyGrid({ block }: { block: Block }) {
                 <Icon name={item.icon ?? ''} size={21} />
               </div>
               <h3>{item.title}</h3>
-              <p>{item.description}</p>
+              <p>{inlineLinks(item.description)}</p>
             </article>
           ))}
         </div>
@@ -599,7 +599,7 @@ export function FaqShell({ block }: { block: Block }) {
             aside={
               <div className="faq-ask">
                 <h3 className="h3-card">{String(block.askTitle ?? '')}</h3>
-                <p>{String(block.askBody ?? '')}</p>
+                <p>{inlineLinks(String(block.askBody ?? ''))}</p>
                 <a href="#contact" className="btn btn-primary btn-sm">
                   {String(block.askCtaLabel ?? '')}
                   <ArrowIcon size={14} />
@@ -676,7 +676,7 @@ export function LatestInsightsBand({
               </div>
               <div className="blog-body">
                 <h3 className="h3-card">{post.title}</h3>
-                <p>{post.excerpt}</p>
+                <p>{inlineLinks(post.excerpt)}</p>
                 <Link href={`/blog/${post.slug}/`} className="blog-more">
                   Explore more
                   <ArrowIcon size={15} />

@@ -8,6 +8,8 @@ import { useAttachments } from './useAttachments';
 import { formatBytes } from '@/lib/utils/format';
 import { ArrowIcon } from '@/components/shared/Icon';
 import { HoneypotField } from './HoneypotField';
+import { CaptchaField, useCaptcha } from './Captcha';
+import { DEFAULT_DIAL_CODE, DIAL_CODES } from './dialCodes';
 
 /**
  * The main lead form.
@@ -21,13 +23,6 @@ import { HoneypotField } from './HoneypotField';
  * pages while keeping each one's specific wording ("Get my free SEO audit" versus "Get a
  * Free Consultation", "Monthly SEO budget" versus "Approximate budget").
  */
-/**
- * Dialling codes offered by the contact page's phone field.
- *
- * The source populated this select from a script; the list is design/content rather than
- * something to invent, so only the codes the original shipped are offered.
- */
-const DIAL_CODES = ['+91', '+1', '+44', '+61', '+971', '+65', '+49', '+33', '+31', '+27'];
 
 export function LeadForm({
   config,
@@ -53,7 +48,8 @@ export function LeadForm({
     clearField(field === 'details' ? 'message' : field);
   };
 
-  const [dialCode, setDialCode] = useState(DIAL_CODES[0] ?? '');
+  const [dialCode, setDialCode] = useState(DEFAULT_DIAL_CODE);
+  const captcha = useCaptcha();
   const [nda, setNda] = useState(true);
   const [dragging, setDragging] = useState(false);
   const files = useAttachments();
@@ -77,12 +73,19 @@ export function LeadForm({
       // Receipts for files already uploaded, not the files themselves. Only the ones that
       // finished have a receipt, so a failed upload cannot hold up the enquiry.
       attachmentTokens: files.tokens,
+      captchaId: captcha.id,
+      captchaAnswer: captcha.answer,
     });
 
     if (ok) {
       setValues({ name: '', email: '', phone: '', service: '', budget: '', details: '', website: '' });
+      setDialCode(DEFAULT_DIAL_CODE);
       files.clear();
     }
+
+    // The server spends a challenge the moment it checks one, so a rejected submission has
+    // already used this question up — see the same note on the banner form.
+    if (!ok) captcha.refresh();
   }
 
   return (
@@ -340,6 +343,8 @@ export function LeadForm({
           <span>Send me an NDA before we discuss details.</span>
         </label>
       ) : null}
+
+      <CaptchaField captcha={captcha} error={state.fieldErrors.captcha?.[0]} wrapperClass="field" idPrefix="f" />
 
       {/*
         Submitting is held while a file is still uploading.

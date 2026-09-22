@@ -125,7 +125,7 @@ export function TechnologyGrid({
             <Icon name={item.icon} size={20} />
           </div>
           {plainHeading ? <h3>{item.title}</h3> : <h3 className="h3-card">{item.title}</h3>}
-          <p>{item.description}</p>
+          <p>{inlineLinks(item.description)}</p>
           {/* The outcome line exists only on the home page's cards. */}
           {item.outcome ? <span className="out">{item.outcome}</span> : null}
         </article>
@@ -165,7 +165,7 @@ export function WhyList({ items }: { items: WhyItem[] }) {
           <span className="n">{String(index + 1).padStart(2, '0')}</span>
           <div>
             <h3 className="h3-card">{item.title}</h3>
-            <p>{item.description}</p>
+            <p>{inlineLinks(item.description)}</p>
           </div>
         </article>
       ))}
@@ -249,7 +249,7 @@ export function CtaBand({
               <h2 className="h2-sm" {...(headingId ? { id: headingId } : {})}>
                 {title}
               </h2>
-              {body ? <p>{body}</p> : null}
+              {body ? <p>{inlineLinks(body)}</p> : null}
               {internal ? (
                 <Link href={href} className="btn btn-mint">
                   {label}
@@ -292,7 +292,7 @@ export function ImageTextSection({
             <h2 className="h2 rv" {...(headingId ? { id: headingId } : {})}>
               {title}
             </h2>
-            {body ? <p className="lede rv d1">{body}</p> : null}
+            {body ? <p className="lede rv d1">{inlineLinks(body)}</p> : null}
           </div>
           {image ? (
             <div className="im-frame rv d2">
@@ -327,7 +327,7 @@ export function LatestInsights({ title, posts }: { title: string; posts: BlogPos
                 <h3 className="h3-card">
                   <Link href={`/blog/${post.slug}/`}>{post.title}</Link>
                 </h3>
-                <p>{post.excerpt}</p>
+                <p>{inlineLinks(post.excerpt)}</p>
                 <Link href={`/blog/${post.slug}/`} className="blog-more">
                   Explore more
                   <ArrowIcon size={15} />

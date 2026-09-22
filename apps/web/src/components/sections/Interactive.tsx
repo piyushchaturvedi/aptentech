@@ -5,6 +5,7 @@ import Link from 'next/link';
 import type { CaseStudy, FeatureGroup, ProcessStep, ServiceItem, TechStackGroup, FaqItem } from '@aptentech/shared';
 import { ACCENT_HEX } from '@aptentech/shared';
 import { Icon, ArrowIcon, TickIcon, ChevronIcon } from '@/components/shared/Icon';
+import { inlineLinks } from '@/components/shared/InlineLinks';
 
 /**
  * Interactive sections.
@@ -51,7 +52,7 @@ export function ServicesPanel({ items, label = 'Services' }: { items: ServiceIte
           <Icon name={current.icon} size={24} />
         </div>
         <h3>{current.title}</h3>
-        <p>{current.description}</p>
+        <p>{inlineLinks(current.description)}</p>
         <ul className="svc-ul">
           {current.bullets.map((bullet) => (
             <li key={bullet}>
@@ -60,12 +61,6 @@ export function ServicesPanel({ items, label = 'Services' }: { items: ServiceIte
             </li>
           ))}
         </ul>
-        <div className="svc-foot2">
-          <a href="#contact" className="btn btn-mint btn-sm">
-            Discuss this service
-            <ArrowIcon />
-          </a>
-        </div>
       </div>
     </div>
   );
@@ -126,13 +121,12 @@ export function HomeServicePanel({ items }: { items: ServiceItem[] }) {
           </div>
           <h3>{current.title}</h3>
         </div>
-        <p>{current.description}</p>
+        <p>{inlineLinks(current.description)}</p>
         <div className="svc-links">
           {current.bullets.map((bullet) => (
             <a href="#contact" key={bullet}>
               <i />
               {bullet}
-              <ArrowIcon />
             </a>
           ))}
         </div>
@@ -243,7 +237,7 @@ export function FeatureGroups({ items }: { items: FeatureGroup[] }) {
             <Icon name={current.icon} size={23} />
           </div>
           <h3>{current.title}</h3>
-          <p>{current.description}</p>
+          <p>{inlineLinks(current.description)}</p>
         </div>
         <ul className="fgridlist">
           {current.items.map((item) => (
@@ -304,7 +298,7 @@ export function ProcessTimeline({ steps }: { steps: ProcessStep[] }) {
               Stage {pad(active + 1)} of {pad(steps.length)}
             </p>
             <h3>{step.title}</h3>
-            <p>{step.description}</p>
+            <p>{inlineLinks(step.description)}</p>
             <div className="tl-out">
               {step.deliverables.map((d) => (
                 <span key={d}>{d}</span>
@@ -470,7 +464,7 @@ function CodePanel({ console: c }: { console: CaseStudy['shotConsole'] | undefin
         </span>
       ))}
       <br />
-      <b>&rarr;</b> {c.summary}
+      <b>&rarr;</b> {inlineLinks(c.summary)}
     </div>
   );
 }
@@ -559,15 +553,15 @@ export function CaseCarousel({
                   <dl className="cs-dl">
                     <div>
                       <dt>Problem</dt>
-                      <dd>{cs.problem}</dd>
+                      <dd>{inlineLinks(cs.problem)}</dd>
                     </div>
                     <div>
                       <dt>Solution</dt>
-                      <dd>{cs.solution}</dd>
+                      <dd>{inlineLinks(cs.solution)}</dd>
                     </div>
                     <div>
                       <dt>Result</dt>
-                      <dd>{cs.result}</dd>
+                      <dd>{inlineLinks(cs.result)}</dd>
                     </div>
                   </dl>
                   <div className="cs-res">
@@ -711,7 +705,7 @@ export function FaqAccordion({
                 role="region"
                 style={{ height: isOpen ? 'auto' : 0, overflow: 'hidden' }}
               >
-                <p>{faq.answer}</p>
+                <p>{inlineLinks(faq.answer)}</p>
               </div>
             </div>
           );

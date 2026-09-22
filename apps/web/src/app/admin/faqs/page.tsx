@@ -39,7 +39,7 @@ export default function AdminFaqsPage() {
       renderEditor={(item, patch) => (
         <>
           <Text label="Question" value={item.question} onChange={(v) => patch({ question: v })} />
-          <TextArea label="Answer" value={item.answer} onChange={(v) => patch({ answer: v })} rows={5} />
+          <TextArea links label="Answer" value={item.answer} onChange={(v) => patch({ answer: v })} rows={5} />
           <div className="adm-grid2">
             <Text
               label="Category"

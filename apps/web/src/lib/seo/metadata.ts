@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import type { SeoFields, SiteSettings } from '@aptentech/shared';
 import type { ResolvedMedia } from '@/lib/api/content';
+import { stripLinks } from '@/components/shared/InlineLinks';
 
 /**
  * Metadata construction.
@@ -45,7 +46,9 @@ export function buildMetadata({
   const defaults = settings.defaultSeo;
 
   const title = seo?.title || fallbackTitle || defaults?.title || settings.companyName;
-  const description = seo?.description || fallbackDescription || defaults?.description || '';
+  // A fallback description is often a page's own body copy, which may carry link notation.
+  // A search snippet cannot hold a link, so the words are kept and the brackets dropped.
+  const description = stripLinks(seo?.description || fallbackDescription || defaults?.description || '');
 
   // A CMS canonical wins; otherwise it is derived from the route, so a page can never end
   // up self-referencing the wrong URL by omission.
@@ -94,7 +97,7 @@ export function buildMetadata({
     },
     openGraph: {
       title: seo?.ogTitle || title,
-      description: seo?.ogDescription || description,
+      description: stripLinks(seo?.ogDescription) || description,
       url: canonical,
       siteName: settings.companyName,
       type,
@@ -106,7 +109,7 @@ export function buildMetadata({
       // now, so a shared link renders as a card rather than a bare URL.
       card: image ? 'summary_large_image' : 'summary',
       title: seo?.ogTitle || title,
-      description: seo?.ogDescription || description,
+      description: stripLinks(seo?.ogDescription) || description,
       ...(image ? { images: [image] } : {}),
     },
   };

@@ -2,6 +2,7 @@ import type { Request, Response, NextFunction } from 'express';
 import { contentRepository } from '../repositories/content.repository';
 import { settingsRepository, redirectRepository } from '../repositories/system.repository';
 import { hydrateService } from '../services/hydrate.service';
+import { captchaService } from '../services/captcha.service';
 import { sanitizeRichText, sanitizePageBlocks, sanitizeArticleHtml } from '../services/sanitize.service';
 import { notFound } from '../utils/errors';
 import { ok, paginated } from '../utils/respond';
@@ -235,5 +236,18 @@ export const publicController = {
 
   redirects: asyncHandler(async (_req, res) => {
     return ok(res, await redirectRepository.listActive());
+  }),
+
+  /**
+   * A fresh verification question for an enquiry form.
+   *
+   * Never cached. Every response carries a different id, and a cached one would hand the
+   * same single-use challenge to every visitor — the second person to submit would be told
+   * their answer was wrong. The route sits behind the service token like the rest of this
+   * controller, so the browser reaches it through the Next.js proxy rather than directly.
+   */
+  captcha: asyncHandler(async (_req, res) => {
+    res.setHeader('Cache-Control', 'no-store, max-age=0');
+    return ok(res, captchaService.issue());
   }),
 };

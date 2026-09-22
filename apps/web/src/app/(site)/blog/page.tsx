@@ -8,6 +8,7 @@ import { Media } from '@/components/shared/Media';
 import { ScrollReveal } from '@/components/sections/ScrollReveal';
 import { HeroForm } from '@/components/forms/HeroForm';
 import '@/styles/blog.css';
+import { inlineLinks } from '@/components/shared/InlineLinks';
 
 /**
  * Blog listing — `/blog/`.
@@ -140,7 +141,7 @@ export default async function BlogIndex({
                 <h2>
                   <Link href={`/blog/${featured.slug}/`}>{featured.title}</Link>
                 </h2>
-                <p>{featured.excerpt}</p>
+                <p>{inlineLinks(featured.excerpt)}</p>
                 <div className="feat-meta">
                   <span className="by">
                     <span className="av" aria-hidden="true">
@@ -188,7 +189,7 @@ export default async function BlogIndex({
                             {post.title}
                           </Link>
                         </h3>
-                        <p>{post.excerpt}</p>
+                        <p>{inlineLinks(post.excerpt)}</p>
                       </div>
                       <div className="post-meta">
                         <span className="by">

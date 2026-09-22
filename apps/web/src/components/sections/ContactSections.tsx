@@ -3,6 +3,7 @@ import type { LeadFormConfig } from '@aptentech/shared';
 import { ACCENT_HEX } from '@aptentech/shared';
 import { Icon, ArrowIcon } from '@/components/shared/Icon';
 import { LeadForm } from '@/components/forms/LeadForm';
+import { inlineLinks } from '@/components/shared/InlineLinks';
 
 /**
  * The contact page's four bands.
@@ -28,7 +29,7 @@ function SectionHead({ title, lede, headingId }: { title: string; lede?: string;
       <h2 className="h2 rv" id={headingId}>
         {title}
       </h2>
-      {lede ? <p className="lede rv d1">{lede}</p> : null}
+      {lede ? <p className="lede rv d1">{inlineLinks(lede)}</p> : null}
     </div>
   );
 }
@@ -60,7 +61,7 @@ export function ContactBanner({ block }: { block: Block }) {
             </h1>
             {block.lede ? (
               <p className="lede rv d1" style={{ marginTop: 16 }}>
-                {String(block.lede)}
+                {inlineLinks(String(block.lede))}
               </p>
             ) : null}
 
@@ -73,7 +74,7 @@ export function ContactBanner({ block }: { block: Block }) {
                     </div>
                     <div>
                       <b>{reason.title}</b>
-                      <span>{reason.description}</span>
+                      <span>{inlineLinks(reason.description)}</span>
                     </div>
                   </div>
                 ))}
@@ -130,7 +131,7 @@ export function StepGrid({ block }: { block: Block }) {
             <article key={step.title} className={`next ${reveal(index)}`} style={accentStyle(step.accent)}>
               <span className="n">{step.number}</span>
               <h3 className="h3-card">{step.title}</h3>
-              <p>{step.description}</p>
+              <p>{inlineLinks(step.description)}</p>
             </article>
           ))}
         </div>
@@ -154,7 +155,7 @@ export function RouteGrid({ block }: { block: Block }) {
                 <Icon name={route.icon ?? ''} size={20} />
               </div>
               <h3 className="h3-card">{route.title}</h3>
-              <p>{route.description}</p>
+              <p>{inlineLinks(route.description)}</p>
               {/*
                 Addresses are still the source's `[SALES EMAIL]` placeholders. A placeholder
                 is shown as plain text rather than a `mailto:` a visitor could click into a

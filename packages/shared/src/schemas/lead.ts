@@ -94,6 +94,19 @@ export const leadSubmissionSchema = z.object({
 
   /** Milliseconds between form render and submit. Sub-second submissions are automated. */
   elapsedMs: z.coerce.number().int().min(0).max(86_400_000).optional().default(0),
+
+  /**
+   * The verification question the visitor was asked, and what they answered.
+   *
+   * Only the handle travels: the answer the server is expecting never leaves it, so nothing
+   * in this payload can be worked backwards into a correct response. Both are optional here
+   * and neither is checked by this schema, because a missing or wrong answer is not a
+   * malformed lead — it is a lead that has not been verified yet, and the two deserve
+   * different errors. The API refuses an unanswered challenge in its own middleware, which
+   * is the only place the decision is made.
+   */
+  captchaId: z.string().trim().max(64).optional().default(''),
+  captchaAnswer: z.string().trim().max(8).optional().default(''),
 });
 
 export type LeadSubmissionInput = z.infer<typeof leadSubmissionSchema>;

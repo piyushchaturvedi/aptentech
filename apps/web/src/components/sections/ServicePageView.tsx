@@ -248,7 +248,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                     <Icon name={item.icon} size={22} />
                   </div>
                   <h3 className="h3-card">{item.title}</h3>
-                  <p>{item.description}</p>
+                  <p>{inlineLinks(item.description)}</p>
                 </article>
               ))}
             </div>
@@ -401,7 +401,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
               <div className="aw-lead rv">
                 <div>
                   <h3>{page.awardLead?.title}</h3>
-                  <p>{page.awardLead?.body}</p>
+                  <p>{inlineLinks(page.awardLead?.body)}</p>
                 </div>
                 <div className="rating">
                   <Stars size={17} />
@@ -642,7 +642,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                 </h2>
                 {lede('why') ? (
                   <p className="lede rv d1" style={{ marginTop: 16 }}>
-                    {lede('why')}
+                    {inlineLinks(lede('why'))}
                   </p>
                 ) : null}
                 {page.whyCtaLabel ? (
@@ -675,7 +675,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
               <h2 className="h2 rv" id="faq-h2">
                 {page.faqTitle}
               </h2>
-              {lede('faqs') ? <p className="rv d1">{lede('faqs')}</p> : null}
+              {lede('faqs') ? <p className="rv d1">{inlineLinks(lede('faqs'))}</p> : null}
             </div>
             <FaqAccordion faqs={page.faqs} wide />
             {page.faqAfter ? (
@@ -735,7 +735,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                   <div className="blog-body">
                     {/* The source heading is plain text; the card's link is .blog-more below. */}
                     <h3 className="h3-card">{post.title}</h3>
-                    <p>{post.excerpt}</p>
+                    <p>{inlineLinks(post.excerpt)}</p>
                     <Link href={`/blog/${post.slug}/`} className="blog-more">
                       Explore more
                       <ArrowIcon size={15} />
@@ -758,7 +758,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
               </h2>
               {lede('leadForm') ? (
                 <p className="lede rv d1" style={{ marginTop: 16 }}>
-                  {lede('leadForm')}
+                  {inlineLinks(lede('leadForm'))}
                 </p>
               ) : null}
 
@@ -771,7 +771,7 @@ export function ServicePageView({ page, settings }: { page: ResolvedServicePage;
                       </div>
                       <div>
                         <b>{reason.title}</b>
-                        <span>{reason.description}</span>
+                        <span>{inlineLinks(reason.description)}</span>
                       </div>
                     </div>
                   ))}

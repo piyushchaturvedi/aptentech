@@ -1,5 +1,6 @@
 import type { BlogPost, FaqItem, SiteSettings } from '@aptentech/shared';
 import { absoluteUrl } from './metadata';
+import { stripLinks } from '@/components/shared/InlineLinks';
 
 /**
  * Structured data.
@@ -56,7 +57,7 @@ export function OrganizationSchema({ settings }: { settings: SiteSettings }) {
   if (settings.logo?.url) {
     data.logo = /^https?:\/\//i.test(settings.logo.url) ? settings.logo.url : absoluteUrl(settings.logo.url);
   }
-  if (settings.defaultSeo?.description) data.description = settings.defaultSeo.description;
+  if (settings.defaultSeo?.description) data.description = stripLinks(settings.defaultSeo.description);
 
   const address = (settings.addressLines ?? []).filter((line) => !unusable(line));
   if (address.length) {
@@ -180,7 +181,7 @@ export function FaqSchema({ faqs }: { faqs: FaqItem[] }) {
         mainEntity: visible.map((faq) => ({
           '@type': 'Question',
           name: faq.question,
-          acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+          acceptedAnswer: { '@type': 'Answer', text: stripLinks(faq.answer) },
         })),
       }}
     />
@@ -192,7 +193,7 @@ export function ArticleSchema({ post, settings }: { post: BlogPost; settings: Si
     '@context': 'https://schema.org',
     '@type': 'BlogPosting',
     headline: post.title,
-    description: post.excerpt,
+    description: stripLinks(post.excerpt),
     url: absoluteUrl(`/blog/${post.slug}/`),
     mainEntityOfPage: { '@type': 'WebPage', '@id': absoluteUrl(`/blog/${post.slug}/`) },
     publisher: { '@type': 'Organization', name: settings.companyName },

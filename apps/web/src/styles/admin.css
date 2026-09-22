@@ -689,3 +689,9 @@
 
 /* Several buttons in one table cell — Edit beside View — kept on one line with a small gap. */
 .adm-actions { display: flex; align-items: center; gap: 6px; flex-wrap: nowrap; }
+
+/* A field label with a control beside it — the "Add link" button on body text areas. The
+   label keeps exactly the styling `.adm-field > label` gives every other field. */
+.adm-field-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.adm-field-head > label { font-weight: 600; font-size: 12.5px; color: var(--a-ink); }
+.adm-btn.xs { min-height: 24px; padding: 2px 9px; font-size: 11.5px; }

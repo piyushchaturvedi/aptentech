@@ -84,9 +84,9 @@ export default function AdminCaseStudiesPage() {
             <Text label="Category" value={item.category} onChange={(v) => patch({ category: v })} />
           </div>
 
-          <TextArea label="Problem" value={item.problem} onChange={(v) => patch({ problem: v })} rows={3} />
-          <TextArea label="Solution" value={item.solution} onChange={(v) => patch({ solution: v })} rows={3} />
-          <TextArea label="Result" value={item.result} onChange={(v) => patch({ result: v })} rows={2} />
+          <TextArea links label="Problem" value={item.problem} onChange={(v) => patch({ problem: v })} rows={3} />
+          <TextArea links label="Solution" value={item.solution} onChange={(v) => patch({ solution: v })} rows={3} />
+          <TextArea links label="Result" value={item.result} onChange={(v) => patch({ result: v })} rows={2} />
 
           <Repeater
             label="Metrics"

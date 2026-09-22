@@ -303,7 +303,7 @@ export default function AdminBlogPage() {
                 hint="Headings, lists, links, quotes and code. Anything outside that set is removed when saved."
               />
 
-              <TextArea
+              <TextArea links
                 label="Excerpt"
                 value={editing.excerpt}
                 onChange={(v) => patch({ excerpt: v })}
@@ -345,7 +345,7 @@ export default function AdminBlogPage() {
                   render={(faq, update) => (
                     <>
                       <Text label="Question" value={faq.question} onChange={(v) => update({ question: v })} />
-                      <TextArea label="Answer" value={faq.answer} onChange={(v) => update({ answer: v })} rows={3} />
+                      <TextArea links label="Answer" value={faq.answer} onChange={(v) => update({ answer: v })} rows={3} />
                       <Toggle label="Visible" value={faq.visible !== false} onChange={(v) => update({ visible: v })} />
                     </>
                   )}

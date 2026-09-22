@@ -31,6 +31,19 @@ import Link from 'next/link';
  * harmless to everyone else.
  */
 function isSafeHref(href: string): boolean {
+  /*
+    A leading slash is not enough to mean "a page on this site".
+
+    `//example.com/` is a protocol-relative URL: it starts with a slash and goes to another
+    host entirely. Left to the rule below it became a same-site <Link>, so an editor — or
+    anyone who reached the CMS — could point body copy at an outside site through what looks
+    in the admin like an internal path, and the link would carry the visitor off the domain
+    with no sign in the notation that it had. `/\` is here for the same reason: some
+    browsers normalise a backslash to a forward slash before resolving, so `/\evil.example`
+    reaches the same place.
+  */
+  if (/^\/[/\\]/.test(href)) return false;
+
   if (href.startsWith('/') || href.startsWith('#')) return true;
   return /^(https?:|mailto:|tel:)/i.test(href);
 }
@@ -108,4 +121,18 @@ export function inlineLinks(text: string | null | undefined): React.ReactNode {
 export function InlineText({ text }: { text: string | null | undefined }) {
   if (!text) return null;
   return <>{inlineLinks(text)}</>;
+}
+
+/**
+ * The same text with the link notation reduced to its words.
+ *
+ * For every place a body string leaves the page as plain text rather than as rendered copy —
+ * a meta description, an Open Graph card, a FAQ answer in structured data. None of those can
+ * carry a link, and without this they would carry the notation itself: a Google snippet reading
+ * "we approach [legacy modernisation](/services/modernization/) in phases" is worse than one
+ * without the link. The anchor text is kept; only the brackets and the address go.
+ */
+export function stripLinks(text: string | null | undefined): string {
+  if (!text) return '';
+  return text.replace(PATTERN, (_whole, label: string) => label);
 }

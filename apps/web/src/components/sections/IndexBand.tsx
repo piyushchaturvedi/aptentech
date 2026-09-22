@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { ACCENT_HEX, type AccentToken } from '@aptentech/shared';
 import type { ServiceSummary } from '@/lib/api/content';
 import { ArrowIcon } from '@/components/shared/Icon';
+import { inlineLinks } from '@/components/shared/InlineLinks';
 
 /**
  * An index of the pages that live under one section of the site.
@@ -61,7 +62,7 @@ export function IndexBand({
               {title}
             </h1>
           </div>
-          {lede ? <p className={`lede rv d${eyebrow ? 2 : 1}`}>{lede}</p> : null}
+          {lede ? <p className={`lede rv d${eyebrow ? 2 : 1}`}>{inlineLinks(lede)}</p> : null}
         </div>
 
         <div className="bento">

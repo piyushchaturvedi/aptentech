@@ -11,6 +11,7 @@ import { ShareRow } from '@/components/sections/ShareRow';
 import { ScrollReveal } from '@/components/sections/ScrollReveal';
 import { HeroForm } from '@/components/forms/HeroForm';
 import '@/styles/blog-detail.css';
+import { inlineLinks } from '@/components/shared/InlineLinks';
 
 /**
  * Blog article — `/blog/<slug>/`.
@@ -147,7 +148,7 @@ export default async function ArticleRoute({ params }: { params: Promise<{ slug:
             <div className="ph-in">
               <span className="ph-cat">{post.categoryName}</span>
               <h1 id="post-h1">{post.title}</h1>
-              {post.excerpt ? <p className="ph-standfirst">{post.excerpt}</p> : null}
+              {post.excerpt ? <p className="ph-standfirst">{inlineLinks(post.excerpt)}</p> : null}
 
               <div className="ph-meta">
                 <span className="by">
@@ -296,7 +297,7 @@ export default async function ArticleRoute({ params }: { params: Promise<{ slug:
                         {/* The related band links the title only; the listing grid stretches its link. */}
                         <Link href={`/blog/${item.slug}/`}>{item.title}</Link>
                       </h3>
-                      <p>{item.excerpt}</p>
+                      <p>{inlineLinks(item.excerpt)}</p>
                     </div>
                     <div className="post-meta">
                       <span className="by">
