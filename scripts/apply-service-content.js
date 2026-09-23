@@ -45,6 +45,50 @@ function envValue(key) {
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 /**
+ * Drops the Next.js cache tags for the pages that changed.
+ *
+ * Writing to MongoDB directly is faster and simpler than driving the admin API, but it also
+ * skips the step the admin would have done: telling the renderer that a page it has cached is
+ * out of date. Without this the copy is in the database and the site still serves the old
+ * page for up to an hour, which looks exactly like the script not having worked.
+ *
+ * Signed and timestamped the same way the API signs it, because the endpoint verifies both.
+ * A failure here is reported and not thrown — the content is already written, and the page
+ * will refresh on its own interval regardless.
+ */
+async function revalidate(tags) {
+  if (!tags.length) return;
+
+  const secret = envValue('REVALIDATE_SECRET');
+  const url = envValue('REVALIDATE_URL') || 'http://localhost:3000/api/revalidate';
+
+  if (!secret) {
+    console.log('\nREVALIDATE_SECRET is not set, so the cache was not cleared.');
+    console.log('The pages will pick the new copy up on their next hourly refresh.');
+    return;
+  }
+
+  const body = JSON.stringify({ tags, at: Date.now() });
+  const signature = require('node:crypto').createHmac('sha256', secret).update(body).digest('hex');
+
+  try {
+    const res = await fetch(url, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json', 'x-revalidate-signature': signature },
+      body,
+      signal: AbortSignal.timeout(8000),
+    });
+    if (res.ok) {
+      console.log(`\nCache cleared for: ${tags.join(', ')}`);
+    } else {
+      console.log(`\nRevalidation returned ${res.status}. The pages will refresh on their next hourly interval.`);
+    }
+  } catch (error) {
+    console.log(`\nCould not reach ${url} (${error.message}). The pages will refresh on their next hourly interval.`);
+  }
+}
+
+/**
  * Which keys of a list entry belong to the design rather than to the copy.
  *
  * Entry *n* of the new list inherits these from entry *n* of the old list. Anything not named
@@ -188,6 +232,7 @@ function buildUpdate(doc, copy) {
   const pages = db.collection('servicepages');
 
   let touched = 0;
+  const changedTags = [];
 
   for (const file of files) {
     const slug = path.basename(file, '.json');
@@ -220,10 +265,20 @@ function buildUpdate(doc, copy) {
       for (const key of moved) update[key] = next[key];
       await pages.updateOne({ _id: doc._id }, { $set: update });
       console.log('  written');
+
+      // Both the list tag and the page's own tag: a changed name or hero shows on the index
+      // as well as on the page itself. The list tags are spelt out rather than derived from
+      // the kind, because two of the four are not the kind plus an s.
+      const LIST_TAG = { service: 'services', solution: 'solutions', industry: 'industries', technology: 'technologies' };
+      const listTag = LIST_TAG[doc.kind];
+      if (listTag) changedTags.push(listTag);
+      changedTags.push(`${doc.kind}:${slug}`);
     }
   }
 
   await client.close();
+
+  if (APPLY && changedTags.length) await revalidate([...new Set(changedTags)]);
 
   if (!touched) {
     console.log('\nEverything is already up to date.');
