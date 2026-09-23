@@ -2,7 +2,8 @@
   "_source": "Aptentech — Digital Marketing Page Content.docx",
   "_notes": [
     "The document's opening bullet list runs nine items, and the last four ('and budget recommendation', 'Tracking gap review', 'NDA before you share anything', 'No obligation to continue') are call-to-action points rather than services — they match the points already under the mid-page CTA. The first five are published as the hero tick list and the last four as the CTA points. 'and budget recommendation' is a fragment; published as 'Channel and budget recommendation', which is what the existing CTA point says.",
-    "The document contains a line reading 'Section: (Remove this section)' between the process section and the why section. Two sections sit there on the page — pricing and tech stack — and the instruction names neither, so nothing has been removed. AptenTech should say which one, and it can then be hidden from the admin without a deploy.",
+    "The document's line 'Section: (Remove this section)', which sits between the process and why sections, is the pricing section: AptenTech confirmed it. The section is hidden rather than deleted — its content stays in the database and one toggle in the admin brings it back. The choice fits what was there: all three tiers read 'Available on request', and this document answers the pricing question in FAQ 2 instead.",
+    "'cost' is left in canvasSectionIds even though that section no longer renders. An id nobody renders costs nothing, and it means un-hiding the section restores its tinted background exactly as it was. The page now has one plain section following another where pricing used to sit, which is the same thing the design already does twice on every one of these pages.",
     "Years of experience is set to 5, matching the home page and the rest of the site, rather than the 3 this document states. See the note in mobile-app-development.json."
   ],
 
@@ -394,6 +395,8 @@
     { "label": "Meta Advertising Standards" },
     { "label": "HIPAA-Aware Marketing" }
   ],
+
+  "hiddenSections": ["pricing"],
 
   "processTitle": "Our digital marketing process",
   "process": [
