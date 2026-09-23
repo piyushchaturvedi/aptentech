@@ -4,14 +4,13 @@
     "The document's opening bullet list runs nine items, and the last four ('and budget recommendation', 'Tracking gap review', 'NDA before you share anything', 'No obligation to continue') are call-to-action points rather than services — they match the points already under the mid-page CTA. The first five are published as the hero tick list and the last four as the CTA points. 'and budget recommendation' is a fragment; published as 'Channel and budget recommendation', which is what the existing CTA point says.",
     "The document's line 'Section: (Remove this section)', which sits between the process and why sections, is the pricing section: AptenTech confirmed it. The section is hidden rather than deleted — its content stays in the database and one toggle in the admin brings it back. The choice fits what was there: all three tiers read 'Available on request', and this document answers the pricing question in FAQ 2 instead.",
     "'cost' is left in canvasSectionIds even though that section no longer renders. An id nobody renders costs nothing, and it means un-hiding the section restores its tinted background exactly as it was. The page now has one plain section following another where pricing used to sit, which is the same thing the design already does twice on every one of these pages.",
-    "Years of experience is set to 5, matching the home page and the rest of the site, rather than the 3 this document states. See the note in mobile-app-development.json."
+    "Years of experience is set to 5, matching the home page and the rest of the site, rather than the 3 this document states. See the note in mobile-app-development.json.",
+    "The positioning paragraph is in positioningBody, not sectionLedes.positioning. Every other band on these pages takes its standfirst from sectionLedes, but this one does not, and a paragraph written to sectionLedes.positioning is read by nothing — it reached the database and appeared on no page."
   ],
-
   "seo": {
     "title": "Digital Marketing Company | AptenTech",
     "description": "Full-service digital marketing agency for US brands. SEO, AI visibility, paid media, content, CRO, and analytics, measured against revenue, not dashboards."
   },
-
   "heroTitle": "Digital Marketing",
   "heroTitleHighlight": "Company",
   "heroDescription": "AptenTech is a full-service digital marketing company that runs SEO, paid media, content, CRO, and lifecycle programs as one system. It starts with measurement you can defend in a board meeting, then scales the channels producing the pipeline, not the ones that happen to report well.",
@@ -22,9 +21,7 @@
     "Content, PR & link building",
     "Conversion rate optimization"
   ],
-
   "protectTitle": "How digital marketing drives business growth?",
-  "valuePropTitle": "How digital marketing drives business growth?",
   "protect": [
     {
       "title": "Reach more users",
@@ -39,7 +36,6 @@
       "description": "Good targeting lets a small business beat a bigger one in its own market, even with far less money to spend each month."
     }
   ],
-
   "positioningTitle": "What our affordable digital marketing services cover",
   "coreCapabilitiesTitle": "Our core capabilities",
   "coreCapabilities": [
@@ -50,19 +46,40 @@
     "Content written for buyers, not for word count",
     "Privacy, ad policy, and accessibility covered during the build"
   ],
-
   "brandStripLabel": "Trusted by clients",
-
   "statsTitle": "Our work in numbers",
   "stats": [
-    { "value": "250", "suffix": "+", "label": "Projects delivered" },
-    { "value": "120", "suffix": "+", "label": "Global clients" },
-    { "value": "5", "suffix": "+", "label": "Years of experience" },
-    { "value": "98", "suffix": "%", "label": "Client retention rate" },
-    { "value": "60", "suffix": "+", "label": "Countries served" },
-    { "value": "150", "suffix": "+", "label": "App developers" }
+    {
+      "value": "250",
+      "suffix": "+",
+      "label": "Projects delivered"
+    },
+    {
+      "value": "120",
+      "suffix": "+",
+      "label": "Global clients"
+    },
+    {
+      "value": "5",
+      "suffix": "+",
+      "label": "Years of experience"
+    },
+    {
+      "value": "98",
+      "suffix": "%",
+      "label": "Client retention rate"
+    },
+    {
+      "value": "60",
+      "suffix": "+",
+      "label": "Countries served"
+    },
+    {
+      "value": "150",
+      "suffix": "+",
+      "label": "App developers"
+    }
   ],
-
   "servicesTitle": "Digital marketing services we offer",
   "services": [
     {
@@ -210,7 +227,6 @@
       ]
     }
   ],
-
   "midCtaTitle": "Not sure which channel deserves the budget? Let's find out.",
   "midCtaPoints": [
     "Channel and budget recommendation",
@@ -218,9 +234,7 @@
     "NDA before you share anything",
     "No obligation to continue"
   ],
-
   "recognitionTitle": "Recognition & trust",
-
   "solutionsTitle": "Industries we run marketing for",
   "solutions": [
     {
@@ -332,24 +346,57 @@
       ]
     }
   ],
-
   "caseStudiesTitle": "Results we've delivered",
   "testimonialsTitle": "Our client testimonial",
-
   "featuresTitle": "AI visibility marketing that gets you cited",
   "featuresLayout": "chips",
   "features": [
-    { "title": "Citation tracking across ChatGPT, Gemini, and Perplexity", "description": "", "items": [] },
-    { "title": "Crawler access for AI search bots", "description": "", "items": [] },
-    { "title": "Entity and structured data setup", "description": "", "items": [] },
-    { "title": "Prompt-level share of voice against competitors", "description": "", "items": [] },
-    { "title": "Correcting how AI describes your brand", "description": "", "items": [] },
-    { "title": "Placement in comparison and round-up content", "description": "", "items": [] },
-    { "title": "Digital PR for earned brand mentions", "description": "", "items": [] },
-    { "title": "AI referral traffic isolated in analytics", "description": "", "items": [] },
-    { "title": "Monthly AI visibility reporting", "description": "", "items": [] }
+    {
+      "title": "Citation tracking across ChatGPT, Gemini, and Perplexity",
+      "description": "",
+      "items": []
+    },
+    {
+      "title": "Crawler access for AI search bots",
+      "description": "",
+      "items": []
+    },
+    {
+      "title": "Entity and structured data setup",
+      "description": "",
+      "items": []
+    },
+    {
+      "title": "Prompt-level share of voice against competitors",
+      "description": "",
+      "items": []
+    },
+    {
+      "title": "Correcting how AI describes your brand",
+      "description": "",
+      "items": []
+    },
+    {
+      "title": "Placement in comparison and round-up content",
+      "description": "",
+      "items": []
+    },
+    {
+      "title": "Digital PR for earned brand mentions",
+      "description": "",
+      "items": []
+    },
+    {
+      "title": "AI referral traffic isolated in analytics",
+      "description": "",
+      "items": []
+    },
+    {
+      "title": "Monthly AI visibility reporting",
+      "description": "",
+      "items": []
+    }
   ],
-
   "technologiesTitle": "Benefits of online digital marketing services",
   "technologies": [
     {
@@ -377,43 +424,75 @@
       "description": "Grow faster with flexible white-label support, keeping clients happy while your business focuses on relationships, growth, and better customer experiences."
     }
   ],
-
   "midCta2Title": "Your search for a digital marketing agency near me ends here.",
   "midCta2Body": "Let's turn your online presence into a powerful growth engine that brings attention, trust, and real business results.",
-  "midCta2Button": { "label": "Make It Happen" },
-
+  "midCta2Button": {
+    "label": "Make It Happen"
+  },
   "complianceTitle": "How we keep your marketing compliant",
   "compliance": [
-    { "label": "CCPA & CPRA" },
-    { "label": "GDPR" },
-    { "label": "CAN-SPAM" },
-    { "label": "TCPA" },
-    { "label": "FTC Disclosure Guidelines" },
-    { "label": "WCAG 2.2 AA" },
-    { "label": "Consent Mode & Cookie Governance" },
-    { "label": "Google Ads Policies" },
-    { "label": "Meta Advertising Standards" },
-    { "label": "HIPAA-Aware Marketing" }
+    {
+      "label": "CCPA & CPRA"
+    },
+    {
+      "label": "GDPR"
+    },
+    {
+      "label": "CAN-SPAM"
+    },
+    {
+      "label": "TCPA"
+    },
+    {
+      "label": "FTC Disclosure Guidelines"
+    },
+    {
+      "label": "WCAG 2.2 AA"
+    },
+    {
+      "label": "Consent Mode & Cookie Governance"
+    },
+    {
+      "label": "Google Ads Policies"
+    },
+    {
+      "label": "Meta Advertising Standards"
+    },
+    {
+      "label": "HIPAA-Aware Marketing"
+    }
   ],
-
-  "hiddenSections": ["pricing"],
-
+  "hiddenSections": [
+    "pricing"
+  ],
   "processTitle": "Our digital marketing process",
   "process": [
     {
       "title": "Understand your business",
       "description": "We first learn what you sell, who you serve, and where you want your business to go.",
-      "deliverables": ["Understand your ideal customers", "Identify your biggest challenges", "Define clear growth goals"]
+      "deliverables": [
+        "Understand your ideal customers",
+        "Identify your biggest challenges",
+        "Define clear growth goals"
+      ]
     },
     {
       "title": "Find what matters",
       "description": "We look at your market and competitors to discover where your brand can stand out.",
-      "deliverables": ["Spot customer expectations", "Study competitor strengths", "Find untapped opportunities"]
+      "deliverables": [
+        "Spot customer expectations",
+        "Study competitor strengths",
+        "Find untapped opportunities"
+      ]
     },
     {
       "title": "Build your strategy",
       "description": "We create a practical marketing roadmap focused on reaching the right people at the right time.",
-      "deliverables": ["Choose suitable marketing channels", "Plan engaging content", "Set realistic campaign goals"]
+      "deliverables": [
+        "Choose suitable marketing channels",
+        "Plan engaging content",
+        "Set realistic campaign goals"
+      ]
     },
     {
       "title": "Create & launch",
@@ -427,15 +506,22 @@
     {
       "title": "Watch what works",
       "description": "We track customer responses and campaign performance to understand what deserves more attention and improvement.",
-      "deliverables": ["Monitor meaningful results", "Identify winning ideas", "Improve underperforming campaigns"]
+      "deliverables": [
+        "Monitor meaningful results",
+        "Identify winning ideas",
+        "Improve underperforming campaigns"
+      ]
     },
     {
       "title": "Improve & grow",
       "description": "We continuously refine your marketing based on real results, helping your business attract and convert more customers.",
-      "deliverables": ["Double down on what works", "Adjust what falls short", "Find new growth opportunities"]
+      "deliverables": [
+        "Double down on what works",
+        "Adjust what falls short",
+        "Find new growth opportunities"
+      ]
     }
   ],
-
   "whyTitle": "Why is AptenTech the right choice as an internet marketing agency?",
   "why": [
     {
@@ -463,7 +549,6 @@
       "description": "We don't chase quick wins alone; we build marketing efforts that strengthen your brand, customer relationships, and growth potential over time."
     }
   ],
-
   "faqTitle": "Digital marketing FAQs",
   "faqs": [
     {
@@ -503,15 +588,14 @@
       "answer": "Choose a digital marketing company with proven results, relevant industry experience, transparent pricing, clear communication, customized strategies, and measurable reporting."
     }
   ],
-
   "sectionLedes": {
     "protect": "Growth does not come from being on every channel. It comes from proper digital marketing strategy development that picks the right few and funds them properly.",
-    "positioning": "Anyone can launch a campaign. The harder part is making sure the page loads fast, the form works, and your ad account numbers match what your bank shows. Most agencies hand this work back to you. As a digital marketing agency with experts on the team, we handle it ourselves.",
     "solutions": "Different industries need different marketing. As an AI marketing agency, we know what works in each of these sectors and build your campaigns around it.",
     "features": "Buyers now ask ChatGPT, Gemini, and Perplexity for recommendations before they ever open Google. Ranking first no longer means being named. As a full-service digital marketing agency, these are the parts we work on to change that.",
     "technologies": "Partnering with a trusted marketing and development company helps businesses expand services, reduce costs, access expertise, strengthen branding, and achieve faster growth.",
     "compliance": "Compliance failures are expensive and preventable. As an online marketing company working with US brands, we build privacy, advertising policy, and accessibility requirements into every campaign from the start.",
     "process": "Most agencies start spending in week one and figure out the rest later. We do not. Working with an internet marketing company should mean knowing exactly what happens next, and what it produces.",
     "why": "AptenTech is an affordable digital marketing company that has spent years running campaigns for US businesses. What sets us apart is our team — marketers, designers, and engineers working together, so your strategy does not stall waiting on someone else to build it. You get senior people on your account, not juniors learning on your budget."
-  }
+  },
+  "positioningBody": "Anyone can launch a campaign. The harder part is making sure the page loads fast, the form works, and your ad account numbers match what your bank shows. Most agencies hand this work back to you. As a digital marketing agency with experts on the team, we handle it ourselves."
 }

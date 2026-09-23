@@ -2,14 +2,13 @@
   "_source": "Taxi Booking App Development Company for On-Demand Rides.docx",
   "_notes": [
     "Several bullet lists in the document are split across lines mid-phrase, which is how they came out of the source file rather than how they read. They are rejoined here: 'Real-Time Driver' + 'Tracking & Mapping' becomes one hero point; the limousine list becomes 'Premium Vehicle Catalog' / 'Chauffeur Profiles & Selection' / 'Hourly & Day-Based Packages' / 'VIP Client Management Tools'; the carpooling list becomes 'Intelligent Route Matching' / 'Ride Cost Splitting & Sharing'; and the design step's deliverables become 'Interactive Prototyping' / 'Usability Testing & Refinement'.",
-    "The market figures replace the four placeholder dashes that were on the page. They are the document's own numbers and carry no source; the section standfirst no longer asks for one to be added, so AptenTech should be able to cite them if asked."
+    "The market figures replace the four placeholder dashes that were on the page. They are the document's own numbers and carry no source; the section standfirst no longer asks for one to be added, so AptenTech should be able to cite them if asked.",
+    "The positioning paragraph is in positioningBody, not sectionLedes.positioning. Every other band on these pages takes its standfirst from sectionLedes, but this one does not, and a paragraph written to sectionLedes.positioning is read by nothing — it reached the database and appeared on no page."
   ],
-
   "seo": {
     "title": "Taxi Booking App Development Company | AptenTech",
     "description": "Build smarter rides with AptenTech, a leading taxi booking app development company offering scalable apps with seamless booking, real-time tracking, secure payments, and more."
   },
-
   "heroTitle": "AI-Powered Taxi Booking App",
   "heroTitleHighlight": "Development Company",
   "heroDescription": "If you're looking for a custom taxi booking app development company, choose one with proven experience crafting high-performance, user-friendly ride-hailing platforms. AptenTech is your trusted partner for on-demand taxi booking app development, delivering solutions that delight riders and drivers alike.",
@@ -21,9 +20,7 @@
     "Real-time driver tracking & mapping",
     "Secure payment gateway integration"
   ],
-
   "protectTitle": "How do we keep your taxi app secure?",
-  "valuePropTitle": "How do we keep your taxi app secure?",
   "protect": [
     {
       "title": "End-to-end encryption",
@@ -38,7 +35,6 @@
       "description": "We design taxi apps with data protection at the core, adhering to GDPR, CCPA, and regional privacy regulations through transparent data handling practices."
     }
   ],
-
   "positioningTitle": "From concept to launch: taxi app development",
   "coreCapabilitiesTitle": "Our core capabilities",
   "coreCapabilities": [
@@ -48,28 +44,60 @@
     "Flexible monetization models, from commission-based to subscription, tailored to your specific business strategy.",
     "Seamless integration with existing systems, from payment processors to marketing automation platforms, for a unified workflow."
   ],
-
   "marketContextTitle": "Why invest in taxi booking apps?",
   "marketStats": [
-    { "value": "USD 468.4 Billion", "label": "Global taxi app market" },
-    { "value": "Asia-Pacific", "label": "Dominant market" },
-    { "value": "North America", "label": "Fastest-growing market" },
-    { "value": "4.83%", "label": "Market size CAGR" }
+    {
+      "value": "USD 468.4 Billion",
+      "label": "Global taxi app market"
+    },
+    {
+      "value": "Asia-Pacific",
+      "label": "Dominant market"
+    },
+    {
+      "value": "North America",
+      "label": "Fastest-growing market"
+    },
+    {
+      "value": "4.83%",
+      "label": "Market size CAGR"
+    }
   ],
-
   "brandStripLabel": "Trusted by clients",
-
   "statsTitle": "Our track record by the numbers",
   "statsNote": "AptenTech's years of experience as a trusted taxi app development company are reflected in our portfolio and client successes. Here's a snapshot of our journey so far.",
   "stats": [
-    { "value": "250", "suffix": "+", "label": "Projects delivered" },
-    { "value": "120", "suffix": "+", "label": "Global clients" },
-    { "value": "5", "suffix": "+", "label": "Years of experience" },
-    { "value": "98", "suffix": "%", "label": "Client retention rate" },
-    { "value": "60", "suffix": "+", "label": "Countries served" },
-    { "value": "150", "suffix": "+", "label": "App developers" }
+    {
+      "value": "250",
+      "suffix": "+",
+      "label": "Projects delivered"
+    },
+    {
+      "value": "120",
+      "suffix": "+",
+      "label": "Global clients"
+    },
+    {
+      "value": "5",
+      "suffix": "+",
+      "label": "Years of experience"
+    },
+    {
+      "value": "98",
+      "suffix": "%",
+      "label": "Client retention rate"
+    },
+    {
+      "value": "60",
+      "suffix": "+",
+      "label": "Countries served"
+    },
+    {
+      "value": "150",
+      "suffix": "+",
+      "label": "App developers"
+    }
   ],
-
   "servicesTitle": "Taxi app development services we provide",
   "services": [
     {
@@ -133,17 +161,17 @@
       ]
     }
   ],
-
   "midCtaTitle": "Your vision, our innovation — the perfect ride",
   "midCtaBody": "From ideation to launch and beyond, we're your end-to-end partner for taxi app success.",
-  "midCtaButton": { "label": "Start Your Journey Today!" },
+  "midCtaButton": {
+    "label": "Start Your Journey Today!"
+  },
   "midCtaPoints": [
     "Trusted by taxi & ride-hailing brands",
     "Dedicated team of domain experts",
     "Agile development & quick TTM",
     "Transparent, fixed-price billing"
   ],
-
   "solutionsTitle": "Taxi & ride-hailing app solutions we build",
   "solutions": [
     {
@@ -228,7 +256,6 @@
       ]
     }
   ],
-
   "featuresTitle": "Taxi booking app features",
   "featuresLayout": "groups",
   "features": [
@@ -341,7 +368,6 @@
       ]
     }
   ],
-
   "technologiesTitle": "Emerging technology we use in taxi app development",
   "technologies": [
     {
@@ -381,23 +407,38 @@
       "description": "Leverage ultra-fast, low-latency networks and decentralized computing to power near-instant ride matching and real-time features."
     }
   ],
-
   "midCta2Title": "Ride the wave of innovation with an AI-powered taxi app",
   "midCta2Body": "AptenTech, as a prominent taxi app development company, combines the latest technology with deep domain expertise to create taxi apps that disrupt markets and dazzle users.",
-  "midCta2Button": { "label": "Build Your Taxi App Now!" },
-
+  "midCta2Button": {
+    "label": "Build Your Taxi App Now!"
+  },
   "complianceTitle": "Regulatory compliance & safety",
   "compliance": [
-    { "label": "GDPR / CCPA" },
-    { "label": "PCI-DSS" },
-    { "label": "TNC" },
-    { "label": "ADA" },
-    { "label": "SOC 2" },
-    { "label": "ISO 27001" },
-    { "label": "COPPA" },
-    { "label": "CAN-SPAM" }
+    {
+      "label": "GDPR / CCPA"
+    },
+    {
+      "label": "PCI-DSS"
+    },
+    {
+      "label": "TNC"
+    },
+    {
+      "label": "ADA"
+    },
+    {
+      "label": "SOC 2"
+    },
+    {
+      "label": "ISO 27001"
+    },
+    {
+      "label": "COPPA"
+    },
+    {
+      "label": "CAN-SPAM"
+    }
   ],
-
   "processTitle": "Our taxi app development process",
   "process": [
     {
@@ -442,11 +483,15 @@
       ]
     }
   ],
-
   "pricingTitle": "Taxi app development cost",
   "costTable": {
     "caption": "Taxi app development cost by tier",
-    "headers": ["App type", "What's included", "Timeline", "Estimated cost"],
+    "headers": [
+      "App type",
+      "What's included",
+      "Timeline",
+      "Estimated cost"
+    ],
     "rows": [
       {
         "tier": "Basic taxi app (MVP)",
@@ -476,22 +521,99 @@
       "Admin, driver & customer panels"
     ]
   },
-
   "techStackTitle": "Our taxi app development tech stack",
   "techStack": [
-    { "category": "Frontend", "items": ["React Native", "Flutter", "Swift", "Kotlin"] },
-    { "category": "Backend", "items": ["Node.js", "Python", "Java", "Laravel"] },
-    { "category": "Database", "items": ["PostgreSQL", "MySQL", "MongoDB", "Redis"] },
-    { "category": "Cloud & hosting", "items": ["AWS", "Microsoft Azure", "Google Cloud"] },
-    { "category": "Maps & location", "items": ["Google Maps API", "Mapbox", "GPS"] },
-    { "category": "Real-time communication", "items": ["WebSockets", "Firebase"] },
-    { "category": "Payments", "items": ["Stripe", "PayPal", "Razorpay"] },
-    { "category": "Push notifications", "items": ["Firebase Cloud Messaging", "OneSignal"] },
-    { "category": "Security", "items": ["OAuth 2.0", "JWT", "SSL/TLS"] },
-    { "category": "DevOps", "items": ["Docker", "Kubernetes", "Jenkins", "GitHub Actions"] },
-    { "category": "Analytics", "items": ["Google Analytics", "Firebase Analytics", "Power BI"] }
+    {
+      "category": "Frontend",
+      "items": [
+        "React Native",
+        "Flutter",
+        "Swift",
+        "Kotlin"
+      ]
+    },
+    {
+      "category": "Backend",
+      "items": [
+        "Node.js",
+        "Python",
+        "Java",
+        "Laravel"
+      ]
+    },
+    {
+      "category": "Database",
+      "items": [
+        "PostgreSQL",
+        "MySQL",
+        "MongoDB",
+        "Redis"
+      ]
+    },
+    {
+      "category": "Cloud & hosting",
+      "items": [
+        "AWS",
+        "Microsoft Azure",
+        "Google Cloud"
+      ]
+    },
+    {
+      "category": "Maps & location",
+      "items": [
+        "Google Maps API",
+        "Mapbox",
+        "GPS"
+      ]
+    },
+    {
+      "category": "Real-time communication",
+      "items": [
+        "WebSockets",
+        "Firebase"
+      ]
+    },
+    {
+      "category": "Payments",
+      "items": [
+        "Stripe",
+        "PayPal",
+        "Razorpay"
+      ]
+    },
+    {
+      "category": "Push notifications",
+      "items": [
+        "Firebase Cloud Messaging",
+        "OneSignal"
+      ]
+    },
+    {
+      "category": "Security",
+      "items": [
+        "OAuth 2.0",
+        "JWT",
+        "SSL/TLS"
+      ]
+    },
+    {
+      "category": "DevOps",
+      "items": [
+        "Docker",
+        "Kubernetes",
+        "Jenkins",
+        "GitHub Actions"
+      ]
+    },
+    {
+      "category": "Analytics",
+      "items": [
+        "Google Analytics",
+        "Firebase Analytics",
+        "Power BI"
+      ]
+    }
   ],
-
   "whyTitle": "Why choose AptenTech for on-demand taxi app development?",
   "why": [
     {
@@ -519,7 +641,6 @@
       "description": "Our taxi apps are built to the highest standards of performance, security, and usability, with round-the-clock support to keep you running smoothly."
     }
   ],
-
   "faqTitle": "Taxi app development FAQs",
   "faqs": [
     {
@@ -547,10 +668,8 @@
       "answer": "Look for a company offering on-demand taxi booking app development services, proven ride-hailing experience, solid tech expertise, transparent pricing, and reliable post-launch support."
     }
   ],
-
   "sectionLedes": {
     "protect": "Security and privacy are paramount in ride-sharing app development. Our taxi app development services follow rigorous practices to safeguard user data and transactions at every turn.",
-    "positioning": "The ride-hailing market is primed for explosive growth. Seize the opportunity with a cutting-edge taxi app built by an experienced, forward-thinking development partner. AptenTech is your go-to taxi mobile app development company, leveraging the latest technologies to create apps that outpace the competition.",
     "marketContext": "Wondering if a taxi app is worth the investment? These numbers reveal why now could be the right time.",
     "solutions": "From local cab services to large-scale ride-hailing platforms, we deliver taxi app development solutions designed around your business model, customers, drivers, and operational needs.",
     "features": "At AptenTech, we develop taxi apps packed with features to delight your users and streamline operations. Here are some key capabilities our taxi app development services can bring to your platform.",
@@ -561,5 +680,6 @@
     "techStack": "We use a modern, flexible tech stack optimized for building high-performance, scalable taxi apps that are secure, maintainable, and future-ready.",
     "why": "AptenTech turns taxi concepts into connected mobility platforms where booking, dispatch, payments, navigation, and fleet operations work as one. As a top-rated taxi booking app development company, we focus on building products that solve real operational challenges, not just adding another app to the market.",
     "recognition": "Leading taxi and ride-hailing brands worldwide trust AptenTech to power their apps with innovation, reliability, and scale."
-  }
+  },
+  "positioningBody": "The ride-hailing market is primed for explosive growth. Seize the opportunity with a cutting-edge taxi app built by an experienced, forward-thinking development partner. AptenTech is your go-to taxi mobile app development company, leveraging the latest technologies to create apps that outpace the competition."
 }

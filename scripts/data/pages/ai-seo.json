@@ -4,7 +4,8 @@
     "The document's second section is headed 'How Digital Marketing Drives Business Growth?' — the same heading appears in the digital marketing document, and all three cards under it are about search demand, SEO data and organic growth. Published as 'How AI SEO drives business growth?' so the heading matches the page and its own cards.",
     "The 'AI SEO, AEO, and GEO: What's the Difference?' comparison table is not published. It is a seven-row, four-column comparison, and the only table in the approved design is the pricing table, whose columns are tier, scope, timeline and investment. Rendering it needs a new section in the design rather than a content change, so it is left for AptenTech to decide on.",
     "The document does not cover the compliance, pricing or tech-stack sections that this page already has, so those are left exactly as they are rather than emptied.",
-    "The service bullets are the document's exact sentences. An earlier draft of this payload shortened most of them — dropping \"and experiences\", \"overall\", \"potential customers\" — which is an edit to approved copy that nobody asked for."
+    "The service bullets are the document's exact sentences. An earlier draft of this payload shortened most of them — dropping \"and experiences\", \"overall\", \"potential customers\" — which is an edit to approved copy that nobody asked for.",
+    "The positioning paragraph is in positioningBody, not sectionLedes.positioning. Every other band on these pages takes its standfirst from sectionLedes, but this one does not, and a paragraph written to sectionLedes.positioning is read by nothing — it reached the database and appeared on no page."
   ],
   "seo": {
     "title": "AI SEO Services | AEO & GEO Experts",
@@ -22,7 +23,6 @@
     "Continuous ranking & performance monitoring"
   ],
   "protectTitle": "How AI SEO drives business growth?",
-  "valuePropTitle": "How AI SEO drives business growth?",
   "protect": [
     {
       "title": "Capture more search demand",
@@ -459,12 +459,12 @@
   ],
   "sectionLedes": {
     "protect": "Our top-rated AI-driven SEO services help businesses move beyond traditional optimization by uncovering search opportunities, improving decision-making, and connecting organic visibility with meaningful business outcomes.",
-    "positioning": "AptenTech is an award-winning AI SEO agency helping businesses build visibility beyond traditional search. Our answer engine optimization strategies address how to appear in Google Overviews and how to get cited by ChatGPT, strengthening content authority, topical relevance, and brand signals so AI-powered platforms can better discover, understand, and reference your business.",
     "services": "We optimize content, technical signals, and brand authority to improve discoverability across traditional search, AI Overviews, LLMs, and emerging answer-driven search experiences.",
     "features": "AI platforms discover and interpret information differently. Our AI SEO services adapt to these changes, strengthening brand visibility across each search experience.",
     "solutions": "Every industry faces different search behaviors, competitors, and customer journeys. Our AI SEO services adapt to your market, helping your brand build relevant visibility across traditional and AI-powered search.",
     "technologies": "As an AI-powered SEO agency, AptenTech measures more than rankings, tracking how often your brand appears, gets referenced, attracts traffic, and contributes to business growth across AI-driven search.",
     "process": "Most agencies start spending in week one and figure out the rest later. We do not. Working with an internet marketing company should mean knowing exactly what happens next, and what it produces.",
     "why": "AptenTech is a top AI SEO services company focused on where search is heading, not where it has been. We connect traditional SEO with AEO, GEO, entity optimization, and LLM visibility to help brands earn rankings, citations, mentions, and meaningful visibility across the platforms shaping modern search."
-  }
+  },
+  "positioningBody": "AptenTech is an award-winning AI SEO agency helping businesses build visibility beyond traditional search. Our answer engine optimization strategies address how to appear in Google Overviews and how to get cited by ChatGPT, strengthening content authority, topical relevance, and brand signals so AI-powered platforms can better discover, understand, and reference your business."
 }
