@@ -86,6 +86,19 @@ node scripts/migrate-tech-stack.js --apply
 node scripts/migrate-home-growth.js --apply
 node scripts/migrate-lead-attachments.js --apply
 
+# Approved page copy, from scripts/data. Unlike the migrations above, these assert that a
+# page equals a payload in the repository — an assertion that stops being true the moment an
+# admin edits the page. So they are guarded by a hash of the payload file: a payload applies
+# when it has changed since it was last written, and a deploy that carries no new copy leaves
+# the CMS alone. Without that guard this would revert every admin edit made since the last
+# release, which from the admin's side looks like the CMS losing their work.
+#
+# `|| true` because copy is not the site. A payload that fails to apply is a page showing its
+# previous wording, which is not a reason to abandon a deploy that has already been built.
+say "Applying approved page copy"
+node scripts/apply-home-content.js --apply || true
+node scripts/apply-service-content.js --apply || true
+
 # Deletes attachment files no enquiry claims. Not a migration — it runs every deploy because
 # abandoned uploads accumulate continuously, and a deploy is the one moment that reliably
 # happens without anyone having to remember it. It only ever removes files the database does

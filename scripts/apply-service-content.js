@@ -19,13 +19,22 @@
  *   node scripts/apply-service-content.js                      # dry run, every payload
  *   node scripts/apply-service-content.js ai-seo               # dry run, one page
  *   node scripts/apply-service-content.js --apply              # write
+ *   node scripts/apply-service-content.js --apply --force      # write even if unchanged
+ *
+ * A payload whose file has not changed since it was last written is skipped, so the deploy
+ * can run this unattended without reverting edits an admin has since made in the CMS. See
+ * scripts/lib/content-checkpoint.js. `--force` writes regardless, which is what someone
+ * running it by hand usually means.
  */
 const fs = require('node:fs');
 const path = require('node:path');
+const { payloadHash, shouldApply, recordApplied } = require('./lib/content-checkpoint');
+const { revalidate } = require('./lib/revalidate');
 
 const ROOT = path.resolve(__dirname, '..');
 const DATA = path.join(ROOT, 'scripts/data/pages');
 const APPLY = process.argv.includes('--apply');
+const FORCE = process.argv.includes('--force');
 const ONLY = process.argv.slice(2).filter((a) => !a.startsWith('--'));
 
 const ACCENTS = ['indigo', 'mint', 'violet', 'amber', 'cyan', 'pink'];
@@ -43,50 +52,6 @@ function envValue(key) {
 }
 
 const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
-
-/**
- * Drops the Next.js cache tags for the pages that changed.
- *
- * Writing to MongoDB directly is faster and simpler than driving the admin API, but it also
- * skips the step the admin would have done: telling the renderer that a page it has cached is
- * out of date. Without this the copy is in the database and the site still serves the old
- * page for up to an hour, which looks exactly like the script not having worked.
- *
- * Signed and timestamped the same way the API signs it, because the endpoint verifies both.
- * A failure here is reported and not thrown — the content is already written, and the page
- * will refresh on its own interval regardless.
- */
-async function revalidate(tags) {
-  if (!tags.length) return;
-
-  const secret = envValue('REVALIDATE_SECRET');
-  const url = envValue('REVALIDATE_URL') || 'http://localhost:3000/api/revalidate';
-
-  if (!secret) {
-    console.log('\nREVALIDATE_SECRET is not set, so the cache was not cleared.');
-    console.log('The pages will pick the new copy up on their next hourly refresh.');
-    return;
-  }
-
-  const body = JSON.stringify({ tags, at: Date.now() });
-  const signature = require('node:crypto').createHmac('sha256', secret).update(body).digest('hex');
-
-  try {
-    const res = await fetch(url, {
-      method: 'POST',
-      headers: { 'content-type': 'application/json', 'x-revalidate-signature': signature },
-      body,
-      signal: AbortSignal.timeout(8000),
-    });
-    if (res.ok) {
-      console.log(`\nCache cleared for: ${tags.join(', ')}`);
-    } else {
-      console.log(`\nRevalidation returned ${res.status}. The pages will refresh on their next hourly interval.`);
-    }
-  } catch (error) {
-    console.log(`\nCould not reach ${url} (${error.message}). The pages will refresh on their next hourly interval.`);
-  }
-}
 
 /**
  * Which keys of a list entry belong to the design rather than to the copy.
@@ -236,7 +201,18 @@ function buildUpdate(doc, copy) {
 
   for (const file of files) {
     const slug = path.basename(file, '.json');
-    const copy = JSON.parse(fs.readFileSync(path.join(DATA, file), 'utf8'));
+    const full = path.join(DATA, file);
+    const copy = JSON.parse(fs.readFileSync(full, 'utf8'));
+    const hash = payloadHash(full);
+
+    // Asked before the page is even read: the question is whether this payload is new, not
+    // whether the page happens to match it. A page that no longer matches because someone
+    // edited it in the admin is the case this exists to leave alone.
+    const verdict = await shouldApply(db, `page:${slug}`, hash, { force: FORCE });
+    if (!verdict.apply) {
+      console.log(`\n${slug}\n  skipped — ${verdict.reason}`);
+      continue;
+    }
 
     const doc = await pages.findOne({ slug });
     if (!doc) {
@@ -249,7 +225,10 @@ function buildUpdate(doc, copy) {
 
     console.log(`\n${slug}  (${doc.kind})`);
     if (!moved.length) {
-      console.log('  already up to date');
+      console.log(`  already up to date (${verdict.reason})`);
+      // The payload is new but the page already says the same thing — a comment or a note
+      // changed, nothing else. Still recorded, so the next deploy does not ask again.
+      if (APPLY) await recordApplied(db, `page:${slug}`, hash, file);
       continue;
     }
 
@@ -273,12 +252,14 @@ function buildUpdate(doc, copy) {
       const listTag = LIST_TAG[doc.kind];
       if (listTag) changedTags.push(listTag);
       changedTags.push(`${doc.kind}:${slug}`);
+
+      await recordApplied(db, `page:${slug}`, hash, file);
     }
   }
 
   await client.close();
 
-  if (APPLY && changedTags.length) await revalidate([...new Set(changedTags)]);
+  if (APPLY && changedTags.length) await revalidate([...new Set(changedTags)], envValue);
 
   if (!touched) {
     console.log('\nEverything is already up to date.');

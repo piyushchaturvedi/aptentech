@@ -12,12 +12,20 @@
  *
  *   node scripts/apply-home-content.js
  *   node scripts/apply-home-content.js --apply
+ *   node scripts/apply-home-content.js --apply --force   # write even if unchanged
+ *
+ * A payload whose file has not changed since it was last written is skipped, so the deploy
+ * can run this unattended without reverting edits an admin has since made in the CMS. See
+ * scripts/lib/content-checkpoint.js.
  */
 const fs = require('node:fs');
 const path = require('node:path');
+const { payloadHash, shouldApply, recordApplied } = require('./lib/content-checkpoint');
+const { revalidate } = require('./lib/revalidate');
 
 const ROOT = path.resolve(__dirname, '..');
 const APPLY = process.argv.includes('--apply');
+const FORCE = process.argv.includes('--force');
 const PAYLOAD = path.join(ROOT, 'scripts/data/home-content.json');
 
 const ACCENTS = ['indigo', 'mint', 'violet', 'amber', 'cyan', 'pink'];
@@ -74,6 +82,17 @@ function mergeList(existing, incoming, design, template = {}) {
   const { MongoClient } = require('mongodb');
   const client = await MongoClient.connect(uri, { serverSelectionTimeoutMS: 10_000 });
   const db = client.db(dbName);
+
+  // Asked before the page is read: the question is whether this payload is new, not whether
+  // the page happens to match it. A page that no longer matches because someone edited it in
+  // the admin is the case this exists to leave alone.
+  const hash = payloadHash(PAYLOAD);
+  const verdict = await shouldApply(db, 'home', hash, { force: FORCE });
+  if (!verdict.apply) {
+    console.log(`Home page skipped — ${verdict.reason}.`);
+    await client.close();
+    return;
+  }
 
   const home = await db.collection('sitepages').findOne({ slug: 'home' });
   if (!home) {
@@ -247,13 +266,18 @@ function mergeList(existing, incoming, design, template = {}) {
   });
 
   if (!changes.length) {
-    console.log('Home page copy is already up to date.');
+    console.log(`Home page copy is already up to date (${verdict.reason}).`);
+    // The payload is new but the page already says the same thing — a note changed, nothing
+    // else. Still recorded, so the next deploy does not ask again.
+    if (APPLY) await recordApplied(db, 'home', hash, 'home-content.json');
   } else {
     console.log('Changes:');
     for (const c of changes) console.log('  ' + c);
     if (APPLY) {
       await db.collection('sitepages').updateOne({ _id: home._id }, { $set: { blocks } });
+      await recordApplied(db, 'home', hash, 'home-content.json');
       console.log('\nWritten.');
+      await revalidate(['page:home', 'pages'], envValue);
     } else {
       console.log('\nDry run — nothing was written. To apply:');
       console.log('  node scripts/apply-home-content.js --apply\n');
