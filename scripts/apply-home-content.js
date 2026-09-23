@@ -286,6 +286,9 @@ function mergeList(existing, incoming, design, template = {}) {
 
   await client.close();
 })().catch((err) => {
-  console.error(err.message);
+  // The whole error, not just its message. This runs unattended in the deploy, where the
+  // only record of a failure is whatever it printed, and a bare message with no stack says
+  // nothing about which of the page blocks it was working on when it gave up.
+  console.error(err);
   process.exit(1);
 });

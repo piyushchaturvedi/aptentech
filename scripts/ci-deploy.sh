@@ -38,6 +38,11 @@ cd "$ROOT"
 
 say() { printf '\n\033[1m==> %s\033[0m\n' "$*"; }
 
+# A step that failed without being fatal. Loud on purpose: the alternative is `|| true`,
+# which hides the failure completely and leaves someone comparing a live page against a
+# payload to work out that a script never ran.
+warn() { printf '\n\033[1;33m!!! %s\033[0m\n' "$*" >&2; }
+
 # ---------------------------------------------------------------- one at a time
 #
 # Two pushes a minute apart would otherwise run two builds over the same working tree, and the
@@ -93,11 +98,13 @@ node scripts/migrate-lead-attachments.js --apply
 # the CMS alone. Without that guard this would revert every admin edit made since the last
 # release, which from the admin's side looks like the CMS losing their work.
 #
-# `|| true` because copy is not the site. A payload that fails to apply is a page showing its
-# previous wording, which is not a reason to abandon a deploy that has already been built.
+# Not fatal: a payload that fails to apply is a page showing its previous wording, which is
+# not a reason to abandon a deploy that has already been built. But not silent either — the
+# first time one of these failed under `|| true`, the only evidence was a page that had not
+# changed, and working out which of the two scripts had not run took longer than the fix.
 say "Applying approved page copy"
-node scripts/apply-home-content.js --apply || true
-node scripts/apply-service-content.js --apply || true
+node scripts/apply-home-content.js --apply || warn "home page copy did NOT apply — error above"
+node scripts/apply-service-content.js --apply || warn "service page copy did NOT apply — error above"
 
 # Deletes attachment files no enquiry claims. Not a migration — it runs every deploy because
 # abandoned uploads accumulate continuously, and a deploy is the one moment that reliably
