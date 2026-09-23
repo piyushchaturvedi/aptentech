@@ -1,5 +1,5 @@
 {
-  "note": "Home page copy from 'Copy of Home Page-AptenTech.pdf'. Text only — accents and icons stay as the design set them, and are merged in by apply-home-content.js.",
+  "note": "Home page copy from 'Copy of Home Page-AptenTech.docx'. Text only — accents and icons stay as the design set them, and are merged in by apply-home-content.js.",
 
   "hero": {
     "splitHeading": { "lead": "From Ideas To", "highlight": "Intelligent Digital Products", "trail": "" },
@@ -107,15 +107,15 @@
         ]
       },
       {
-        "title": "Product Development",
-        "description": "Turn an early concept into a market-ready product with the strategy, design, development, testing, and expertise needed at every stage.",
+        "title": "Digital Marketing",
+        "description": "We create data-driven digital marketing strategies that strengthen your online presence, attract qualified audiences, and turn meaningful customer interactions into measurable business growth.",
         "bullets": [
-          "MVP Development",
-          "Product Strategy",
-          "Product Prototyping",
-          "Full-Cycle Product Development",
-          "Product Testing",
-          "Product Maintenance & Support"
+          "Search Engine Optimization",
+          "AEO Services",
+          "Pay-Per-Click Advertising",
+          "Social Media Marketing",
+          "Content Marketing",
+          "GEO Services"
         ]
       }
     ]
@@ -210,7 +210,7 @@
       { "title": "Paid Advertising", "description": "We manage performance-focused campaigns that target high-intent users, optimize ad spend, and generate measurable business results.", "outcome": "Measurable results" },
       { "title": "Content Marketing", "description": "Strategic content created around your audience builds authority, answers real questions, strengthens trust, and supports lead generation.", "outcome": "Authority and trust" },
       { "title": "Social Media Marketing", "description": "We create and manage social strategies that expand brand reach, engage the right audience, and drive meaningful business opportunities.", "outcome": "Wider brand reach" },
-      { "title": "CRO", "description": "Our CRO expertise turns existing traffic into more leads through smarter landing pages, stronger messaging, and optimized user journeys.", "outcome": "More from the same traffic" }
+      { "title": "Performance Marketing", "description": "Our performance marketing focuses on campaigns that drive clicks, leads, and sales, backed by data and top-tier marketing services that improve results.", "outcome": "Clicks, leads and sales" }
     ]
   },
 

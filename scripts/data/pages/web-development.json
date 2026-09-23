@@ -1,0 +1,530 @@
+{
+  "_source": "Web Development Company.docx",
+  "_notes": [
+    "The document's cost table carries [COST RANGE] in every Investment cell, with a line telling the author to replace it with AptenTech's verified commercial ranges before publishing. Those are instructions to the writer, not copy, so the tiers, scopes and timelines are taken from the document and the existing 'Available on request' is kept in the Investment column until AptenTech supplies real figures.",
+    "The document's compliance list ends with 'Note: do not present these as AptenTech certifications unless independently verified.' That note is guidance to the author and is not published. The badges are published as a list of standards the work is built to, which is what the section heading already says.",
+    "The stats paragraph in the document reads 'here's where our mobile app development agency stands today' — copied from the mobile document. Published as 'web development agency'.",
+    "Years of experience is set to 5, matching the home page and the rest of the site, rather than the 3 this document states. See the note in mobile-app-development.json."
+  ],
+
+  "seo": {
+    "title": "Web Development Company in the USA",
+    "description": "AptenTech is a web development company delivering custom websites, modern solutions, and scalable digital experiences for growing businesses."
+  },
+
+  "heroTitle": "Web Development",
+  "heroTitleHighlight": "Company",
+  "heroDescription": "AptenTech is a custom web development company that delivers fast, secure, and maintainable web applications for businesses. We specialize in building tailored solutions ranging from customer portals and e-commerce platforms to complex enterprise integrations and modern web applications.",
+  "heroPoints": [
+    "React, Next.js & Vue",
+    "Custom web application development",
+    "Core Web Vitals optimization",
+    "Accessibility to WCAG 2.2 AA",
+    "ERP, CRM & API integration",
+    "Headless CMS & e-commerce"
+  ],
+
+  "protectTitle": "How we de-risk web development before a line of code is written",
+  "valuePropTitle": "How we de-risk web development before a line of code is written",
+  "protect": [
+    {
+      "title": "Architecture planned for long-term change",
+      "description": "We define rendering strategy, data flow, and service boundaries around how the platform is expected to grow, not only what is fastest to ship in the first sprint."
+    },
+    {
+      "title": "Performance built into the delivery plan",
+      "description": "Core Web Vitals, page weight, and loading behavior are treated as engineering requirements, helping prevent performance from becoming a costly pre-launch repair project."
+    },
+    {
+      "title": "Integrations scoped early",
+      "description": "ERP, CRM, identity, payment, and legacy dependencies are mapped during architecture so integration complexity is visible before it can disrupt the delivery schedule."
+    }
+  ],
+
+  "positioningTitle": "What our web developers engineer beyond the interface",
+  "coreCapabilitiesTitle": "Our core web development capabilities",
+  "coreCapabilities": [
+    "Building custom web applications on modular, API-first architectures",
+    "Engineering rendering strategies around performance, crawlability, and cost",
+    "Creating reusable frontend systems that stay consistent as products grow",
+    "Integrating ERP, CRM, identity, payments, and third-party platforms",
+    "Developing customer portals, internal tools, and enterprise web platforms",
+    "Supporting e-commerce, headless CMS, and content-driven experiences",
+    "Embedding web security, accessibility, and testing into delivery"
+  ],
+
+  "brandStripLabel": "Trusted by clients",
+
+  "statsTitle": "Our work in numbers",
+  "statsNote": "Years of building across industries have given us a track record we're happy to be measured on. Here's where our web development agency stands today.",
+  "stats": [
+    { "value": "250", "suffix": "+", "label": "Projects delivered" },
+    { "value": "120", "suffix": "+", "label": "Global clients" },
+    { "value": "5", "suffix": "+", "label": "Years of experience" },
+    { "value": "98", "suffix": "%", "label": "Client retention rate" },
+    { "value": "60", "suffix": "+", "label": "Countries served" },
+    { "value": "150", "suffix": "+", "label": "App developers" }
+  ],
+
+  "servicesTitle": "Web development services we deliver",
+  "services": [
+    {
+      "title": "Custom web application development",
+      "description": "We deliver custom web application development for portals, internal tools and digital platforms built around your workflows, users, and integration requirements.",
+      "bullets": [
+        "Modular API-first architecture",
+        "Server and client rendering",
+        "Role-based permissions",
+        "Workflow-driven functionality",
+        "Automated testing & CI/CD",
+        "Post-launch iteration"
+      ]
+    },
+    {
+      "title": "Frontend development services",
+      "description": "Our frontend development services focus on responsive interfaces, reusable components, accessibility, and measurable performance across real devices.",
+      "bullets": [
+        "React, Next.js and Vue",
+        "Design systems & components",
+        "Core Web Vitals budgets",
+        "WCAG 2.2 AA accessibility",
+        "Responsive implementation",
+        "Visual regression testing"
+      ]
+    },
+    {
+      "title": "Multi-tenant web platforms",
+      "description": "We offer web platforms designed for multiple organizations or customer groups, with isolation, permissions, onboarding, and configuration planned into the architecture from the beginning.",
+      "bullets": [
+        "Tenant data isolation",
+        "Plan and access logic",
+        "Self-service onboarding",
+        "Usage controls",
+        "Organizational hierarchies",
+        "Tenant-level configuration"
+      ]
+    },
+    {
+      "title": "Backend development services",
+      "description": "Our backend development services cover APIs, business logic, data processing, and integrations that need to remain reliable as traffic and connected systems grow.",
+      "bullets": [
+        "REST, GraphQL & event APIs",
+        "Service boundaries",
+        "Background jobs & queues",
+        "Caching & query optimization",
+        "API versioning & rate limits",
+        "Structured logging"
+      ]
+    },
+    {
+      "title": "Ecommerce web development",
+      "description": "Our e-commerce web development is for storefronts where page speed, catalogue performance, checkout reliability, and back-office integration directly affect revenue.",
+      "bullets": [
+        "Headless & composable architecture",
+        "Catalogue search & filtering",
+        "Checkout & payment flows",
+        "PIM, ERP & OMS integration",
+        "Core Web Vitals tuning",
+        "Peak-traffic load testing"
+      ]
+    },
+    {
+      "title": "Web consulting & architecture",
+      "description": "Our web consulting services help define the right architecture, technology stack, integrations, and development roadmap before engineering work begins.",
+      "bullets": [
+        "MVP scope definition",
+        "Framework & rendering strategy",
+        "Integration mapping",
+        "Performance & SEO budgets",
+        "Security exposure review",
+        "Costed delivery plan"
+      ]
+    },
+    {
+      "title": "Website redesign & replatforming",
+      "description": "We modernize ageing web stacks through website redesign services and controlled replatforming, improving performance, content operations, maintainability, and development speed without disrupting your business.",
+      "bullets": [
+        "Codebase & architecture audit",
+        "Framework upgrades",
+        "Phased migration",
+        "SEO migration safeguards",
+        "CI/CD modernisation",
+        "Maintainable handover"
+      ]
+    },
+    {
+      "title": "CMS, portals & integrations",
+      "description": "We build headless CMS platforms, customer portals, and API integrations that connect your web experience with the systems powering everyday business operations.",
+      "bullets": [
+        "Headless CMS implementation",
+        "Content modelling",
+        "Customer & partner portals",
+        "SSO integration",
+        "ERP, CRM & payment connectors",
+        "Multi-site & multilingual setup"
+      ]
+    }
+  ],
+
+  "midCtaTitle": "Have a web project in mind? Let's pressure-test it first.",
+  "midCtaBody": "Bring the idea, constraints, and launch target. We'll help clarify the MVP, architecture, and integration risks before you commit to a full web development engagement.",
+  "midCtaButton": { "label": "Talk to Our Experts" },
+  "midCtaPoints": [
+    "Feature scope for an MVP",
+    "Architecture recommendation",
+    "NDA before you share anything",
+    "No obligation to continue",
+    "No hidden costs or surprise charges"
+  ],
+
+  "solutionsTitle": "Industries we build web platforms for",
+  "solutionsCtaLabel": "Find the right model for your idea",
+  "solutions": [
+    {
+      "title": "Technology & digital platforms",
+      "bullets": [
+        "Customer-facing web platforms",
+        "Account and organisation management",
+        "Subscription and access workflows",
+        "Usage dashboards"
+      ]
+    },
+    {
+      "title": "Fintech & banking",
+      "bullets": [
+        "Customer and advisor portals",
+        "KYC, AML & audit workflows",
+        "PCI DSS scope containment",
+        "Reporting & reconciliation"
+      ]
+    },
+    {
+      "title": "Ecommerce & retail",
+      "bullets": [
+        "Headless storefronts",
+        "Catalogue search & filtering",
+        "Checkout reliability",
+        "PIM, ERP & OMS integration"
+      ]
+    },
+    {
+      "title": "Healthcare & life sciences",
+      "bullets": ["Patient & clinician portals", "EHR / FHIR integration", "HIPAA-aligned controls", "Audit logging"]
+    },
+    {
+      "title": "Education & e-learning",
+      "bullets": [
+        "Learning platforms & portals",
+        "Course delivery",
+        "Assessment & progress tracking",
+        "LMS / SIS integration"
+      ]
+    },
+    {
+      "title": "Logistics & supply chain",
+      "bullets": ["Fleet & shipment dashboards", "Warehouse tools", "Partner portals", "ERP / WMS integration"]
+    },
+    {
+      "title": "Real estate & PropTech",
+      "bullets": ["Listing & search platforms", "Agent / landlord portals", "Document workflows", "Market analytics"]
+    },
+    {
+      "title": "Enterprise & internal tools",
+      "bullets": ["Operations consoles", "Workflow automation", "SSO integration", "Role-based access"]
+    },
+    {
+      "title": "Media & publishing",
+      "bullets": [
+        "Headless CMS platforms",
+        "Editorial workflows",
+        "Access & paywall logic",
+        "Traffic-spike performance"
+      ]
+    },
+    {
+      "title": "Travel & hospitality",
+      "bullets": ["Booking experiences", "Supplier integration", "Localisation & currency", "Peak-season scaling"]
+    },
+    {
+      "title": "Manufacturing & industrial",
+      "bullets": ["Production dashboards", "Supplier portals", "IoT data visualisation", "ERP / MES integration"]
+    },
+    {
+      "title": "Startups & new ventures",
+      "bullets": [
+        "MVP web applications",
+        "Investor-ready releases",
+        "Analytics from day one",
+        "Scalable architecture"
+      ]
+    }
+  ],
+
+  "featuresTitle": "Web platform features we build",
+  "featuresLayout": "chips",
+  "features": [
+    { "title": "Single sign-on and social login", "description": "", "items": [] },
+    { "title": "Role-based access & permissions", "description": "", "items": [] },
+    { "title": "Customer and partner portals", "description": "", "items": [] },
+    { "title": "Workflow & approval automation", "description": "", "items": [] },
+    { "title": "Dashboards & reporting", "description": "", "items": [] },
+    { "title": "Search, filters & saved views", "description": "", "items": [] },
+    { "title": "Notifications & alerts", "description": "", "items": [] },
+    { "title": "Document generation", "description": "", "items": [] },
+    { "title": "Payments & checkout", "description": "", "items": [] },
+    { "title": "Subscriptions & access rules", "description": "", "items": [] },
+    { "title": "Catalogue & content management", "description": "", "items": [] },
+    { "title": "Multi-language & localisation", "description": "", "items": [] },
+    { "title": "API access & webhooks", "description": "", "items": [] },
+    { "title": "ERP / CRM integration", "description": "", "items": [] },
+    { "title": "Headless CMS workflows", "description": "", "items": [] },
+    { "title": "Audit trails & history", "description": "", "items": [] },
+    { "title": "Bulk import / export", "description": "", "items": [] },
+    { "title": "Admin and operations consoles", "description": "", "items": [] },
+    { "title": "Analytics & event tracking", "description": "", "items": [] },
+    { "title": "Feature flags & staged releases", "description": "", "items": [] },
+    { "title": "Accessibility support", "description": "", "items": [] },
+    { "title": "Core Web Vitals optimisation", "description": "", "items": [] },
+    { "title": "Automated testing & CI/CD", "description": "", "items": [] },
+    { "title": "Monitoring & error tracking", "description": "", "items": [] }
+  ],
+
+  "technologiesTitle": "Future-ready technologies we build with",
+  "technologies": [
+    {
+      "title": "Modern rendering strategies",
+      "description": "Server, static and edge rendering selected per route to balance page speed, crawlability and infrastructure cost."
+    },
+    {
+      "title": "Generative AI & RAG",
+      "description": "AI assistants and semantic search grounded in approved business content with evaluation and access controls."
+    },
+    {
+      "title": "Edge computing & CDN delivery",
+      "description": "Caching, routing and selected logic closer to users to reduce latency across regions and devices."
+    },
+    {
+      "title": "Event-driven architecture",
+      "description": "Queues and event processing that keep slow or unreliable work outside the user request path."
+    },
+    {
+      "title": "Design systems at scale",
+      "description": "Reusable components and design tokens that keep growing web products consistent and easier to change."
+    },
+    {
+      "title": "Zero-trust web security",
+      "description": "Secure defaults, dependency scanning, secrets management and OWASP-aligned controls throughout delivery."
+    },
+    {
+      "title": "Observability & performance budgets",
+      "description": "Structured logs, tracing and Core Web Vitals checks that make reliability and performance measurable."
+    },
+    {
+      "title": "Infrastructure as code",
+      "description": "Reproducible environments and controlled deployments that reduce configuration drift between environments."
+    },
+    {
+      "title": "Progressive web apps",
+      "description": "Installable and offline-capable web experiences where progressive web app development fits the use case."
+    }
+  ],
+
+  "midCta2Title": "Want AI capability built into your web platform properly?",
+  "midCta2Body": "As a web development company, we can assess where AI genuinely improves the web experience, what data it needs, and how to control quality, security, and operating cost before it reaches production.",
+  "midCta2Button": { "label": "Discuss Your AI Requirements" },
+
+  "complianceTitle": "Compliance & standards we build to",
+  "compliance": [
+    { "label": "GDPR" },
+    { "label": "CCPA" },
+    { "label": "HIPAA" },
+    { "label": "PCI DSS" },
+    { "label": "SOC 2 Type II" },
+    { "label": "ISO 27001" },
+    { "label": "OWASP Top 10" },
+    { "label": "NIST CSF" },
+    { "label": "WCAG 2.2 AA" },
+    { "label": "ADA & Section 508" }
+  ],
+
+  "processTitle": "Our web development process",
+  "process": [
+    {
+      "title": "Discovery & product strategy",
+      "description": "Define users, business goals, existing systems, MVP scope, and measurable success criteria.",
+      "deliverables": ["Feature scope", "Success metrics", "Out-of-scope list"]
+    },
+    {
+      "title": "UX & design system",
+      "description": "Prototype priority journeys and create reusable components before development expands across the platform.",
+      "deliverables": ["Clickable prototype", "Design system", "Usability findings"]
+    },
+    {
+      "title": "Architecture & technical design",
+      "description": "Define rendering strategy, data model, integrations, performance budgets and security controls.",
+      "deliverables": ["Architecture document", "Integration plan", "Performance budget"]
+    },
+    {
+      "title": "Development sprints",
+      "description": "Build in short increments with working releases, shared priorities, automated tests and regular demos.",
+      "deliverables": ["Working build", "Sprint demo", "Automated test results"]
+    },
+    {
+      "title": "QA, performance & security testing",
+      "description": "Test across browsers and devices, audit accessibility, validate load behaviour and review security before release.",
+      "deliverables": ["Browser matrix report", "Load test summary", "Accessibility audit"]
+    },
+    {
+      "title": "Launch, monitor & iterate",
+      "description": "Release in controlled stages, establish monitoring and hand over the platform with an evidence-led iteration plan.",
+      "deliverables": ["Monitoring dashboards", "Handover pack", "Iteration roadmap"]
+    }
+  ],
+
+  "pricingTitle": "Web development cost for your project",
+  "costFactorsCtaLabel": "Get a costed scope for your idea",
+  "costTable": {
+    "caption": "Web development cost by delivery tier",
+    "headers": ["Tier", "Typical scope", "Indicative timeline", "Investment"],
+    "rows": [
+      {
+        "tier": "Focused build",
+        "includes": "Marketing platform, portal, or focused web application with standard integrations.",
+        "timeline": "3–5 months",
+        "investment": "Available on request"
+      },
+      {
+        "tier": "Growth platform",
+        "includes": "Custom web application with multiple workflows, integrations, permissions and advanced frontend requirements.",
+        "timeline": "5–9 months",
+        "investment": "Available on request"
+      },
+      {
+        "tier": "Enterprise / replatform",
+        "includes": "Complex enterprise web development, major migration, ecommerce or integration-heavy platform.",
+        "timeline": "9–15+ months",
+        "investment": "Available on request"
+      }
+    ],
+    "factorsTitle": "What moves the number",
+    "factors": [
+      "Product type — website, portal, web application or storefront",
+      "Integration surface — number and complexity of connected systems",
+      "Migration scope — content, URLs, data and legacy dependencies",
+      "Performance requirements — traffic, rendering and Core Web Vitals targets",
+      "Compliance scope — accessibility, privacy, security and industry controls"
+    ]
+  },
+
+  "techStackTitle": "Tech stack we use for web development",
+  "techStack": [
+    { "category": "Frontend", "items": ["React", "Next.js", "Vue", "Nuxt", "TypeScript", "Tailwind CSS"] },
+    { "category": "Backend", "items": ["Node.js", "Python", "Go", "Java Spring Boot", ".NET Core", "PHP / Laravel"] },
+    { "category": "APIs & messaging", "items": ["REST", "GraphQL", "gRPC", "Kafka", "RabbitMQ", "WebSockets"] },
+    { "category": "Databases", "items": ["PostgreSQL", "MySQL", "MongoDB", "Redis", "Elasticsearch", "ClickHouse"] },
+    { "category": "CMS & commerce", "items": ["Strapi", "Contentful", "Sanity", "Shopify", "Magento", "WordPress"] },
+    { "category": "Cloud & DevOps", "items": ["AWS", "Azure", "Google Cloud", "Docker", "Kubernetes", "Terraform"] },
+    {
+      "category": "Security & identity",
+      "items": ["OAuth 2.0", "OpenID Connect", "Auth0", "Keycloak", "AWS Cognito", "Vault"]
+    },
+    {
+      "category": "Testing & monitoring",
+      "items": ["Playwright", "Cypress", "Jest", "Sentry", "Datadog", "Lighthouse CI"]
+    }
+  ],
+
+  "whyTitle": "Why choose AptenTech as your web development company?",
+  "whyCtaLabel": "Get a Free Consultation",
+  "why": [
+    {
+      "title": "Architecture designed for change",
+      "description": "We build web development architectures with future growth in mind, making it easier to add features, integrations, and new capabilities without disrupting the core platform."
+    },
+    {
+      "title": "Performance is an engineering requirement",
+      "description": "At AptenTech, we treat performance as a core part of web application development, optimizing Core Web Vitals, code efficiency, load times, and responsiveness from the start."
+    },
+    {
+      "title": "Security is built into delivery",
+      "description": "Secure defaults, dependency checks, code reviews, and early testing help identify vulnerabilities sooner, reducing avoidable risks and costly fixes later in development."
+    },
+    {
+      "title": "Accessibility starts with the components",
+      "description": "Our website development services include accessibility from the start, using semantic structures, keyboard-friendly interactions, clear navigation, and WCAG-aligned components across the platform."
+    },
+    {
+      "title": "You own the deliverables",
+      "description": "Our website development process keeps code, design files, infrastructure definitions, and agreed documentation organized for a clear and hassle-free project handover."
+    },
+    {
+      "title": "One accountable team",
+      "description": "Strategy, design, and engineering work together through one web development team, keeping decisions aligned and reducing gaps that often arise across multiple vendors."
+    }
+  ],
+
+  "faqTitle": "Web development FAQs",
+  "faqs": [
+    {
+      "question": "What is the difference between a website and a web application?",
+      "answer": "A website primarily presents content, while a web application lets users perform tasks, manage data or complete workflows. Many modern platforms combine both: public, SEO-friendly pages on the front and authenticated application functionality behind them."
+    },
+    {
+      "question": "How much does web development cost?",
+      "answer": "Web development cost depends on scope, integrations, migration, performance requirements and compliance. A focused website or portal costs materially less than an integration-heavy enterprise web application. A useful estimate should show the assumptions and workstreams driving the range."
+    },
+    {
+      "question": "How long does it take to build a web application?",
+      "answer": "A focused first release may take around three to five months, while a broader custom web application with complex integrations can take five to nine months or longer. Final timing depends on scope, dependencies and the level of testing required."
+    },
+    {
+      "question": "How do you make a website pass Core Web Vitals?",
+      "answer": "Start with the rendering strategy, image delivery, JavaScript weight, fonts, caching and third-party scripts. We set performance budgets during development and use Lighthouse or equivalent checks in CI so regressions are caught before release."
+    },
+    {
+      "question": "How do you avoid losing SEO traffic during a website migration?",
+      "answer": "Preserve valuable URLs where possible, map every changed URL to the correct redirect, carry over metadata and structured data, maintain canonicals, validate internal links and submit updated sitemaps. Crawl the old and new sites before cutover so missing or incorrect redirects are found early."
+    },
+    {
+      "question": "WordPress vs headless CMS vs custom build: which should we choose?",
+      "answer": "Choose WordPress when standard content publishing covers most requirements, a headless CMS when editors need structured content across multiple channels, and custom web development when workflows, integrations or application logic are the differentiator. The right choice depends on operating needs, not trend."
+    },
+    {
+      "question": "Who owns the code and hosting after launch?",
+      "answer": "Ownership is explicit in the agreement. AptenTech engagements define repository access, infrastructure, design files, documentation and handover terms from the start, so you are not dependent on the web development company after launch."
+    }
+  ],
+
+  "closingCtaTitle": "Let's build a web platform your users trust and your team can maintain",
+  "leadReasons": [
+    {
+      "title": "Reply within one business day",
+      "description": "Usually the same day, from someone who can answer technical questions."
+    },
+    {
+      "title": "NDA on request",
+      "description": "We can sign before you share sensitive requirements, supplier details or commercial information."
+    },
+    {
+      "title": "Early-stage requirements are fine",
+      "description": "You do not need a finished specification. A clear problem and target outcome are enough to start."
+    }
+  ],
+  "leadForm": { "submitLabel": "Get a Free Consultation" },
+
+  "sectionLedes": {
+    "protect": "Your website needs more than clean code. As a web development agency, we connect business goals with thoughtful architecture, intuitive interfaces, reliable integrations, and technology choices built for long-term use.",
+    "positioning": "A successful web platform needs more than polished screens. Our web developers engineer the architecture, performance, integrations, accessibility, and delivery foundations that help the application remain reliable and maintainable after launch.",
+    "services": "AptenTech provides web development services across strategy, UI engineering, backend development, e-commerce, integrations, and modernization. Each service can be engaged independently or combined into an end-to-end build.",
+    "solutions": "Different sectors create different integration, security, accessibility and traffic requirements. The examples below show the web platforms we engineer.",
+    "features": "These capabilities give scope discussions a practical starting point. The final feature set is defined around the users, workflows and business requirements of each custom web development project.",
+    "technologies": "We use modern web technologies where they improve speed, maintainability, security or operating efficiency. Architecture choices are made around the project requirement rather than added simply because a technology is fashionable.",
+    "compliance": "Security, privacy and accessibility requirements are translated into technical controls during architecture.",
+    "process": "From discovery to launch, our web development process keeps every decision focused on the outcome the platform has to deliver.",
+    "pricing": "Web development cost depends on application scope, integrations, migration effort, performance targets, and compliance requirements.",
+    "techStack": "Our web application development stack is chosen around your business goals, system integrations, performance expectations, and long-term maintainability.",
+    "why": "AptenTech is a top-rated website development company bringing strategy, UI engineering, backend development, API integrations, quality testing, and ongoing support together under one engagement. We build websites around your business goals, user expectations, and technical requirements rather than treating development as a page-building exercise. From initial planning to post-launch improvements, our team focuses on performance, maintainability, security, and a reliable experience across devices.",
+    "faqs": "Concise answers to the questions buyers commonly ask when evaluating web development services: cost, performance, migration, and ownership.",
+    "leadForm": "Tell us what you need to build, the systems it must connect with and your target launch window. A senior engineer reviews every enquiry and responds with a practical point of view."
+  }
+}

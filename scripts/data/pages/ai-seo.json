@@ -1,0 +1,436 @@
+{
+  "_source": "AI SEO Services_AptenTech .docx",
+  "_notes": [
+    "The document's second section is headed 'How Digital Marketing Drives Business Growth?' — the same heading appears in the digital marketing document, and all three cards under it are about search demand, SEO data and organic growth. Published as 'How AI SEO drives business growth?' so the heading matches the page and its own cards.",
+    "The 'AI SEO, AEO, and GEO: What's the Difference?' comparison table is not published. It is a seven-row, four-column comparison, and the only table in the approved design is the pricing table, whose columns are tier, scope, timeline and investment. Rendering it needs a new section in the design rather than a content change, so it is left for AptenTech to decide on.",
+    "The document does not cover the compliance, pricing or tech-stack sections that this page already has, so those are left exactly as they are rather than emptied."
+  ],
+
+  "seo": {
+    "title": "AI SEO Services | AEO & GEO Experts",
+    "description": "Get AI SEO services that improve visibility across Google AI Overviews, ChatGPT, Gemini, and more. Grow rankings, citations, and AI search presence with AptenTech."
+  },
+
+  "heroTitle": "AI SEO",
+  "heroTitleHighlight": "Services",
+  "heroDescription": "Struggling with declining rankings, weak traffic, or content that fails to convert? AptenTech's AI SEO services identify search gaps, optimize performance, and turn organic visibility into measurable growth.",
+  "heroPoints": [
+    "AI-powered keyword & search intent analysis",
+    "Technical SEO issue detection & optimization",
+    "Content gap & opportunity identification",
+    "AI-driven content optimization",
+    "Competitor & SERP performance analysis",
+    "Continuous ranking & performance monitoring"
+  ],
+
+  "protectTitle": "How AI SEO drives business growth?",
+  "valuePropTitle": "How AI SEO drives business growth?",
+  "protect": [
+    {
+      "title": "Capture more search demand",
+      "description": "Analyze search behavior, intent, and emerging opportunities to uncover valuable queries, while our AI SEO agency approach helps attract prospects with stronger conversion potential."
+    },
+    {
+      "title": "Turn SEO data into smarter decisions",
+      "description": "Identify ranking gaps, content opportunities, and performance patterns using insights from an AI SEO firm that connects optimization priorities with measurable business growth."
+    },
+    {
+      "title": "Scale organic growth more efficiently",
+      "description": "Streamline research, content optimization, and performance analysis to expand visibility across pages and markets with support from an experienced AI search optimization agency."
+    }
+  ],
+
+  "positioningTitle": "Get your business found in Google AI Overviews and ChatGPT",
+  "coreCapabilitiesTitle": "Our core capabilities",
+  "coreCapabilities": [
+    "Optimize content for better Google AI Overview visibility",
+    "Strengthen brand signals for more ChatGPT citations",
+    "Build answer-focused content for AI search engines",
+    "Improve entity authority across AI-powered search platforms",
+    "Create AI-ready content around real search intent",
+    "Develop topical authority with strategic content clusters"
+  ],
+
+  "brandStripLabel": "Trusted by clients",
+
+  "statsTitle": "Our work in numbers",
+  "stats": [
+    { "value": "250", "suffix": "+", "label": "Projects delivered" },
+    { "value": "120", "suffix": "+", "label": "Global clients" },
+    { "value": "5", "suffix": "+", "label": "Years of experience" },
+    { "value": "98", "suffix": "%", "label": "Client retention rate" },
+    { "value": "60", "suffix": "+", "label": "Countries served" },
+    { "value": "150", "suffix": "+", "label": "App developers" }
+  ],
+
+  "servicesTitle": "AI SEO services that expand your search visibility",
+  "services": [
+    {
+      "title": "AI SEO audit & visibility report",
+      "description": "We evaluate your current search footprint across Google and AI platforms, identifying visibility gaps, technical limitations, content weaknesses, and untapped optimization opportunities.",
+      "bullets": [
+        "Measure brand visibility across traditional and emerging AI-powered search platforms",
+        "Identify technical, content, and authority gaps affecting organic search performance",
+        "Benchmark your visibility against competitors across commercially important topics",
+        "Deliver prioritized recommendations based on opportunities with real growth potential"
+      ]
+    },
+    {
+      "title": "LLM optimization",
+      "description": "We optimize your digital presence so large language models can better understand your expertise, services, entities, relationships, and relevant brand information.",
+      "bullets": [
+        "Structure important information clearly for easier interpretation by large language models",
+        "Strengthen contextual signals connecting your brand with relevant services and topics",
+        "Improve content depth around questions customers frequently ask AI-powered platforms",
+        "Build consistent brand information that supports recognition across generative search"
+      ]
+    },
+    {
+      "title": "AI content optimization",
+      "description": "Our AI SEO services strengthen existing and new content around intent, topical depth, relevance, structure, and information AI-powered search systems can understand.",
+      "bullets": [
+        "Optimize existing pages around search intent and topical relevance",
+        "Structure answers clearly to improve readability for users and AI-driven discovery",
+        "Identify missing subtopics that prevent pages from developing complete coverage",
+        "Refine content using performance insights instead of generic AI-generated copy"
+      ]
+    },
+    {
+      "title": "GEO services",
+      "description": "We prepare your brand for generative search experiences by strengthening authority, contextual relevance, citations, and content signals that AI systems can confidently reference.",
+      "bullets": [
+        "Build authoritative content designed around topics generative engines need to understand",
+        "Improve citation-worthy information through stronger evidence, clarity and attribution",
+        "Strengthen brand-topic associations that help systems recognize your expertise",
+        "Optimize important pages for discovery across conversational and generative journeys"
+      ]
+    },
+    {
+      "title": "AEO services",
+      "description": "As an experienced AI SEO agency, we structure content around real questions and concise answers, improving discoverability across answer engines and conversational search.",
+      "bullets": [
+        "Research customer questions that reveal informational and commercial search intent",
+        "Create direct answers supported by useful context, expertise and supporting information",
+        "Organize content structures that make information easier for answer engines to extract",
+        "Optimize FAQ and service content for conversational queries across modern search"
+      ]
+    },
+    {
+      "title": "Entity SEO",
+      "description": "We strengthen relationships between your brand, services, expertise, people, and topics so search and AI systems can interpret your business more accurately.",
+      "bullets": [
+        "Establish clear connections between your business, services and relevant industry topics",
+        "Maintain consistent entity information across pages, profiles and trusted external sources",
+        "Strengthen semantic relationships that clarify what your business does and who it serves",
+        "Improve structured signals supporting brand recognition within modern search ecosystems"
+      ]
+    },
+    {
+      "title": "Microsoft Copilot AI SEO services",
+      "description": "We optimize content and brand signals to improve discoverability within Microsoft's AI-powered ecosystem, supporting stronger visibility across Copilot-driven search and discovery experiences.",
+      "bullets": [
+        "Optimize relevant content for conversational searches across Microsoft's AI ecosystem",
+        "Strengthen authority signals that support better understanding of your brand",
+        "Improve content structure so important information is easier to interpret and surface",
+        "Track evolving Copilot search behavior to uncover new visibility opportunities"
+      ]
+    },
+    {
+      "title": "AI keyword research",
+      "description": "Our AI SEO company approach goes beyond search volume, uncovering conversational queries, emerging topics, customer questions, and commercial opportunities across traditional and AI search.",
+      "bullets": [
+        "Discover conversational queries reflecting how customers search through AI platforms",
+        "Map keywords according to intent, customer journey stages and business value",
+        "Identify emerging topics before they become highly competitive search opportunities",
+        "Prioritize queries capable of supporting qualified traffic and long-term organic growth"
+      ]
+    },
+    {
+      "title": "AI search reporting",
+      "description": "We track how your brand performs across traditional and AI-driven search, turning visibility, citation, ranking, and content data into clear optimization priorities.",
+      "bullets": [
+        "Monitor visibility changes across Google, AI Overviews, LLMs and answer-driven search",
+        "Track brand mentions and citations appearing in relevant AI-generated responses",
+        "Compare performance trends to understand which activities produce real improvement",
+        "Translate complex search data into clear actions for continuous improvement"
+      ]
+    }
+  ],
+
+  "recognitionTitle": "Recognition & trust",
+
+  "featuresTitle": "A unified approach to multi-platform AI search",
+  "featuresLayout": "groups",
+  "features": [
+    {
+      "title": "Google AI Overviews",
+      "description": "Optimization aimed at the summaries Google now places above the results.",
+      "items": [
+        "AI Overview content optimization",
+        "E-E-A-T signal strengthening",
+        "Structured data implementation",
+        "AI visibility performance tracking"
+      ]
+    },
+    {
+      "title": "ChatGPT & OpenAI Search",
+      "description": "Work aimed at being one of the sources ChatGPT names when it answers.",
+      "items": [
+        "Citation-ready authority content",
+        "LLM entity signal optimization",
+        "Brand mention visibility tracking",
+        "Prompt-based response monitoring"
+      ]
+    },
+    {
+      "title": "Perplexity AI",
+      "description": "Perplexity cites its sources in line, so source positioning is the work.",
+      "items": [
+        "Real-time content discoverability",
+        "Authoritative source positioning",
+        "Citation-worthy content development",
+        "Perplexity citation visibility tracking"
+      ]
+    },
+    {
+      "title": "Google Gemini",
+      "description": "Entity and multimodal signals that Gemini reads when it builds an answer.",
+      "items": [
+        "Knowledge Graph entity optimization",
+        "Multimodal content optimization",
+        "Brand entity signal strengthening",
+        "Gemini response visibility monitoring"
+      ]
+    },
+    {
+      "title": "Microsoft Bing Copilot",
+      "description": "Copilot draws on Bing, so crawlability and structured data come first.",
+      "items": [
+        "Bing crawlability optimization",
+        "Copilot-ready structured data",
+        "Microsoft search signal strengthening",
+        "Copilot citation visibility tracking"
+      ]
+    },
+    {
+      "title": "Grok & voice search AI",
+      "description": "Spoken questions are phrased differently from typed ones, and are optimized for separately.",
+      "items": [
+        "Conversational query optimization",
+        "Voice-ready content structuring",
+        "Speakable and FAQ schema",
+        "Entity signals for voice discovery"
+      ]
+    }
+  ],
+
+  "caseStudiesTitle": "Results we've delivered",
+  "testimonialsTitle": "Our client testimonial",
+
+  "solutionsTitle": "AI SEO solutions for different industries",
+  "solutions": [
+    {
+      "title": "SaaS & technology",
+      "bullets": [
+        "Expert entity and authority building",
+        "Product comparison query optimization",
+        "Technical content for AI discovery",
+        "B2B conversational search targeting"
+      ]
+    },
+    {
+      "title": "eCommerce",
+      "bullets": [
+        "Product schema and entity optimization",
+        "AI shopping search visibility",
+        "Product comparison content optimization",
+        "Review and UGC signal strengthening"
+      ]
+    },
+    {
+      "title": "Healthcare",
+      "bullets": [
+        "YMYL-focused content optimization",
+        "Medical E-E-A-T signal strengthening",
+        "Trusted healthcare citation building",
+        "Patient question and answer optimization"
+      ]
+    },
+    {
+      "title": "Finance",
+      "bullets": [
+        "Compliance-focused AI content optimization",
+        "Financial trust signal strengthening",
+        "Comparison query answer optimization",
+        "Authoritative financial entity building"
+      ]
+    },
+    {
+      "title": "Professional services",
+      "bullets": [
+        "Professional entity signal optimization",
+        "Expertise and authority strengthening",
+        "Service-focused answer engine optimization",
+        "High-intent consultation query targeting"
+      ]
+    },
+    {
+      "title": "Local businesses",
+      "bullets": [
+        "Google Business Profile optimization",
+        "Local entity and schema strengthening",
+        "Conversational \"near me\" optimization",
+        "Hyperlocal AI search visibility"
+      ]
+    }
+  ],
+
+  "technologiesTitle": "How we measure AI search visibility",
+  "technologies": [
+    {
+      "title": "AI Overview appearances",
+      "description": "We track how frequently your pages and brand appear within Google AI Overviews for relevant queries, revealing changes in generative search visibility."
+    },
+    {
+      "title": "LLM brand mentions",
+      "description": "We monitor how often leading LLMs mention your brand across relevant prompts, helping measure recognition and presence throughout conversational AI search experiences."
+    },
+    {
+      "title": "AI citations",
+      "description": "We identify when AI platforms cite or reference your website as a source, providing a clearer picture of your content's authority and discoverability."
+    },
+    {
+      "title": "Citation share vs competitors",
+      "description": "Our AI visibility agency benchmarks your citation presence against competitors, revealing who earns greater AI exposure and where opportunities exist to close gaps."
+    },
+    {
+      "title": "Conversational query visibility",
+      "description": "We measure your visibility across natural-language questions and conversational prompts customers use when researching problems, comparing solutions, or making purchase decisions online."
+    },
+    {
+      "title": "AI referral traffic",
+      "description": "We track visits arriving from AI platforms to understand which engines, cited pages, and conversational experiences are actually driving users to your website."
+    },
+    {
+      "title": "Organic rankings and traffic",
+      "description": "Traditional search still matters, so we monitor keyword rankings and organic traffic alongside AI visibility to understand your complete search performance picture."
+    },
+    {
+      "title": "Conversion and lead contribution",
+      "description": "We connect AI and organic search activity with enquiries, conversions, and qualified leads to understand whether improved visibility contributes to meaningful business outcomes."
+    },
+    {
+      "title": "AI search opportunity growth",
+      "description": "An AI SEO consultant evaluates emerging queries, citation gaps, and platform trends to identify new opportunities for expanding your brand's future search visibility."
+    }
+  ],
+
+  "midCta2Title": "Don't let AI search overlook your brand",
+  "midCta2Body": "Work with our experienced AI visibility agency to strengthen how your business is discovered, understood, and referenced across today's leading AI search platforms.",
+  "midCta2Button": { "label": "Talk to Our AI SEO Experts" },
+
+  "processTitle": "Our AI SEO process",
+  "process": [
+    {
+      "title": "AI visibility audit",
+      "description": "We assess your current presence across search engines and AI platforms, uncovering content, technical, entity, and citation gaps limiting overall search visibility.",
+      "deliverables": ["Visibility gaps", "AI citations", "Technical issues"]
+    },
+    {
+      "title": "Search opportunity mapping",
+      "description": "We analyze conversational queries, competitors, customer intent, and emerging search patterns to identify opportunities where your brand can earn meaningful AI visibility.",
+      "deliverables": ["Query research", "Competitor gaps", "Search intent"]
+    },
+    {
+      "title": "Content & entity optimization",
+      "description": "We strengthen content depth, structure, entities, and topical relationships so search engines and AI platforms can better understand, trust, and reference your brand.",
+      "deliverables": ["Content structure", "Entity signals", "Topical authority"]
+    },
+    {
+      "title": "AEO & GEO implementation",
+      "description": "We optimize answers, schema, citations, and content formats to increase your chances of appearing across AI Overviews, answer engines, and generative search experiences.",
+      "deliverables": ["Answer optimization", "Structured data", "Citation readiness"]
+    },
+    {
+      "title": "Technical AI search optimization",
+      "description": "We improve crawlability, machine readability, internal linking, and technical signals that help search engines and AI systems efficiently access and interpret important content.",
+      "deliverables": ["Crawlability", "Machine readability", "Internal linking"]
+    },
+    {
+      "title": "Monitor, test & improve",
+      "description": "We continuously track AI mentions, citations, rankings, traffic, and competitor movement, using performance insights to refine strategies and uncover new growth opportunities.",
+      "deliverables": ["AI mentions", "Performance tracking", "Continuous improvement"]
+    }
+  ],
+
+  "whyTitle": "Why choose AptenTech as your AI SEO company?",
+  "why": [
+    {
+      "title": "Platform-specific AI strategies",
+      "description": "Every AI platform interprets information differently, so we adapt content, entities, citations, and technical signals instead of applying one strategy everywhere."
+    },
+    {
+      "title": "Built to earn AI citations",
+      "description": "We strengthen source quality, topical authority, factual depth, and content structure to increase opportunities for your brand to become a referenced source."
+    },
+    {
+      "title": "SEO, AEO, and GEO together",
+      "description": "Instead of treating emerging search channels separately, we connect SEO, AEO, and GEO into one strategy covering rankings, answers, mentions, and citations."
+    },
+    {
+      "title": "Decisions backed by visibility data",
+      "description": "We track AI appearances, brand mentions, citations, competitor share, referral traffic, and conversions to understand where visibility is growing and what needs improvement."
+    },
+    {
+      "title": "Human strategy behind AI optimization",
+      "description": "AI supports our research and analysis, but strategy remains human-led, keeping optimization aligned with search intent, brand expertise, and meaningful business opportunities."
+    }
+  ],
+
+  "faqTitle": "AI SEO FAQs",
+  "faqs": [
+    {
+      "question": "What are AI SEO services?",
+      "answer": "AI SEO improves content, entities, authority, and technical signals to strengthen brand visibility across Google, AI Overviews, ChatGPT, Gemini, and other AI platforms."
+    },
+    {
+      "question": "How is AI SEO different from traditional SEO?",
+      "answer": "An AI-powered SEO agency optimizes beyond rankings and traffic, focusing on citations, brand mentions, generated answers, and discoverability across emerging AI search experiences."
+    },
+    {
+      "question": "How can my website appear in Google AI Overviews?",
+      "answer": "Our experienced AI SEO consultant focuses on topical depth, clear answers, credible information, structured content, and authority signals that support AI Overview visibility."
+    },
+    {
+      "question": "How can my business get cited by ChatGPT?",
+      "answer": "An AI visibility agency strengthens entity signals, source quality, topical authority, and citation-worthy content, improving opportunities for brands to be referenced in relevant responses."
+    },
+    {
+      "question": "How long do AI SEO services take to show results?",
+      "answer": "Timelines depend on existing authority, competition, content, and technical health. An AI SEO services company tracks mentions, citations, traffic, and visibility improvements over time."
+    },
+    {
+      "question": "Can AI SEO improve traditional Google rankings too?",
+      "answer": "Yes. Content quality, technical improvements, entity optimization, internal linking, and topical authority used for AI visibility can also support stronger traditional organic performance."
+    },
+    {
+      "question": "Why choose AptenTech for AI SEO services?",
+      "answer": "AptenTech combines traditional SEO, AEO, GEO, entity optimization, and LLM visibility into one strategy designed to grow your presence across traditional and AI search."
+    },
+    {
+      "question": "Which AI platforms does AptenTech optimize for?",
+      "answer": "AptenTech builds platform-specific strategies for Google AI Overviews, ChatGPT, Gemini, Perplexity, Microsoft Copilot, and other emerging AI-powered search and discovery platforms."
+    }
+  ],
+
+  "sectionLedes": {
+    "protect": "Our top-rated AI-driven SEO services help businesses move beyond traditional optimization by uncovering search opportunities, improving decision-making, and connecting organic visibility with meaningful business outcomes.",
+    "positioning": "AptenTech is an award-winning AI SEO agency helping businesses build visibility beyond traditional search. Our answer engine optimization strategies address how to appear in Google Overviews and how to get cited by ChatGPT, strengthening content authority, topical relevance, and brand signals so AI-powered platforms can better discover, understand, and reference your business.",
+    "services": "We optimize content, technical signals, and brand authority to improve discoverability across traditional search, AI Overviews, LLMs, and emerging answer-driven search experiences.",
+    "features": "AI platforms discover and interpret information differently. Our AI SEO services adapt to these changes, strengthening brand visibility across each search experience.",
+    "solutions": "Every industry faces different search behaviors, competitors, and customer journeys. Our AI SEO services adapt to your market, helping your brand build relevant visibility across traditional and AI-powered search.",
+    "technologies": "As an AI-powered SEO agency, AptenTech measures more than rankings, tracking how often your brand appears, gets referenced, attracts traffic, and contributes to business growth across AI-driven search.",
+    "process": "Most agencies start spending in week one and figure out the rest later. We do not. Working with an internet marketing company should mean knowing exactly what happens next, and what it produces.",
+    "why": "AptenTech is a top AI SEO services company focused on where search is heading, not where it has been. We connect traditional SEO with AEO, GEO, entity optimization, and LLM visibility to help brands earn rankings, citations, mentions, and meaningful visibility across the platforms shaping modern search."
+  }
+}

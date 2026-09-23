@@ -1,0 +1,514 @@
+{
+  "_source": "Aptentech — Digital Marketing Page Content.docx",
+  "_notes": [
+    "The document's opening bullet list runs nine items, and the last four ('and budget recommendation', 'Tracking gap review', 'NDA before you share anything', 'No obligation to continue') are call-to-action points rather than services — they match the points already under the mid-page CTA. The first five are published as the hero tick list and the last four as the CTA points. 'and budget recommendation' is a fragment; published as 'Channel and budget recommendation', which is what the existing CTA point says.",
+    "The document contains a line reading 'Section: (Remove this section)' between the process section and the why section. Two sections sit there on the page — pricing and tech stack — and the instruction names neither, so nothing has been removed. AptenTech should say which one, and it can then be hidden from the admin without a deploy.",
+    "Years of experience is set to 5, matching the home page and the rest of the site, rather than the 3 this document states. See the note in mobile-app-development.json."
+  ],
+
+  "seo": {
+    "title": "Digital Marketing Company | AptenTech",
+    "description": "Full-service digital marketing agency for US brands. SEO, AI visibility, paid media, content, CRO, and analytics, measured against revenue, not dashboards."
+  },
+
+  "heroTitle": "Digital Marketing",
+  "heroTitleHighlight": "Company",
+  "heroDescription": "AptenTech is a full-service digital marketing company that runs SEO, paid media, content, CRO, and lifecycle programs as one system. It starts with measurement you can defend in a board meeting, then scales the channels producing the pipeline, not the ones that happen to report well.",
+  "heroPoints": [
+    "SEO & organic growth",
+    "AI visibility & answer engines",
+    "Search engine marketing (SEM)",
+    "Content, PR & link building",
+    "Conversion rate optimization"
+  ],
+
+  "protectTitle": "How digital marketing drives business growth?",
+  "valuePropTitle": "How digital marketing drives business growth?",
+  "protect": [
+    {
+      "title": "Reach more users",
+      "description": "Your customers are looking for what you sell right now. Digital marketing puts you in front of them at that exact moment."
+    },
+    {
+      "title": "Measurable results",
+      "description": "You can track which ad or page brought each sale, then spend more on what works and stop the rest."
+    },
+    {
+      "title": "Affordable reach",
+      "description": "Good targeting lets a small business beat a bigger one in its own market, even with far less money to spend each month."
+    }
+  ],
+
+  "positioningTitle": "What our affordable digital marketing services cover",
+  "coreCapabilitiesTitle": "Our core capabilities",
+  "coreCapabilities": [
+    "Site speed and technical fixes done by our own engineers",
+    "Tracking that still works after browser and privacy updates",
+    "One report pulling from your ads, analytics, and CRM",
+    "Landing pages built in days, not sprints",
+    "Content written for buyers, not for word count",
+    "Privacy, ad policy, and accessibility covered during the build"
+  ],
+
+  "brandStripLabel": "Trusted by clients",
+
+  "statsTitle": "Our work in numbers",
+  "stats": [
+    { "value": "250", "suffix": "+", "label": "Projects delivered" },
+    { "value": "120", "suffix": "+", "label": "Global clients" },
+    { "value": "5", "suffix": "+", "label": "Years of experience" },
+    { "value": "98", "suffix": "%", "label": "Client retention rate" },
+    { "value": "60", "suffix": "+", "label": "Countries served" },
+    { "value": "150", "suffix": "+", "label": "App developers" }
+  ],
+
+  "servicesTitle": "Digital marketing services we offer",
+  "services": [
+    {
+      "title": "Search engine optimization (SEO)",
+      "description": "We fix what stops your site from ranking, then build the content and links that keep it climbing month after month.",
+      "bullets": [
+        "Technical audits and site speed fixes",
+        "Keyword research and intent mapping",
+        "On-page and content optimization",
+        "Local and multi-location SEO",
+        "Internal linking structure",
+        "Monthly ranking and traffic reports"
+      ]
+    },
+    {
+      "title": "AI visibility marketing",
+      "description": "Buyers now ask ChatGPT and Gemini for recommendations. We make sure your brand is one of the names they get back.",
+      "bullets": [
+        "Citation tracking across major AI assistants",
+        "Crawler access for AI search bots",
+        "Entity and structured data setup",
+        "Brand mention accuracy monitoring",
+        "Placement in comparison content",
+        "AI referral traffic reporting"
+      ]
+    },
+    {
+      "title": "Search engine marketing (SEM)",
+      "description": "Google and Bing ads managed for profit, not clicks. Better account structure, cleaner signals, and landing pages that actually convert.",
+      "bullets": [
+        "Google and Microsoft Ads management",
+        "Account structure and rebuilds",
+        "Search, Shopping, and Performance Max",
+        "Negative keyword and waste control",
+        "Bid strategy and budget pacing",
+        "Landing page testing"
+      ]
+    },
+    {
+      "title": "Paid social advertising",
+      "description": "Meta, LinkedIn, TikTok, and YouTube run as a creative testing system, because the ad matters more than the targeting settings.",
+      "bullets": [
+        "Campaign setup across all major platforms",
+        "Monthly creative concept production",
+        "Audience building and exclusions",
+        "Retargeting and lookalike campaigns",
+        "Conversions API setup",
+        "Creative performance reporting"
+      ]
+    },
+    {
+      "title": "Programmatic advertising",
+      "description": "Display, connected TV, and retail media bought through curated supply with frequency control, so your budget reaches people instead of bots.",
+      "bullets": [
+        "DSP setup and campaign management",
+        "Connected TV and streaming placements",
+        "Retail media and offsite display",
+        "Audience targeting and segmentation",
+        "Brand safety and fraud controls",
+        "Incrementality and lift testing"
+      ]
+    },
+    {
+      "title": "Content marketing",
+      "description": "Content written for buyers, not word counts. Every piece has a job before it gets written and a place in your funnel.",
+      "bullets": [
+        "Content strategy and topic planning",
+        "Blog and long-form article writing",
+        "Landing page and sales copy",
+        "Lead magnets and gated assets",
+        "Content refresh and pruning",
+        "Distribution and repurposing"
+      ]
+    },
+    {
+      "title": "Link building & digital PR",
+      "description": "Editorial links from real publications, earned through outreach and original data. Every placement comes with a live URL you can check.",
+      "bullets": [
+        "HARO link building and journalist outreach",
+        "Digital PR campaigns",
+        "Original research and data studies",
+        "Guest posting on relevant sites",
+        "Unlinked mention reclamation",
+        "Full placement reporting"
+      ]
+    },
+    {
+      "title": "Conversion rate optimization (CRO)",
+      "description": "Doubling your conversion rate is cheaper than doubling your traffic. We research first, then test what will actually move the number.",
+      "bullets": [
+        "Funnel and drop-off analysis",
+        "Heatmaps and session recordings",
+        "A/B and multivariate testing",
+        "Form and checkout optimization",
+        "Landing page redesigns",
+        "Documented test results"
+      ]
+    },
+    {
+      "title": "Email marketing",
+      "description": "The channel you already own. We rebuild your flows around what people actually do, not around a fixed time delay.",
+      "bullets": [
+        "Email and SMS program design",
+        "Welcome and onboarding sequences",
+        "Cart and browse abandonment flows",
+        "Win-back and retention campaigns",
+        "List segmentation and hygiene",
+        "Deliverability and compliance"
+      ]
+    },
+    {
+      "title": "Lead generation services",
+      "description": "A form fill is not a lead. We optimize for what your sales team will actually pick up the phone for.",
+      "bullets": [
+        "Offer and lead magnet development",
+        "Landing page and form optimization",
+        "Lead scoring and routing rules",
+        "Call tracking and attribution",
+        "Speed-to-lead automation",
+        "Qualified pipeline reporting"
+      ]
+    },
+    {
+      "title": "Online reputation management",
+      "description": "Your star rating sells more than your homepage. We turn review collection into a routine that runs without anyone remembering.",
+      "bullets": [
+        "Automated review request campaigns",
+        "Monitoring and real-time alerts",
+        "Response templates and management",
+        "Listing accuracy across directories",
+        "Multi-location reputation reporting",
+        "Negative review handling"
+      ]
+    },
+    {
+      "title": "Web design & development",
+      "description": "Campaigns are only as good as the page they land on. We design and build ours in-house, so fixes ship in days.",
+      "bullets": [
+        "Conversion-focused landing pages",
+        "Full website design and builds",
+        "Core Web Vitals and speed work",
+        "ADA compliance and WCAG remediation",
+        "WordPress, Shopify, and custom stacks",
+        "Ongoing maintenance and support"
+      ]
+    }
+  ],
+
+  "midCtaTitle": "Not sure which channel deserves the budget? Let's find out.",
+  "midCtaPoints": [
+    "Channel and budget recommendation",
+    "Tracking gap review",
+    "NDA before you share anything",
+    "No obligation to continue"
+  ],
+
+  "recognitionTitle": "Recognition & trust",
+
+  "solutionsTitle": "Industries we run marketing for",
+  "solutions": [
+    {
+      "title": "SaaS & technology",
+      "bullets": [
+        "Demand gen tied to pipeline",
+        "Trial and demo conversion",
+        "Product-led growth loops",
+        "LTV:CAC and payback reporting"
+      ]
+    },
+    {
+      "title": "Ecommerce & D2C",
+      "bullets": [
+        "Shopping feeds and PMax",
+        "Margin-based bidding, not ROAS",
+        "Repeat purchase and retention",
+        "Creative testing at volume"
+      ]
+    },
+    {
+      "title": "Healthcare & wellness",
+      "bullets": [
+        "Privacy-safe tracking setup",
+        "Restricted-category ad approvals",
+        "Local and multi-clinic SEO",
+        "Booked appointments, not calls"
+      ]
+    },
+    {
+      "title": "Home & trade services",
+      "bullets": [
+        "Local Services Ads management",
+        "Bad lead disputes and credits",
+        "Seasonal demand planning",
+        "Jobs booked as the metric"
+      ]
+    },
+    {
+      "title": "Legal services",
+      "bullets": [
+        "High-intent case queries",
+        "Lead screening before attorneys",
+        "Practice area page depth",
+        "Cost per signed case"
+      ]
+    },
+    {
+      "title": "Real estate & property",
+      "bullets": [
+        "Listing and neighborhood search",
+        "Inquiry scoring before handoff",
+        "CRM routing by territory",
+        "Attribution across long cycles"
+      ]
+    },
+    {
+      "title": "Financial services",
+      "bullets": [
+        "Compliance review in workflow",
+        "Disclosure rules in ad copy",
+        "Lead verification before sales",
+        "Consent-first tracking setup"
+      ]
+    },
+    {
+      "title": "Manufacturing & B2B industrial",
+      "bullets": [
+        "Part number and spec search",
+        "Distributor and dealer support",
+        "RFQ volume and quote rates",
+        "Trade show campaign support"
+      ]
+    },
+    {
+      "title": "Education & e-learning",
+      "bullets": [
+        "Enrollment window campaigns",
+        "Program page optimization",
+        "Application to enrollment tracking",
+        "Parent and student targeting"
+      ]
+    },
+    {
+      "title": "Restaurants & hospitality",
+      "bullets": [
+        "Local visibility and map pack",
+        "Review generation systems",
+        "Reservation and order flows",
+        "Peak and slow season planning"
+      ]
+    },
+    {
+      "title": "Travel & tourism",
+      "bullets": [
+        "Long research cycle content",
+        "Retargeting across touchpoints",
+        "Seasonal and destination campaigns",
+        "Bookings measured end to end"
+      ]
+    },
+    {
+      "title": "Nonprofits & associations",
+      "bullets": [
+        "Google Ad Grants management",
+        "Donation flow optimization",
+        "Recurring donor campaigns",
+        "Cost per donor reporting"
+      ]
+    }
+  ],
+
+  "caseStudiesTitle": "Results we've delivered",
+  "testimonialsTitle": "Our client testimonial",
+
+  "featuresTitle": "AI visibility marketing that gets you cited",
+  "featuresLayout": "chips",
+  "features": [
+    { "title": "Citation tracking across ChatGPT, Gemini, and Perplexity", "description": "", "items": [] },
+    { "title": "Crawler access for AI search bots", "description": "", "items": [] },
+    { "title": "Entity and structured data setup", "description": "", "items": [] },
+    { "title": "Prompt-level share of voice against competitors", "description": "", "items": [] },
+    { "title": "Correcting how AI describes your brand", "description": "", "items": [] },
+    { "title": "Placement in comparison and round-up content", "description": "", "items": [] },
+    { "title": "Digital PR for earned brand mentions", "description": "", "items": [] },
+    { "title": "AI referral traffic isolated in analytics", "description": "", "items": [] },
+    { "title": "Monthly AI visibility reporting", "description": "", "items": [] }
+  ],
+
+  "technologiesTitle": "Benefits of online digital marketing services",
+  "technologies": [
+    {
+      "title": "Expand your services",
+      "description": "Build new app development and marketing services without hiring a full team by partnering with a marketing and development company that handles delivery smoothly."
+    },
+    {
+      "title": "Save more, earn more",
+      "description": "Offer affordable digital marketing services under your own name while experts manage campaigns, content, and strategy for better growth."
+    },
+    {
+      "title": "Attract better leads",
+      "description": "Use inbound marketing services to attract interested customers naturally, build trust through useful content, and create more opportunities to sell successfully."
+    },
+    {
+      "title": "Win bigger clients",
+      "description": "Expand into enterprise digital marketing without building everything yourself, while experienced partners provide dependable support for managing bigger clients confidently."
+    },
+    {
+      "title": "Grow marketplace sales",
+      "description": "Boost marketplace visibility with Amazon SEO services, helping products reach more shoppers, gain attention, and create stronger sales opportunities every day."
+    },
+    {
+      "title": "Scale without stress",
+      "description": "Grow faster with flexible white-label support, keeping clients happy while your business focuses on relationships, growth, and better customer experiences."
+    }
+  ],
+
+  "midCta2Title": "Your search for a digital marketing agency near me ends here.",
+  "midCta2Body": "Let's turn your online presence into a powerful growth engine that brings attention, trust, and real business results.",
+  "midCta2Button": { "label": "Make It Happen" },
+
+  "complianceTitle": "How we keep your marketing compliant",
+  "compliance": [
+    { "label": "CCPA & CPRA" },
+    { "label": "GDPR" },
+    { "label": "CAN-SPAM" },
+    { "label": "TCPA" },
+    { "label": "FTC Disclosure Guidelines" },
+    { "label": "WCAG 2.2 AA" },
+    { "label": "Consent Mode & Cookie Governance" },
+    { "label": "Google Ads Policies" },
+    { "label": "Meta Advertising Standards" },
+    { "label": "HIPAA-Aware Marketing" }
+  ],
+
+  "processTitle": "Our digital marketing process",
+  "process": [
+    {
+      "title": "Understand your business",
+      "description": "We first learn what you sell, who you serve, and where you want your business to go.",
+      "deliverables": ["Understand your ideal customers", "Identify your biggest challenges", "Define clear growth goals"]
+    },
+    {
+      "title": "Find what matters",
+      "description": "We look at your market and competitors to discover where your brand can stand out.",
+      "deliverables": ["Spot customer expectations", "Study competitor strengths", "Find untapped opportunities"]
+    },
+    {
+      "title": "Build your strategy",
+      "description": "We create a practical marketing roadmap focused on reaching the right people at the right time.",
+      "deliverables": ["Choose suitable marketing channels", "Plan engaging content", "Set realistic campaign goals"]
+    },
+    {
+      "title": "Create & launch",
+      "description": "We turn the strategy into campaigns, content, and promotions designed to get people interested.",
+      "deliverables": [
+        "Create audience-friendly content",
+        "Launch targeted campaigns",
+        "Keep your brand message consistent"
+      ]
+    },
+    {
+      "title": "Watch what works",
+      "description": "We track customer responses and campaign performance to understand what deserves more attention and improvement.",
+      "deliverables": ["Monitor meaningful results", "Identify winning ideas", "Improve underperforming campaigns"]
+    },
+    {
+      "title": "Improve & grow",
+      "description": "We continuously refine your marketing based on real results, helping your business attract and convert more customers.",
+      "deliverables": ["Double down on what works", "Adjust what falls short", "Find new growth opportunities"]
+    }
+  ],
+
+  "whyTitle": "Why is AptenTech the right choice as an internet marketing agency?",
+  "why": [
+    {
+      "title": "Business-focused",
+      "description": "We act as a digital marketing agency that understands your goals, customers, competition, and priorities before creating campaigns that actually fit."
+    },
+    {
+      "title": "Simple process",
+      "description": "As an internet marketing agency, we keep communication clear, explain decisions simply, and make sure you always know what happens next."
+    },
+    {
+      "title": "Real growth",
+      "description": "Our online marketing company focuses on meaningful business outcomes, helping you attract better prospects, generate enquiries, and turn attention into customers."
+    },
+    {
+      "title": "Flexible support",
+      "description": "Our web marketing services adapt to your changing needs, whether you're launching something new, entering a market, or ready to grow further."
+    },
+    {
+      "title": "Clear reporting",
+      "description": "You get straightforward updates that show what's working, where opportunities exist, and which areas deserve more attention for better results."
+    },
+    {
+      "title": "Long-term thinking",
+      "description": "We don't chase quick wins alone; we build marketing efforts that strengthen your brand, customer relationships, and growth potential over time."
+    }
+  ],
+
+  "faqTitle": "Digital marketing FAQs",
+  "faqs": [
+    {
+      "question": "What services does AptenTech offer?",
+      "answer": "We cover SEO, AI visibility, search engine marketing (SEM), paid social, content, link building, CRO, email marketing services, lead generation services, reputation management, and web development. Most clients start with three or four channels and expand once the results justify it."
+    },
+    {
+      "question": "How much does digital marketing cost?",
+      "answer": "Most US agencies charge a management retainer plus a separate media budget, typically between $2,500 and $12,000 a month depending on how many channels you run. Your ad spend stays in accounts you own. We will tell you honestly whether your target is reachable at your budget."
+    },
+    {
+      "question": "How long before we see results?",
+      "answer": "Paid channels give readable data within four to six weeks. SEO and AI visibility take three to six months to move and longer to compound. Any top digital marketing company that promises page one in thirty days is not being straight with you."
+    },
+    {
+      "question": "Do you work with clients outside your city?",
+      "answer": "Almost all of our work is remote. If you have been searching for a digital marketing agency near me, the better question is who does the work and how they report on it, not how far away they sit. Local knowledge comes from research, not proximity."
+    },
+    {
+      "question": "Do you require a long-term contract?",
+      "answer": "Three months to start, then month to month with notice. Three months is roughly the minimum window to judge the work fairly, and it protects both sides from drawing conclusions off one bad month."
+    },
+    {
+      "question": "Who owns the accounts and data?",
+      "answer": "You do, from day one. Ad accounts, analytics, tag containers, dashboards, content, and creative are all set up in your name. If you leave, you keep everything and we remove our access."
+    },
+    {
+      "question": "Can you work alongside our in-house team?",
+      "answer": "Yes, and it often works best that way. We can lead the whole program or fill specific gaps. Analytics, paid media, technical SEO, and development are what teams ask us for most."
+    },
+    {
+      "question": "What makes you different from other agencies?",
+      "answer": "We have engineers on staff. Most agencies audit your site, find the problems, then hand the fixes back to your developers. A top digital marketing company should be able to build what it recommends, and that is what we do."
+    },
+    {
+      "question": "How to choose a digital marketing company?",
+      "answer": "Choose a digital marketing company with proven results, relevant industry experience, transparent pricing, clear communication, customized strategies, and measurable reporting."
+    }
+  ],
+
+  "sectionLedes": {
+    "protect": "Growth does not come from being on every channel. It comes from proper digital marketing strategy development that picks the right few and funds them properly.",
+    "positioning": "Anyone can launch a campaign. The harder part is making sure the page loads fast, the form works, and your ad account numbers match what your bank shows. Most agencies hand this work back to you. As a digital marketing agency with engineers on the team, we handle it ourselves.",
+    "solutions": "Different industries need different marketing. As an AI marketing agency, we know what works in each of these sectors and build your campaigns around it.",
+    "features": "Buyers now ask ChatGPT, Gemini, and Perplexity for recommendations before they ever open Google. Ranking first no longer means being named. As a full-service digital marketing agency, these are the parts we work on to change that.",
+    "technologies": "Partnering with a trusted marketing and development company helps businesses expand services, reduce costs, access expertise, strengthen branding, and achieve faster growth.",
+    "compliance": "Compliance failures are expensive and preventable. As an online marketing company working with US brands, we build privacy, advertising policy, and accessibility requirements into every campaign from the start.",
+    "process": "Most agencies start spending in week one and figure out the rest later. We do not. Working with an internet marketing company should mean knowing exactly what happens next, and what it produces.",
+    "why": "AptenTech is an affordable digital marketing company that has spent years running campaigns for US businesses. What sets us apart is our team — marketers, designers, and engineers working together, so your strategy does not stall waiting on someone else to build it. You get senior people on your account, not juniors learning on your budget."
+  }
+}

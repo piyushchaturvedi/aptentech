@@ -1,0 +1,507 @@
+{
+  "_source": "Mobile App Development Company — AptenTech.docx",
+  "_notes": [
+    "Years of experience is set to 5, not the 3 the document states. Three of the six copy documents say 3+ and three say 5+, and the same stats block appears verbatim in all of them — the web document even describes itself as a 'mobile app development agency', so the block was copied between files. 5 matches the home page and the rest of the site; publishing two different answers to the same question would be worse than either.",
+    "The 'Trusted By Clients' sentence has no slot: the brand strip renders one 10px uppercase label above the logo marquee, and a 150-character sentence set that way is unreadable. The short label is published and the sentence is left for AptenTech to place."
+  ],
+
+  "seo": {
+    "title": "Mobile App Development Company | AptenTech – Build Apps That Last",
+    "description": "Looking for a reliable mobile app development company? AptenTech turns ideas into high-performing, future-ready apps. Clean code, lasting results, and honest guidance—every single time."
+  },
+
+  "heroTitle": "Custom Mobile App",
+  "heroTitleHighlight": "Development Company",
+  "heroDescription": "Every business today has an app idea. Very few get one that actually ships, scales, and earns. That gap is where we work. AptenTech is a mobile app development company that turns rough concepts into products people open daily — engineered for performance, designed for retention, and built to grow with your business instead of against it.",
+  "heroPoints": [
+    "Custom Mobile App Development",
+    "iOS & Android App Development",
+    "Cross-Platform App Development",
+    "UI/UX Design & Product Strategy",
+    "App Modernization Services",
+    "Post-Launch Support & Scaling"
+  ],
+
+  "protectTitle": "How do we keep your app and your users safe?",
+  "valuePropTitle": "How do we keep your app and your users safe?",
+  "protect": [
+    {
+      "title": "Encrypted data at rest and in transit",
+      "description": "User credentials, payment tokens, and session data are protected with AES-256 encryption and TLS 1.3, closing off interception and unauthorized access across every layer of your stack."
+    },
+    {
+      "title": "Secure authentication & access control",
+      "description": "Biometric login, multi-factor authentication, token expiry, and role-based permissions keep accounts locked to their rightful owners and limit what any single session can reach."
+    },
+    {
+      "title": "Privacy-compliant by design",
+      "description": "We architect around GDPR, CCPA, and platform-level privacy rules, with transparent consent flows, data minimization, and clean deletion paths that satisfy both regulators and app store reviewers."
+    }
+  ],
+
+  "positioningTitle": "Behind the build: modern mobile app development",
+  "coreCapabilitiesTitle": "Our core capabilities",
+  "coreCapabilities": [
+    "Modular codebase architecture that lets you add features later without rewriting what already works.",
+    "Cross-platform app development that reaches iOS and Android from a single build, cutting time-to-market by up to 45%.",
+    "Offline-first data handling so your app stays usable through weak signal, tunnels, and dead zones.",
+    "Legacy app modernization services that migrate outdated builds to modern frameworks without losing user data or App Store rankings.",
+    "Analytics and event tracking wired in from day one, so you launch with visibility rather than guesswork."
+  ],
+
+  "brandStripLabel": "Trusted by clients",
+
+  "statsTitle": "Our work in numbers",
+  "statsNote": "Years of building across industries have given us a track record we're happy to be measured on. Here's where our mobile app development agency stands today.",
+  "stats": [
+    { "value": "250", "suffix": "+", "label": "Projects delivered" },
+    { "value": "120", "suffix": "+", "label": "Global clients" },
+    { "value": "5", "suffix": "+", "label": "Years of experience" },
+    { "value": "98", "suffix": "%", "label": "Client retention rate" },
+    { "value": "60", "suffix": "+", "label": "Countries served" },
+    { "value": "150", "suffix": "+", "label": "App developers" }
+  ],
+
+  "servicesTitle": "Mobile app development services we offer",
+  "services": [
+    {
+      "title": "App strategy & consulting",
+      "description": "Before a single line of code, we pressure-test the idea. Our consultants map the market, size the opportunity, and tell you honestly what to build first and what to postpone.",
+      "bullets": [
+        "Market & competitor research",
+        "Feature prioritization & MVP scoping",
+        "Technology stack recommendations",
+        "Monetization & pricing strategy",
+        "Product roadmap development"
+      ]
+    },
+    {
+      "title": "Custom mobile app development",
+      "description": "No templates, no recycled builds. We design and engineer custom mobile app development projects around your workflows, your users, and your business logic.",
+      "bullets": [
+        "Requirement analysis & architecture design",
+        "Native & hybrid app engineering",
+        "Custom API & backend development",
+        "Third-party system integrations",
+        "Scalable cloud deployment"
+      ]
+    },
+    {
+      "title": "iOS app development services",
+      "description": "Apple users expect polish, and they notice when it's missing. Our iOS app development services deliver builds that feel native to the platform and pass review the first time.",
+      "bullets": [
+        "Swift & SwiftUI development",
+        "iPhone, iPad & Apple Watch apps",
+        "Human Interface Guideline compliance",
+        "App Store submission support",
+        "Apple Pay & Sign-In integration"
+      ]
+    },
+    {
+      "title": "Android app development services",
+      "description": "Thousands of devices, dozens of OS versions, one experience. Our Android app development services are built and tested for real-world device fragmentation.",
+      "bullets": [
+        "Kotlin & Jetpack Compose development",
+        "Multi-device & tablet optimization",
+        "Material Design implementation",
+        "Google Play Console management",
+        "Google Pay & Firebase integration"
+      ]
+    },
+    {
+      "title": "Cross-platform app development",
+      "description": "One codebase, two platforms, half the burn. We use React Native app development and Flutter app development to ship faster without users ever sensing a compromise.",
+      "bullets": [
+        "React Native app development",
+        "Flutter app development",
+        "Shared business logic architecture",
+        "Platform-specific UI adaptations",
+        "Unified release & update pipeline"
+      ]
+    },
+    {
+      "title": "Enterprise mobile app development",
+      "description": "Large organizations need apps that survive contact with legacy systems, compliance teams, and thousands of concurrent users. That's the brief we're built for.",
+      "bullets": [
+        "ERP, CRM & HRMS integrations",
+        "Single sign-on & directory sync",
+        "Role-based workflow automation",
+        "High-concurrency backend design",
+        "Audit logging & compliance reporting"
+      ]
+    },
+    {
+      "title": "App modernization services",
+      "description": "An aging app doesn't need to be abandoned. We rebuild it on current frameworks, keeping your users, your data, and your store history intact.",
+      "bullets": [
+        "Legacy code audit & assessment",
+        "Framework & OS version migration",
+        "Performance & crash rate optimization",
+        "UI/UX redesign & refresh",
+        "Phased rollout without downtime"
+      ]
+    },
+    {
+      "title": "Mobile app maintenance and support",
+      "description": "Launch day is the start of the work, not the end. We keep your app fast, current, and compliant as devices, operating systems, and user expectations move on.",
+      "bullets": [
+        "24/7 monitoring & incident response",
+        "OS update compatibility releases",
+        "Bug fixes & performance tuning",
+        "Feature enhancement sprints",
+        "App store optimization services"
+      ]
+    }
+  ],
+
+  "midCtaTitle": "Your idea deserves engineers, not order-takers.",
+  "midCtaBody": "We ask the hard questions early, build in the open, and hand you a product you can defend in a board meeting. Working with a top mobile app development company should feel like this.",
+  "midCtaButton": { "label": "Start Your Project Today!" },
+  "midCtaPoints": [
+    "450+ apps shipped across 12 industries",
+    "Dedicated mobile app development team per project",
+    "Transparent pricing, zero hidden costs",
+    "Full source code and IP ownership"
+  ],
+
+  "solutionsTitle": "Different industries we build mobile apps for",
+  "solutions": [
+    {
+      "title": "Consumer on-demand apps",
+      "bullets": [
+        "Real-time order & service tracking",
+        "Location-based discovery",
+        "In-app payments & wallets",
+        "Rating & review systems"
+      ]
+    },
+    {
+      "title": "Enterprise productivity apps",
+      "bullets": [
+        "Offline-capable field data capture",
+        "Approval & workflow automation",
+        "Secure document access",
+        "Directory & SSO integration"
+      ]
+    },
+    {
+      "title": "FinTech & banking apps",
+      "bullets": [
+        "KYC & identity verification",
+        "Encrypted transaction processing",
+        "Spend analytics & insights",
+        "Fraud detection triggers"
+      ]
+    },
+    {
+      "title": "Healthcare & wellness apps",
+      "bullets": [
+        "Appointment & consultation booking",
+        "Wearable data sync",
+        "Secure patient record access",
+        "Medication & care reminders"
+      ]
+    },
+    {
+      "title": "eCommerce & retail apps",
+      "bullets": [
+        "Personalized product feeds",
+        "One-tap checkout flows",
+        "Loyalty & rewards engine",
+        "Inventory & order sync"
+      ]
+    },
+    {
+      "title": "EdTech & learning apps",
+      "bullets": [
+        "Structured course delivery",
+        "Progress tracking & certification",
+        "Live class & recording support",
+        "Assessment & quiz modules"
+      ]
+    },
+    {
+      "title": "Logistics & fleet apps",
+      "bullets": [
+        "Route optimization & navigation",
+        "Driver assignment & dispatch",
+        "Proof of delivery capture",
+        "Fleet utilization reporting"
+      ]
+    },
+    {
+      "title": "Social & community apps",
+      "bullets": [
+        "Profile & content publishing",
+        "Real-time chat & notifications",
+        "Feed ranking algorithms",
+        "Moderation & reporting tools"
+      ]
+    }
+  ],
+
+  "featuresTitle": "Our mobile app features",
+  "featuresLayout": "groups",
+  "features": [
+    {
+      "title": "User panel",
+      "description": "Everything the end user touches, designed to be obvious on first open and fast on every open after.",
+      "items": [
+        "Social & email registration",
+        "Biometric login",
+        "Personalized home feed",
+        "Smart search & filters",
+        "In-app wallet & payments",
+        "Real-time push notifications",
+        "Order & activity history",
+        "Offline mode access",
+        "Multi-language support",
+        "Dark mode interface",
+        "In-app support chat",
+        "Referral & rewards program"
+      ]
+    },
+    {
+      "title": "Admin panel",
+      "description": "The control room. Every lever your operations team needs, without a developer in the loop.",
+      "items": [
+        "User & account management",
+        "Content & catalogue control",
+        "Subscription & billing management",
+        "Analytics & reporting dashboard",
+        "Payment gateway configuration",
+        "Push campaign manager",
+        "Role-based access control",
+        "Promo code & offer engine",
+        "Support ticket handling",
+        "Fraud & abuse monitoring",
+        "Multi-currency support",
+        "Audit logs & data exports"
+      ]
+    },
+    {
+      "title": "Advanced panel",
+      "description": "The features that separate an app people tolerate from one they recommend.",
+      "items": [
+        "AI-driven personalization",
+        "Predictive search suggestions",
+        "In-app video & voice calling",
+        "AR-based product preview",
+        "Behavioural segmentation",
+        "A/B testing framework",
+        "Real-time collaboration",
+        "Voice command support",
+        "Smart caching & prefetch",
+        "Third-party API marketplace",
+        "Automated crash reporting",
+        "Feature flag management"
+      ]
+    }
+  ],
+
+  "technologiesTitle": "Future-ready technologies we use for mobile app development",
+  "technologies": [
+    {
+      "title": "Artificial intelligence & machine learning",
+      "description": "We integrate smart AI models and machine learning to automate tasks, predict user needs, and personalize mobile app experiences based on real-time behavior patterns."
+    },
+    {
+      "title": "Edge computing for ultra-low latency",
+      "description": "By processing data locally on devices, edge computing speeds up app performance, improves offline functions, and keeps user data secure during low-connectivity situations."
+    },
+    {
+      "title": "Progressive web apps with native power",
+      "description": "We build fast web apps that work offline and feel like native applications, reducing overall development costs while providing smooth experiences across all devices."
+    },
+    {
+      "title": "Augmented reality & immersive experiences",
+      "description": "Using interactive AR features, we bring digital elements into the real world, creating fun, engaging mobile app experiences for shopping, learning, and business."
+    },
+    {
+      "title": "5G-optimized architecture",
+      "description": "Our apps are built for high-speed 5G networks, allowing instant data sharing, smooth video streaming, and real-time interaction without any frustrating lag or delays."
+    },
+    {
+      "title": "Blockchain-enabled security & transparency",
+      "description": "We use blockchain technology to protect digital transactions, secure user data, and verify identities, giving your mobile app high-level safety and user trust."
+    }
+  ],
+
+  "midCta2Title": "Built right the first time costs less than built twice.",
+  "midCta2Body": "AptenTech engineers apps that hold up under real traffic, real edge cases, and real growth. Skip the rebuild.",
+  "midCta2Button": { "label": "Talk to Our Architects" },
+
+  "complianceTitle": "Built on trust: compliance you can count on",
+  "compliance": [
+    { "label": "GDPR" },
+    { "label": "CCPA" },
+    { "label": "HIPAA" },
+    { "label": "PCI DSS" },
+    { "label": "ISO 27001" },
+    { "label": "SOC 2" },
+    { "label": "COPPA" },
+    { "label": "WCAG 2.1" },
+    { "label": "Apple App Store Guidelines" },
+    { "label": "Google Play Data Safety" }
+  ],
+
+  "processTitle": "Our mobile app development process",
+  "process": [
+    {
+      "title": "Discovery & requirement analysis",
+      "description": "We dig into your business model, users, and constraints to define exactly what gets built and in what order.",
+      "deliverables": ["Stakeholder workshops", "User & market research", "Scope & MVP definition"]
+    },
+    {
+      "title": "UI/UX design & prototyping",
+      "description": "Designers turn requirements into clickable prototypes you can test with real users before development spends a rupee.",
+      "deliverables": ["Wireframing & user flows", "Interactive prototypes", "Design system creation"]
+    },
+    {
+      "title": "Architecture & sprint planning",
+      "description": "Engineers define the technical foundation and break delivery into sprints with visible, testable outcomes.",
+      "deliverables": ["System & database architecture", "API contract definition", "Sprint & milestone planning"]
+    },
+    {
+      "title": "Development & integration",
+      "description": "Frontend, backend, and third-party integrations are built in parallel with weekly demos, so you're never surprised.",
+      "deliverables": ["Frontend & backend development", "Third-party API integration", "Continuous code review"]
+    },
+    {
+      "title": "Quality assurance & testing",
+      "description": "Manual and automated testing across devices, networks, and edge cases until the crash rate is where it belongs.",
+      "deliverables": [
+        "Functional & regression testing",
+        "Performance & load testing",
+        "Security & device compatibility testing"
+      ]
+    },
+    {
+      "title": "Launch & ongoing support",
+      "description": "We handle store submission, monitor the first weeks closely, and keep improving from there.",
+      "deliverables": ["App Store & Play Store deployment", "Post-launch monitoring", "Iterative updates & support"]
+    }
+  ],
+
+  "pricingTitle": "Mobile app development cost",
+  "costTable": {
+    "caption": "Mobile app development cost by app type",
+    "headers": ["App type", "What's included", "Timeline", "Estimated cost"],
+    "rows": [
+      {
+        "tier": "MVP / single platform",
+        "includes": "Core features, basic auth, single platform, standard UI.",
+        "timeline": "8–12 weeks",
+        "investment": "$12,000 – $25,000"
+      },
+      {
+        "tier": "Standard cross-platform app",
+        "includes": "MVP features plus payments, push notifications, admin panel, iOS & Android.",
+        "timeline": "14–20 weeks",
+        "investment": "$30,000 – $60,000"
+      },
+      {
+        "tier": "Enterprise / advanced app",
+        "includes": "Standard features plus AI modules, legacy integrations, high concurrency, advanced security.",
+        "timeline": "22–36 weeks",
+        "investment": "$70,000 – $150,000+"
+      }
+    ],
+    "factorsTitle": "What moves the number",
+    "factors": [
+      "Feature count & technical complexity",
+      "Native vs cross-platform app development",
+      "Backend and third-party integrations",
+      "UI/UX design depth and custom animation",
+      "Development team location and seniority"
+    ]
+  },
+
+  "techStackTitle": "Tech stack we use for mobile application development services",
+  "techStack": [
+    { "category": "Mobile frontend", "items": ["React Native", "Flutter", "Swift (iOS)", "Kotlin (Android)"] },
+    { "category": "Web & admin", "items": ["React.js", "Next.js", "Vue.js", "TypeScript"] },
+    { "category": "Backend", "items": ["Node.js", "Python (Django)", "Java (Spring Boot)", "Go"] },
+    { "category": "Database", "items": ["PostgreSQL", "MongoDB", "MySQL", "Redis"] },
+    { "category": "Cloud & DevOps", "items": ["AWS", "Google Cloud Platform", "Microsoft Azure", "Docker & Kubernetes"] },
+    { "category": "AI & analytics", "items": ["TensorFlow", "PyTorch", "OpenAI APIs", "Mixpanel & Firebase Analytics"] },
+    { "category": "Payments", "items": ["Stripe", "Razorpay", "PayPal", "Apple Pay & Google Pay"] },
+    { "category": "Engagement", "items": ["Firebase Cloud Messaging", "OneSignal", "Braze", "Twilio"] }
+  ],
+
+  "whyTitle": "Why businesses trust AptenTech for end-to-end mobile app development?",
+  "why": [
+    {
+      "title": "Product thinking, not just code",
+      "description": "We challenge weak assumptions before they become expensive features. You get a partner in the decisions, not a vendor waiting for specifications."
+    },
+    {
+      "title": "Senior engineers on every project",
+      "description": "When you hire mobile app developers through us, you get people who've shipped at scale — not juniors learning on your budget with a senior name on the proposal."
+    },
+    {
+      "title": "Full ownership, no lock-in",
+      "description": "Source code, repositories, cloud accounts, and documentation are yours from day one. You can walk away at any point, and the app still works."
+    },
+    {
+      "title": "Native app development depth",
+      "description": "Cross-platform is right for most projects, but not all. When performance demands it, our native app development teams go platform-specific without hesitation."
+    },
+    {
+      "title": "Transparent delivery",
+      "description": "Weekly demos, live sprint boards, and honest status calls. You'll know about a delay from us before you'd notice it yourself."
+    },
+    {
+      "title": "Support that outlasts the launch",
+      "description": "Maintenance, OS updates, and growth work continue long after go-live, because an unmaintained app loses users faster than a bad one."
+    }
+  ],
+
+  "faqTitle": "Mobile app development FAQs",
+  "faqs": [
+    {
+      "question": "How long does it take to develop a mobile app?",
+      "answer": "Most projects run 8 to 36 weeks. A single-platform MVP can launch in 8 to 12 weeks, while enterprise builds with complex integrations take longer. Your app development timeline depends on feature scope, platform count, and how quickly feedback comes back during review cycles."
+    },
+    {
+      "question": "How much does mobile app development cost?",
+      "answer": "Mobile app development cost typically ranges from $12,000 for an MVP to $150,000+ for enterprise platforms. Complexity, platform choice, and integration depth are the biggest drivers. We provide a fixed, itemized estimate after the discovery phase."
+    },
+    {
+      "question": "How do I get started if I only have an idea?",
+      "answer": "That's a normal starting point. As a trusted mobile app development agency, our consulting phase converts a rough concept into a validated scope, wireframes, and a costed roadmap — before you commit to full development."
+    },
+    {
+      "question": "Should I build native or cross-platform?",
+      "answer": "It depends on your performance needs and budget. A reliable mobile app development firm like us will guide you clearly: cross-platform using React Native or Flutter suits most products and reaches both stores faster, while heavy graphics or deep hardware access may justify going native. We'll advise either way honestly."
+    },
+    {
+      "question": "Can you take over an existing app built by another team?",
+      "answer": "Yes. As one of the top mobile app development companies, we audit the existing codebase, document what we find, and either continue development or recommend app modernization services if the foundation won't support your goals."
+    },
+    {
+      "question": "Do you provide support after launch?",
+      "answer": "Yes. Our mobile app maintenance and support plans cover monitoring, bug fixes, OS compatibility updates, and feature enhancements, along with app store optimization services to improve visibility and download rates."
+    },
+    {
+      "question": "Who owns the code and intellectual property?",
+      "answer": "You do, completely. All source code, designs, and documentation transfer to you, and access is provided throughout the project rather than at the end."
+    },
+    {
+      "question": "Can I hire a dedicated team instead of a fixed-scope project?",
+      "answer": "Yes. Many clients engage a dedicated mobile app development team on a monthly basis, giving them flexible capacity and direct control over priorities sprint by sprint."
+    }
+  ],
+
+  "sectionLedes": {
+    "protect": "An app holds your users' identity, their money, and their trust. We treat all three as non-negotiable. Our mobile app development services build security into the architecture from sprint one — never bolted on before launch.",
+    "positioning": "Mobile is no longer a channel. It is the front door. Users decide within seconds whether an app is worth keeping, and that verdict is shaped by load time, flow clarity, and how rarely something breaks. Building for that standard takes more than developers — it takes a team that has shipped enough products to know where they usually fail. AptenTech has spent years running mobile app development for startups chasing their first thousand users and for enterprises replacing systems older than their newest hires. The work is different. The discipline is the same.",
+    "features": "From everyday interactions to complex workflows, we build thoughtful features that make apps easier to use, manage, and grow as business needs evolve.",
+    "technologies": "In the rapidly changing digital world, we focus on technologies that keep applications intelligent, scalable, and future-proof. Our custom mobile app development approach ensures every solution we build remains competitive, adaptive, and ready for tomorrow's demands.",
+    "compliance": "As a compliance-first mobile app development company, we build to the standards your legal team, your users, and the app stores all expect.",
+    "process": "A clear mobile app development process is what keeps scope honest and timelines real. Here's how we work, stage by stage.",
+    "pricing": "Everyone asks how much it costs to develop an app, and the honest answer starts with a question: how much app? Feature depth, platform count, and integration complexity drive the number more than anything else. Here's a realistic app development cost breakdown to plan against.",
+    "techStack": "Our focus stays on tools that deliver lasting value, not fleeting hype. These are the frameworks and platforms behind our mobile application development services.",
+    "why": "Anyone can promise an app. Fewer deliver results that still perform eighteen months later. Businesses that want a reliable mobile application development company choose AptenTech first — for clean code, lasting support, and solutions built to succeed from day one and stay strong long after launch."
+  }
+}
