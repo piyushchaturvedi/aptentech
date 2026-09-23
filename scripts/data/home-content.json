@@ -1,5 +1,5 @@
 {
-  "note": "Home page copy from 'Copy of Home Page-AptenTech.docx'. Text only — accents and icons stay as the design set them, and are merged in by apply-home-content.js.",
+  "note": "Home page copy from 'Copy of Home Page-AptenTech.docx'. Text only — accents and icons stay as the design set them, and are merged in by apply-home-content.js. Note for whoever reads the history: migrate-home-growth.js used to rewrite these same blocks on every deploy with the wording extracted from the original HTML, which silently undid this file. It is now guarded by its own payload hash and runs once per database.",
 
   "hero": {
     "splitHeading": { "lead": "From Ideas To", "highlight": "Intelligent Digital Products", "trail": "" },

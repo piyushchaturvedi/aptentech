@@ -17,16 +17,22 @@
  *   2. The home page's blocks in MongoDB. Only the affected blocks are touched; every other
  *      page, and every other block on this page, is left alone.
  *
- * Safe to re-run: a second run finds the work already done and reports nothing to do.
+ * Runs once per database. This payload is extracted from the source HTML, so it carries the
+ * wording the home page launched with; re-asserting that on every deploy is how it used to
+ * undo approved copy that had been applied since. A hash of the payload file is recorded when
+ * it runs, and it is skipped while that hash is unchanged — the same guard the content
+ * scripts use. See scripts/lib/content-checkpoint.js.
  *
  *   node scripts/migrate-home-growth.js
  *   node scripts/migrate-home-growth.js --apply
  */
 const fs = require('node:fs');
 const path = require('node:path');
+const { payloadHash, shouldApply, recordApplied } = require('./lib/content-checkpoint');
 
 const ROOT = path.resolve(__dirname, '..');
 const APPLY = process.argv.includes('--apply');
+const FORCE = process.argv.includes('--force');
 const PAYLOAD = path.join(ROOT, 'scripts/data/home-growth.json');
 const REGISTRY = path.join(ROOT, 'apps/web/src/components/shared/iconRegistry.generated.ts');
 
@@ -85,6 +91,17 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
   const { MongoClient } = require('mongodb');
   const client = await MongoClient.connect(uri, { serverSelectionTimeoutMS: 10_000 });
   const db = client.db(dbName);
+
+  // Asked before anything is read: the question is whether this migration has run against
+  // this database, not whether the page currently matches it. A page that no longer matches
+  // because newer copy was applied is exactly the case this must leave alone.
+  const hash = payloadHash(PAYLOAD);
+  const verdict = await shouldApply(db, 'migrate:home-growth', hash, { force: FORCE });
+  if (!verdict.apply) {
+    console.log(`Skipped — ${verdict.reason}.`);
+    await client.close();
+    return;
+  }
 
   const home = await db.collection('sitepages').findOne({ slug: 'home' });
   if (!home) {
@@ -146,6 +163,10 @@ const same = (a, b) => JSON.stringify(a) === JSON.stringify(b);
       console.log('  written');
     }
   }
+
+  // Recorded whether or not anything moved: either way this payload has been reconciled
+  // against this database and should not be asked about again.
+  if (APPLY) await recordApplied(db, 'migrate:home-growth', hash, 'home-growth.json');
 
   if (!APPLY) console.log('\nDry run. Re-run with --apply to write.\n');
 
